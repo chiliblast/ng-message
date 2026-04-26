@@ -1,0 +1,150 @@
+<div class="p-6 bg-gray-50 dark:bg-gray-950 min-h-[calc(100vh-80px)]">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-8">
+    <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+      {{ showNewMessage ? 'New Message' : 'Order History' }}
+    </h1>
+    <button 
+      (click)="toggleView()"
+      class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-brand-500/20 flex items-center gap-2"
+    >
+      <svg *ngIf="!showNewMessage" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      <svg *ngIf="showNewMessage" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+      {{ showNewMessage ? 'Back to History' : 'New Message' }}
+    </button>
+  </div>
+
+  <!-- Design 1: Order History -->
+  <div *ngIf="!showNewMessage" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Panel: Summary/Info Cards -->
+    <div class="lg:col-span-4 space-y-4">
+      <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
+          <div class="p-5">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">Total Orders</h3>
+            <p class="text-xl font-bold text-gray-900 dark:text-white">1,284</p>
+          </div>
+          <div class="p-5">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">Delivered</h3>
+            <p class="text-xl font-bold text-emerald-500">98%</p>
+          </div>
+        </div>
+        <div class="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
+          <span class="text-[10px] text-gray-500 font-medium">↑ 12% increase from last month</span>
+        </div>
+      </div>
+
+      <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
+          <div class="p-5">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">New Msgs</h3>
+            <p class="text-xl font-bold text-gray-900 dark:text-white">12</p>
+          </div>
+          <div class="p-5">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg. Response</h3>
+            <p class="text-xl font-bold text-brand-500">2h</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Order History Table -->
+    <div class="lg:col-span-8 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <div class="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
+        <h3 class="font-bold text-gray-900 dark:text-white">Conversation History</h3>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-gray-50 dark:bg-gray-800/50">
+              <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">From</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">To</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+            <tr *ngFor="let order of orderHistory" class="hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-xs">
+                    {{ order.from.charAt(0) }}
+                  </div>
+                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ order.from }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ order.to }}</td>
+              <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ order.date }}</td>
+              <td class="px-6 py-4 text-right">
+                <button class="text-brand-500 hover:text-brand-600 font-medium text-sm">View Details</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Design 2: New Message -->
+  <div *ngIf="showNewMessage" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <!-- Left Panel: Hierarchy Accordions -->
+    <div class="lg:col-span-6 space-y-2">
+      <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Send To Hierarchy</h3>
+        
+        <div class="flex flex-col gap-1">
+          <!-- My Children -->
+          <ng-container *ngFor="let node of userL2">
+            <app-accordian [node]="node" [color]="'blue'" class="mb-1" (onSelect)="selectRecipient($event)"></app-accordian>
+          </ng-container>
+
+          <!-- My Grandchildren -->
+          <ng-container *ngFor="let node of userL3">
+            <app-accordian [node]="node" [color]="'success'" class="mb-1" (onSelect)="selectRecipient($event)"></app-accordian>
+          </ng-container>
+
+          <!-- My Great-Grandchildren -->
+          <ng-container *ngFor="let node of userL4">
+            <app-accordian [node]="node" [color]="'warning'" class="mb-1" (onSelect)="selectRecipient($event)"></app-accordian>
+          </ng-container>
+
+          <!-- Level 5 Nodes -->
+          <ng-container *ngFor="let node of userL5">
+            <app-accordian [node]="node" [color]="'purple'" class="mb-1" (onSelect)="selectRecipient($event)"></app-accordian>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Message Input -->
+    <div class="lg:col-span-6 flex flex-col">
+      <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm flex flex-col h-full">
+        <div class="p-6 flex-1 flex flex-col">
+          <div class="flex items-center gap-2 mb-4">
+            <label class="text-xs font-bold text-gray-400 uppercase tracking-wider">To:</label>
+            <span *ngIf="selectedRecipient" class="px-3 py-1 bg-brand-500/10 text-brand-500 rounded-full text-xs font-bold animate-in fade-in slide-in-from-left-2 duration-300">
+              {{ selectedRecipient }}
+            </span>
+          </div>
+          <textarea 
+            placeholder="Write your message here..."
+            class="flex-1 w-full bg-gray-50 dark:bg-gray-800 border-none rounded-xl p-4 text-sm text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-brand-500 outline-none resize-none min-h-[300px]"
+          ></textarea>
+        </div>
+        
+        <div class="p-6 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-4">
+          <button class="px-6 py-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 font-medium transition-colors">
+            Clear
+          </button>
+          <button class="px-8 py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-bold transition-all shadow-lg shadow-brand-500/20">
+            Send
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
