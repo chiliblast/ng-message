@@ -84,6 +84,28 @@ export class OfflineStorageService {
     });
   }
 
+  async saveSettings(key: string, data: any) {
+    if (!this.db) return;
+    const tx = this.db.transaction('messages', 'readwrite');
+    const store = tx.objectStore('messages');
+    store.put({ id: `settings_${key}`, data: data, storageType: 'settings' });
+  }
+
+  async getSettings(key: string): Promise<any> {
+    return new Promise((resolve) => {
+      if (!this.db) {
+        setTimeout(async () => {
+          resolve(await this.getSettings(key));
+        }, 200);
+        return;
+      }
+      const tx = this.db.transaction('messages', 'readonly');
+      const store = tx.objectStore('messages');
+      const request = store.get(`settings_${key}`);
+      request.onsuccess = () => resolve(request.result?.data || null);
+    });
+  }
+
   async addPendingMessage(message: any) {
     if (!this.db) return;
     const tx = this.db.transaction('pendingMessages', 'readwrite');
