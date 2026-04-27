@@ -118,3 +118,24 @@ TailAdmin Angular ships with a rich set of **ready-to-use dashboard features**:
 - **Bug Fix**: Resolved `NG0100` ExpressionChangedAfterItHasBeenCheckedError in `PieChartTwoComponent`.
 - **Bug Fix**: Fixed `NG8113` warning in `AddApiKeyModalComponent` by removing unused imports.
 - **Cleanup**: Removed unused imports and optimized code across various components.
+
+
+
+----online machine-----
+
+Install node by using the executable files downloaded from the official node website.
+Install the @angular/cli globally on the on-line machine.
+Check the C:\Users\Admin\AppData\Roaming folder.
+Zip the npm and npm_cache folder.
+Transfer the above zip file and node executable to the offline machine.
+Create the new project in angular
+zip the node_module folder inside the created project and transfer it to the offline machine.
+----Offline Machine------
+
+Install node from its executable
+Unzip the npm and npm_cache folder and move it to the C:\Users\Admin\AppData\Roaming folder.
+Run the following command to install the @angular/cli and its dependencies
+npm i @angular/cli -g --cache MY_CACHE_FOLDER --cache-min 999999999 --no-shrinkwrap
+Now create the new angular project. It will show some errors but don't worry.
+Unzip and move the node_module folder inside the new project.
+Now, you can work/run on the project as usual.
