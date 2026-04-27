@@ -1,4 +1,16 @@
 const db = require('../config/db');
+const webpush = require('web-push');
+
+// Configure Web Push (only if keys are set)
+if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+    webpush.setVapidDetails(
+        process.env.VAPID_EMAIL || 'mailto:admin@example.com',
+        process.env.VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+    );
+} else {
+    console.warn('⚠️ Web Push is disabled: VAPID_PUBLIC_KEY or VAPID_PRIVATE_KEY is missing in .env');
+}
 
 exports.sendMessage = async (req, res) => {
     const { receiverId, actionId, messageText } = req.body;
@@ -39,6 +51,43 @@ exports.sendMessage = async (req, res) => {
 
         // 4. Global Broadcast (for Info Messages feed)
         io.emit('global_feed_update', messageData);
+
+        // 5. Web Push Notification
+        try {
+            console.log(`🔍 Checking push subscription for User ID: ${receiverId}...`);
+            const [subRows] = await db.query('SELECT subscription FROM user_subscriptions WHERE user_id = ?', [receiverId]);
+            
+            if (subRows.length > 0) {
+                console.log(`✅ Subscription found! Sending push to User ${receiverId}...`);
+                
+                // Handle cases where the DB driver might have already parsed the JSON column
+                let subscription = subRows[0].subscription;
+                if (typeof subscription === 'string') {
+                    try {
+                        subscription = JSON.parse(subscription);
+                    } catch (e) {
+                        console.error('Failed to parse subscription string:', subscription);
+                        throw e;
+                    }
+                }
+
+                const payload = JSON.stringify({
+                    notification: {
+                        title: `New Message from ${req.user.name || req.user.username}`,
+                        body: messageText,
+                        icon: '/favicon.ico',
+                        badge: '/favicon.ico',
+                        data: { url: '/messages' }
+                    }
+                });
+                await webpush.sendNotification(subscription, payload);
+                console.log('🚀 Push notification sent successfully!');
+            } else {
+                console.log(`ℹ️ No push subscription found for User ${receiverId}.`);
+            }
+        } catch (pushError) {
+            console.error('❌ Push notification error:', pushError);
+        }
 
         res.json({ success: true, message: 'Message sent successfully', data: messageData });
     } catch (error) {

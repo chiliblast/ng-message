@@ -6,6 +6,7 @@ import { ThemeToggleButtonComponent } from '../../components/common/theme-toggle
 import { NotificationDropdownComponent } from '../../components/header/notification-dropdown/notification-dropdown.component';
 import { UserDropdownComponent } from '../../components/header/user-dropdown/user-dropdown.component';
 import { SocketService } from '../../../services/socket.service';
+import { NotificationService } from '../../../services/notification.service';
 
 @Component({
   selector: 'app-header',
@@ -27,10 +28,15 @@ export class AppHeaderComponent {
 
   constructor(
     public sidebarService: SidebarService,
-    private socketService: SocketService
+    private socketService: SocketService,
+    private notificationService: NotificationService
   ) {
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
     this.connected$ = this.socketService.connected$;
+
+    // Request Push Notification Permission
+    this.notificationService.subscribeToNotifications();
+    this.notificationService.listenForNotifications();
   }
 
   handleToggle() {

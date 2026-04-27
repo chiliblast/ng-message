@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const http = require('http');
+const path = require('path');
 const { Server } = require('socket.io');
 const authRoutes = require('./routes/authRoutes');
 require('dotenv').config();
@@ -59,6 +60,15 @@ app.use('/api/auth', authRoutes);
 app.use('/api/hierarchy', require('./routes/hierarchyRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/notifications', require('./routes/notificationRoutes'));
+
+// Serve Static Files (Angular PWA)
+app.use(express.static(path.join(__dirname, 'dist/ng-message/browser')));
+
+// SPA Fallback: Redirect all other requests to index.html
+app.use((req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/ng-message/browser/index.html'));
+});
 
 // Secure route example
 const authMiddleware = require('./middleware/auth');

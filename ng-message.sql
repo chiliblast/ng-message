@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 26, 2026 at 08:59 AM
+-- Generation Time: Apr 27, 2026 at 12:05 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `messages` (
   `message_text` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=20 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `messages`
@@ -251,7 +251,51 @@ INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `action_id`, `message_
 (16, 100, 7, 2, '1111', '2026-04-25 20:08:50'),
 (17, 100, 5, 3, 'edfdf', '2026-04-25 20:13:24'),
 (18, 100, 5, 3, '23323', '2026-04-25 20:25:10'),
-(19, 5, 10, 3, 'sdsds', '2026-04-25 21:18:09');
+(19, 5, 10, 3, 'sdsds', '2026-04-25 21:18:09'),
+(20, 100, 5, 3, '1222', '2026-04-26 17:33:22'),
+(21, 100, 5, 3, '55555', '2026-04-26 18:39:07'),
+(22, 100, 5, 3, '8888', '2026-04-26 18:39:07'),
+(23, 100, 10, 4, '9999', '2026-04-26 18:39:07'),
+(24, 100, 5, 1, '234', '2026-04-26 18:39:07'),
+(25, 100, 5, 3, '567', '2026-04-26 18:40:10'),
+(26, 100, 5, 4, '5556666', '2026-04-26 18:40:56'),
+(27, 100, 5, 1, '23233', '2026-04-26 18:42:00'),
+(28, 100, 5, 4, '33333', '2026-04-26 18:42:15'),
+(29, 100, 5, 2, '2323', '2026-04-26 18:42:38'),
+(30, 100, 5, 3, 'sadsads', '2026-04-26 18:44:45'),
+(31, 100, 5, 2, 'sdsd', '2026-04-26 18:46:49'),
+(32, 100, 5, 3, 'sdsd', '2026-04-26 18:47:39'),
+(33, 100, 5, 2, 'wqwewe', '2026-04-26 18:48:24'),
+(34, 100, 13, 3, 'wewewe', '2026-04-26 18:49:31'),
+(35, 100, 10, 4, 'sddsds', '2026-04-26 18:55:04'),
+(36, 100, 10, 2, 'sdsd', '2026-04-26 18:55:34'),
+(37, 100, 10, 1, 'aaaa', '2026-04-26 18:55:48'),
+(38, 100, 10, 2, 'www', '2026-04-26 18:57:28'),
+(39, 100, 10, 1, 'qqqqq', '2026-04-26 18:57:50'),
+(40, 100, 11, 2, 'sdsdd', '2026-04-26 19:00:02'),
+(41, 100, 5, 3, 'ssd', '2026-04-26 23:45:59'),
+(42, 100, 5, 3, 'sdsd', '2026-04-26 23:46:11'),
+(43, 5, 10, NULL, 'ssdd', '2026-04-26 23:46:25'),
+(44, 100, 5, 3, 'sdfsdf', '2026-04-26 23:48:30'),
+(45, 5, 11, 3, 'fdf', '2026-04-26 23:48:46'),
+(46, 100, 5, 2, 'sdsdsd', '2026-04-26 23:51:27'),
+(47, 100, 5, 4, 'sdsad', '2026-04-26 23:54:18'),
+(48, 5, 10, 3, 'sdsd', '2026-04-26 23:54:31'),
+(49, 5, 11, 3, 'xcxc', '2026-04-26 23:54:49'),
+(50, 100, 5, 2, 'sdf', '2026-04-26 23:55:23'),
+(51, 100, 5, 2, 'dfdf', '2026-04-26 23:55:34'),
+(52, 100, 5, 3, 'asdsd', '2026-04-26 23:57:46'),
+(53, 100, 11, 3, 'sadsd', '2026-04-26 23:58:04'),
+(54, 100, 11, 3, 'dfdf', '2026-04-26 23:58:18'),
+(55, 100, 10, 3, 'dfdf', '2026-04-26 23:59:14'),
+(56, 100, 5, 3, 'sdfsd', '2026-04-26 23:59:29'),
+(57, 100, 5, 3, 'sdsd', '2026-04-27 00:00:06'),
+(58, 100, 5, 3, 'zxzxx', '2026-04-27 00:01:39'),
+(59, 100, 5, 3, 'ssad', '2026-04-27 00:01:54'),
+(60, 100, 5, 3, 'sdsd', '2026-04-27 00:02:25'),
+(61, 100, 15, 3, 'sdasd', '2026-04-27 00:04:01'),
+(62, 100, 15, 3, 'sadsd', '2026-04-27 00:04:13'),
+(63, 100, 5, 3, 'asdasdad', '2026-04-27 00:04:27');
 
 -- --------------------------------------------------------
 
@@ -333,6 +377,30 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`, `position_title`, `po
 (33, 'Mr. Max Born', 'branch2_L5_33', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'Lecturer 4', 'Teaching.', '2026-04-24 09:28:20'),
 (34, 'Mr. Werner Heisenberg', 'branch2_L5_34', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'Teaching Asst 4', 'Lab.', '2026-04-24 09:28:20'),
 (100, 'Dr. Arshad Mahmood', 'level1', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'President', 'Supreme Authority of the Institution.', '2026-04-24 10:54:27');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_subscriptions`
+--
+
+DROP TABLE IF EXISTS `user_subscriptions`;
+CREATE TABLE IF NOT EXISTS `user_subscriptions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `subscription` json NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_subscriptions`
+--
+
+INSERT INTO `user_subscriptions` (`id`, `user_id`, `subscription`, `created_at`) VALUES
+(1, 100, '{\"keys\": {\"auth\": \"UmisX85r41ccae46eMDwbg\", \"p256dh\": \"BE8pOVWunOEh2GLZrwhahQml87xepDlxRZPKnAt224iPWwnMZ328ynxv1Z5nCIdzc8YBM-PLbZ24pnrdzyhdR64\"}, \"endpoint\": \"https://fcm.googleapis.com/fcm/send/cdMJEsZ5MJQ:APA91bG3zbrQxzVApoRkBHOfo1I0V4EMe8pGGNA5EYRm819NP3P20ssmxGgxZFR5xu6FI8Z3jJsKCrD_U6Pp2ikfREtJHQuBw5LKHdYN5w9_AILv4-XHNMEFhJaZG72hCgkyN5jr22xG\", \"expirationTime\": null}', '2026-04-26 23:53:47'),
+(2, 5, '{\"keys\": {\"auth\": \"VPJJwiCmVI5I3eTQW4BlIw\", \"p256dh\": \"BM0U7lfkO3o1RKyC0Aew9VsC6vDchqF1yIm2Inzyid1krvKaQuUkR8kCktnsvRXQJLTbR29QQkTdxusKabaQd5E\"}, \"endpoint\": \"https://fcm.googleapis.com/fcm/send/fZnZG_7ulCI:APA91bEeYVfjh4yNBDK8fN6WlPrKA0AlzjkIwxn0q98ZEEv0hvlpZ25VQyTBDzYtAjecJhkWyBTqeptDHb-w_7HbwVrTthNxDQuFiaTUtSkciA7UzPoAJw87Wk-FUc7TTfbagP7mHFWu\", \"expirationTime\": null}', '2026-04-26 23:55:09');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
