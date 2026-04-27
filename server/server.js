@@ -61,6 +61,7 @@ app.use('/api/hierarchy', require('./routes/hierarchyRoutes'));
 app.use('/api/settings', require('./routes/settingsRoutes'));
 app.use('/api/messages', require('./routes/messageRoutes'));
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/locations', require('./routes/locationRoutes'));
 
 // Serve Static Files (Angular PWA)
 app.use(express.static(path.join(__dirname, 'dist/ng-message/browser')));

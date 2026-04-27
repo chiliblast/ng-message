@@ -23,6 +23,7 @@ import { ReceivedMessagesComponent } from './pages/messages/received-messages/re
 import { SentMessageComponent } from './pages/messages/sent-message/sent-message.component';
 import { InfoMessagesComponent } from './pages/messages/info-messages/info-messages.component';
 import { SendMessagesComponent } from './pages/messages/send-messages/send-messages.component';
+import { LocationImportComponent } from './pages/location-import/location-import.component';
 
 import { authGuard } from './guards/auth.guard';
 import { authRedirectGuard } from './guards/auth-redirect.guard';
@@ -128,14 +129,14 @@ export const routes: Routes = [
         title:'Angular Buttons Dashboard | TailAdmin - Angular Admin Dashboard Template'
       },
       {
-        path:'images',
-        component:ImagesComponent,
-        title:'Angular Images Dashboard | TailAdmin - Angular Admin Dashboard Template'
-      },
-      {
         path:'videos',
         component:VideosComponent,
         title:'Angular Videos Dashboard | TailAdmin - Angular Admin Dashboard Template'
+      },
+      {
+        path: 'location-import',
+        component: LocationImportComponent,
+        title: 'Location Import & Management'
       },
     ]
   },

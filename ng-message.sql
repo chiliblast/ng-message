@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 27, 2026 at 12:05 AM
+-- Generation Time: Apr 27, 2026 at 01:01 AM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -25,6 +25,14 @@ DELIMITER $$
 --
 -- Procedures
 --
+DROP PROCEDURE IF EXISTS `sp_get_all_locations`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_all_locations` (IN `p_limit` INT, IN `p_offset` INT)   BEGIN
+    SELECT COUNT(*) AS total FROM locations;
+    SELECT * FROM locations 
+    ORDER BY created_at DESC 
+    LIMIT p_limit OFFSET p_offset;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_all_other_messages`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_all_other_messages` (IN `p_user_id` INT)   BEGIN
     SELECT 
@@ -99,6 +107,26 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_login` (IN `p_username` VARCHAR(
     SELECT id, name, position_title 
     FROM users 
     WHERE username = p_username AND password = p_password;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_save_global_location`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_save_global_location` (IN `p_name` VARCHAR(255), IN `p_latitude` DECIMAL(10,8), IN `p_longitude` DECIMAL(11,8), IN `p_address` TEXT)   BEGIN
+    -- 1. Check if the exact coordinates already exist
+    IF NOT EXISTS (
+        SELECT 1 FROM locations 
+        WHERE latitude = p_latitude 
+        AND longitude = p_longitude
+    ) THEN
+        -- 2. If they don't exist, insert the row
+        INSERT INTO locations (name, latitude, longitude, address)
+        VALUES (p_name, p_latitude, p_longitude, p_address);
+        
+        -- 3. Return '1' to tell the server we added it
+        SELECT 1 AS status;
+    ELSE
+        -- 4. Return '0' to tell the server we skipped a duplicate
+        SELECT 0 AS status;
+    END IF;
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_send_message`$$
@@ -210,6 +238,32 @@ INSERT INTO `hierarchy` (`user_id`, `level`, `type`) VALUES
 (33, 5, 'TEACHING'),
 (34, 5, 'TEACHING'),
 (100, 1, 'ADMIN');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `locations`
+--
+
+DROP TABLE IF EXISTS `locations`;
+CREATE TABLE IF NOT EXISTS `locations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `latitude` decimal(10,8) NOT NULL,
+  `longitude` decimal(11,8) NOT NULL,
+  `address` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `locations`
+--
+
+INSERT INTO `locations` (`id`, `name`, `latitude`, `longitude`, `address`, `created_at`) VALUES
+(1, 'asas', 23.00000000, 44.00000000, '232424', '2026-04-27 00:48:28'),
+(2, 'Central Park', 40.78509100, -73.96828500, '\"New York', '2026-04-27 00:50:09'),
+(6, 'Eiffel Tower', 48.85840000, 2.29450000, '\"Champ de Mars', '2026-04-27 01:00:46');
 
 -- --------------------------------------------------------
 
