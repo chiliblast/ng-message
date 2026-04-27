@@ -54,10 +54,6 @@ export class HomeComponent implements OnInit {
   popoverPosition = { top: 0, left: 0 };
 
   ngOnInit() {
-    this.authService.user$.subscribe(user => {
-      if (user) this.socketService.register(user.id);
-    });
-
     this.settingsService.loadStatusActions().subscribe();
     this.hierarchyService.getHierarchy().subscribe({
       next: (data) => {

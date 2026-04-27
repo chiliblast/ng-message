@@ -27,6 +27,16 @@ export class OfflineStorageService {
       if (!db.objectStoreNames.contains('pendingMessages')) {
         db.createObjectStore('pendingMessages', { keyPath: 'localId' });
       }
+
+      // Store for ALL registered locations (Global)
+      if (!db.objectStoreNames.contains('locations')) {
+        db.createObjectStore('locations', { keyPath: 'id' });
+      }
+
+      // Store for pending locations to be synced
+      if (!db.objectStoreNames.contains('pendingLocations')) {
+        db.createObjectStore('pendingLocations', { keyPath: 'localId' });
+      }
     };
 
     request.onsuccess = (event: any) => {
@@ -128,5 +138,44 @@ export class OfflineStorageService {
     const tx = this.db.transaction('pendingMessages', 'readwrite');
     const store = tx.objectStore('pendingMessages');
     store.delete(localId);
+  }
+
+  async saveLocations(locations: any[]) {
+    if (!this.db) return;
+    const tx = this.db.transaction('locations', 'readwrite');
+    const store = tx.objectStore('locations');
+    // Clear old data first for a fresh sync
+    store.clear();
+    locations.forEach(loc => store.put(loc));
+  }
+
+  async getLocations(): Promise<any[]> {
+    return new Promise((resolve) => {
+      if (!this.db) {
+        setTimeout(async () => resolve(await this.getLocations()), 200);
+        return;
+      }
+      const tx = this.db.transaction('locations', 'readonly');
+      const store = tx.objectStore('locations');
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+    });
+  }
+
+  async addPendingLocations(locations: any[]) {
+    if (!this.db) return;
+    const tx = this.db.transaction('pendingLocations', 'readwrite');
+    const store = tx.objectStore('pendingLocations');
+    store.add({ localId: Date.now(), data: locations });
+  }
+
+  async getPendingLocations(): Promise<any[]> {
+    return new Promise((resolve) => {
+      if (!this.db) return resolve([]);
+      const tx = this.db.transaction('pendingLocations', 'readonly');
+      const store = tx.objectStore('pendingLocations');
+      const request = store.getAll();
+      request.onsuccess = () => resolve(request.result || []);
+    });
   }
 }

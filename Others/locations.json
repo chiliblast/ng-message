@@ -1,0 +1,16 @@
+[
+  {
+    "name": "London Eye",
+    "number": "442079678020",
+    "latitude": 51.5033,
+    "longitude": -0.1195,
+    "address": "Riverside Building, County Hall, London SE1 7PB, UK"
+  },
+  {
+    "name": "Opera House",
+    "number": "61292507111",
+    "latitude": -33.8568,
+    "longitude": 151.2153,
+    "address": "Bennelong Point, Sydney NSW 2000, Australia"
+  }
+]

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 27, 2026 at 01:01 AM
+-- Generation Time: Apr 27, 2026 at 02:19 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -249,21 +249,25 @@ DROP TABLE IF EXISTS `locations`;
 CREATE TABLE IF NOT EXISTS `locations` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
+  `number` varchar(50) DEFAULT NULL,
   `latitude` decimal(10,8) NOT NULL,
   `longitude` decimal(11,8) NOT NULL,
   `address` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `locations`
 --
 
-INSERT INTO `locations` (`id`, `name`, `latitude`, `longitude`, `address`, `created_at`) VALUES
-(1, 'asas', 23.00000000, 44.00000000, '232424', '2026-04-27 00:48:28'),
-(2, 'Central Park', 40.78509100, -73.96828500, '\"New York', '2026-04-27 00:50:09'),
-(6, 'Eiffel Tower', 48.85840000, 2.29450000, '\"Champ de Mars', '2026-04-27 01:00:46');
+INSERT INTO `locations` (`id`, `name`, `number`, `latitude`, `longitude`, `address`, `created_at`) VALUES
+(13, 'London Eye', NULL, 51.50330000, -0.11950000, 'Riverside Building, County Hall, London SE1 7PB, UK', '2026-04-27 10:46:10'),
+(14, 'Opera House', NULL, -33.85680000, 151.21530000, 'Bennelong Point, Sydney NSW 2000, Australia', '2026-04-27 10:46:10'),
+(15, 'Colosseum', NULL, 41.89020000, 12.49220000, 'Piazza del Colosseo, 1, 00184 Roma RM, Italy', '2026-04-27 10:46:39'),
+(16, 'Taj Mahal', NULL, 27.17510000, 78.04210000, 'Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India', '2026-04-27 10:46:39'),
+(17, 'Central Park', NULL, 40.78509100, -73.96828500, '\"New York', '2026-04-27 10:51:07'),
+(18, 'Eiffel Tower', NULL, 48.85840000, 2.29450000, '\"Champ de Mars', '2026-04-27 10:51:07');
 
 -- --------------------------------------------------------
 
@@ -447,14 +451,6 @@ CREATE TABLE IF NOT EXISTS `user_subscriptions` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_id` (`user_id`)
 ) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `user_subscriptions`
---
-
-INSERT INTO `user_subscriptions` (`id`, `user_id`, `subscription`, `created_at`) VALUES
-(1, 100, '{\"keys\": {\"auth\": \"UmisX85r41ccae46eMDwbg\", \"p256dh\": \"BE8pOVWunOEh2GLZrwhahQml87xepDlxRZPKnAt224iPWwnMZ328ynxv1Z5nCIdzc8YBM-PLbZ24pnrdzyhdR64\"}, \"endpoint\": \"https://fcm.googleapis.com/fcm/send/cdMJEsZ5MJQ:APA91bG3zbrQxzVApoRkBHOfo1I0V4EMe8pGGNA5EYRm819NP3P20ssmxGgxZFR5xu6FI8Z3jJsKCrD_U6Pp2ikfREtJHQuBw5LKHdYN5w9_AILv4-XHNMEFhJaZG72hCgkyN5jr22xG\", \"expirationTime\": null}', '2026-04-26 23:53:47'),
-(2, 5, '{\"keys\": {\"auth\": \"VPJJwiCmVI5I3eTQW4BlIw\", \"p256dh\": \"BM0U7lfkO3o1RKyC0Aew9VsC6vDchqF1yIm2Inzyid1krvKaQuUkR8kCktnsvRXQJLTbR29QQkTdxusKabaQd5E\"}, \"endpoint\": \"https://fcm.googleapis.com/fcm/send/fZnZG_7ulCI:APA91bEeYVfjh4yNBDK8fN6WlPrKA0AlzjkIwxn0q98ZEEv0hvlpZ25VQyTBDzYtAjecJhkWyBTqeptDHb-w_7HbwVrTthNxDQuFiaTUtSkciA7UzPoAJw87Wk-FUc7TTfbagP7mHFWu\", \"expirationTime\": null}', '2026-04-26 23:55:09');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

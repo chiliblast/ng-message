@@ -1,0 +1,16 @@
+<locations>
+  <location>
+    <name>Colosseum</name>
+    <number>39067004261</number>
+    <latitude>41.8902</latitude>
+    <longitude>12.4922</longitude>
+    <address>Piazza del Colosseo, 1, 00184 Roma RM, Italy</address>
+  </location>
+  <location>
+    <name>Taj Mahal</name>
+    <number>915622226431</number>
+    <latitude>27.1751</latitude>
+    <longitude>78.0421</longitude>
+    <address>Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India</address>
+  </location>
+</locations>

@@ -11,6 +11,14 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {
     const savedUser = localStorage.getItem('user');
     if (savedUser) this.userSubject.next(JSON.parse(savedUser));
+
+    // CROSS-TAB SYNC: Listen for storage changes
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'token' && !event.newValue) {
+        console.log('🚪 Logout detected in another tab. Syncing...');
+        this.handleLocalLogout();
+      }
+    });
   }
 
   login(credentials: any) {
@@ -41,8 +49,18 @@ export class AuthService {
   }
 
   logout() {
+    const user = this.userSubject.value;
+    if (user) {
+      // Trigger global logout on server to kill all sockets
+      this.http.post('http://localhost:3000/api/auth/logout-global', { userId: user.id }).subscribe();
+    }
+    
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    this.handleLocalLogout();
+  }
+
+  private handleLocalLogout() {
     this.userSubject.next(null);
     this.router.navigate(['/signin']);
   }

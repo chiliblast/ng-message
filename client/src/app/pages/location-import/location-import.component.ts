@@ -6,6 +6,11 @@ import { AgGridAngular } from 'ag-grid-angular';
 import { ModuleRegistry, AllCommunityModule, ColDef } from 'ag-grid-community';
 import { ThemeService } from '../../shared/services/theme.service';
 
+import { OfflineStorageService } from '../../services/offline-storage.service';
+import { OfflineSyncService } from '../../services/offline-sync.service';
+
+import * as XLSX from 'xlsx';
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 @Component({
@@ -21,6 +26,8 @@ export class LocationImportComponent implements OnInit {
   private locationService = inject(LocationService);
   private toastService = inject(ToastService);
   private themeService = inject(ThemeService);
+  private offlineStorage = inject(OfflineStorageService);
+  private syncService = inject(OfflineSyncService);
 
   theme$ = this.themeService.theme$;
 
@@ -49,22 +56,77 @@ export class LocationImportComponent implements OnInit {
     totalPages: 0
   };
 
+  isDragging = false;
+
   ngOnInit() {
     this.loadRegistry();
+
+    // Refresh registry when offline sync completes
+    this.syncService.syncCompleted$.subscribe(() => {
+      console.log('🔄 Sync completed, refreshing registry...');
+      this.loadRegistry();
+    });
   }
 
-  onFileChange(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        const text = e.target.result;
-        this.parseCSV(text);
-      };
-      reader.readAsText(file);
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    
+    const files = event.dataTransfer?.files;
+    if (files && files.length > 0) {
+      this.handleFiles(files);
+    }
+  }
+
+  async onFileChange(event: any) {
+    const files: FileList = event.target.files;
+    if (files && files.length > 0) {
+      await this.handleFiles(files);
       // Reset the input value so the change event fires even if the same file is picked again
       event.target.value = '';
     }
+  }
+
+  async handleFiles(files: FileList) {
+    const allResults: any[] = [];
+    
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const fileName = file.name.toLowerCase();
+      
+      try {
+        if (fileName.endsWith('.csv')) {
+          const text = await file.text();
+          allResults.push(...this.parseCSV(text));
+        } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+          allResults.push(...await this.parseExcel(file));
+        } else if (fileName.endsWith('.json')) {
+          const text = await file.text();
+          allResults.push(...this.parseJSON(text));
+        } else if (fileName.endsWith('.xml')) {
+          const text = await file.text();
+          allResults.push(...this.parseXML(text));
+        }
+      } catch (err) {
+        console.error(`Error parsing file ${file.name}:`, err);
+        this.toastService.show(`Failed to parse ${file.name}`, 'error');
+      }
+    }
+    
+    this.importData = [...this.importData, ...allResults];
   }
 
   parseCSV(text: string) {
@@ -87,7 +149,68 @@ export class LocationImportComponent implements OnInit {
       });
       result.push(obj);
     }
-    this.importData = result;
+    return result;
+  }
+
+  async parseExcel(file: File): Promise<any[]> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const jsonData = XLSX.utils.sheet_to_json(worksheet);
+        
+        const mappedData = jsonData.map((row: any) => {
+          const findVal = (keys: string[]) => {
+            const key = Object.keys(row).find(k => keys.includes(k.toLowerCase()));
+            return key ? row[key] : null;
+          };
+
+          return {
+            name: findVal(['name', 'location', 'title']),
+            latitude: parseFloat(findVal(['latitude', 'lat'])),
+            longitude: parseFloat(findVal(['longitude', 'lng', 'long'])),
+            address: findVal(['address', 'addr', 'location details']) || ''
+          };
+        });
+        
+        resolve(mappedData.filter(d => !isNaN(d.latitude) && !isNaN(d.longitude)));
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  parseJSON(text: string): any[] {
+    const data = JSON.parse(text);
+    const locations = Array.isArray(data) ? data : (data.locations || []);
+    return locations.map((loc: any) => ({
+      name: loc.name || loc.title,
+      latitude: parseFloat(loc.latitude || loc.lat),
+      longitude: parseFloat(loc.longitude || loc.lng || loc.long),
+      address: loc.address || ''
+    })).filter((d: any) => !isNaN(d.latitude) && !isNaN(d.longitude));
+  }
+
+  parseXML(text: string): any[] {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(text, "text/xml");
+    const locationNodes = xmlDoc.getElementsByTagName("location");
+    const result = [];
+
+    for (let i = 0; i < locationNodes.length; i++) {
+      const node = locationNodes[i];
+      const getVal = (tag: string) => node.getElementsByTagName(tag)[0]?.textContent || '';
+
+      result.push({
+        name: getVal('name') || getVal('title'),
+        latitude: parseFloat(getVal('latitude') || getVal('lat')),
+        longitude: parseFloat(getVal('longitude') || getVal('lng') || getVal('long')),
+        address: getVal('address')
+      });
+    }
+    return result.filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
   }
 
   saveImport() {
@@ -102,7 +225,11 @@ export class LocationImportComponent implements OnInit {
         this.importData = [];
         this.loadRegistry();
       },
-      error: () => this.toastService.show('Failed to save locations', 'error')
+      error: async () => {
+        await this.offlineStorage.addPendingLocations(this.importData);
+        this.toastService.show('Offline: Locations queued for sync', 'info');
+        this.importData = [];
+      }
     });
   }
 
@@ -116,7 +243,7 @@ export class LocationImportComponent implements OnInit {
         this.registryData = res.data;
         this.pagination = res.pagination;
       },
-      error: () => this.toastService.show('Failed to load registry', 'error')
+      error: () => this.toastService.show('Failed to load locations', 'error')
     });
   }
 

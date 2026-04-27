@@ -3,30 +3,65 @@
   <header class="flex justify-between items-center">
     <div>
       <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Location Management</h1>
-      <p class="text-gray-500 dark:text-gray-400">Import and manage organizational locations via CSV</p>
+      <p class="text-gray-500 dark:text-gray-400">Import and manage user locations</p>
     </div>
   </header>
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
     
     <!-- LEFT SIDE: IMPORT WORKBENCH -->
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col h-[600px]">
+    <div 
+      class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 flex flex-col h-[600px] transition-all duration-300"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)">
+
+      <!-- DRAG OVERLAY (Premium Tailwind Design) -->
+      <div 
+        *ngIf="isDragging"
+        class="absolute inset-0 z-50 rounded-2xl bg-brand-500/10 dark:bg-brand-500/20 backdrop-blur-[2px] border-2 border-dashed border-brand-500 flex flex-col items-center justify-center p-8 transition-all animate-in fade-in zoom-in duration-300 pointer-events-none">
+        <div class="bg-white dark:bg-gray-800 p-8 rounded-full shadow-2xl mb-4 animate-bounce">
+          <i class="pi pi-cloud-upload text-6xl text-brand-500"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-brand-600 dark:text-brand-400">Drop to Upload</h3>
+        <p class="text-gray-600 dark:text-gray-400 text-center mt-2 max-w-[250px]">
+          Release your files to import them into the workbench
+        </p>
+      </div>
+      
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
           <i class="pi pi-upload text-brand-500"></i>
-          Import Workbench
+          Import File
         </h2>
         <div class="flex gap-2">
           <label class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
-            <span>Choose CSV</span>
-            <input type="file" (change)="onFileChange($event)" accept=".csv" class="hidden">
+            <span>Browse File</span>
+            <input type="file" (change)="onFileChange($event)" accept=".csv, .xlsx, .xls, .json, .xml" multiple class="hidden">
           </label>
         </div>
       </div>
 
-      <!-- Import Preview Grid -->
-      <div class="flex-1 mb-6 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700">
+      <!-- Import Preview Grid or Placeholder -->
+      <div class="flex-1 mb-6 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 relative">
+        
+        <!-- Empty State / Drag Invitation -->
+        <div 
+          *ngIf="importData.length === 0"
+          class="absolute inset-0 flex flex-col items-center justify-center p-6 bg-gray-50/50 dark:bg-gray-900/20 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl transition-all duration-300">
+          <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl shadow-sm flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+            <i class="pi pi-images text-3xl text-gray-400"></i>
+          </div>
+          <p class="text-gray-900 dark:text-white font-semibold text-center">No files selected</p>
+          <p class="text-gray-500 dark:text-gray-400 text-sm text-center mt-1">
+            Drag and drop your CSV, Excel, JSON or XML files here <br>
+            to preview them before saving
+          </p>
+        </div>
+
+        <!-- The actual Grid -->
         <ag-grid-angular
+          *ngIf="importData.length > 0"
           style="width: 100%; height: 100%;"
           [theme]="'legacy'" [class]="(theme$ | async) === 'dark' ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'"
           [rowData]="importData"
@@ -57,7 +92,7 @@
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
           <i class="pi pi-database text-success-500"></i>
-          Location Registry
+          Locations
         </h2>
         <span class="px-3 py-1 bg-success-50 dark:bg-success-900/20 text-success-600 dark:text-success-400 rounded-full text-xs font-bold uppercase tracking-wider">
           {{ pagination.total }} Total

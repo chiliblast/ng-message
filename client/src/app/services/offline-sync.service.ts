@@ -54,7 +54,10 @@ export class OfflineSyncService {
     const pending = await this.storage.getPendingMessages();
     console.log(`📦 Pending messages found in storage: ${pending.length}`);
     
-    if (pending.length === 0) return;
+    if (pending.length === 0) {
+      this.syncPendingLocations(); // Try syncing locations even if no messages
+      return;
+    }
 
     console.log(`🔄 Syncing ${pending.length} pending messages...`);
 
@@ -75,6 +78,32 @@ export class OfflineSyncService {
       }
     }
     
+    this.syncPendingLocations();
+    this.syncCompletedSubject.next();
+  }
+
+  async syncPendingLocations() {
+    const pending = await this.storage.getPendingLocations();
+    if (pending.length === 0) return;
+
+    console.log(`🌍 Found ${pending.length} pending location batches to sync...`);
+
+    for (const batch of pending) {
+      try {
+        console.log(`📤 Syncing location batch: ${batch.localId}...`);
+        await firstValueFrom(this.http.post('http://localhost:3000/api/locations/bulk', batch.data));
+        
+        // Remove from IndexedDB after successful sync
+        const tx = (this.storage as any).db.transaction('pendingLocations', 'readwrite');
+        const store = tx.objectStore('pendingLocations');
+        store.delete(batch.localId);
+        
+        console.log(`✅ Location batch synced: ${batch.localId}`);
+      } catch (error) {
+        console.error(`❌ Location sync failed for batch ${batch.localId}:`, error);
+        break;
+      }
+    }
     this.syncCompletedSubject.next();
   }
 
