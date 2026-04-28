@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 27, 2026 at 02:19 PM
+-- Generation Time: Apr 28, 2026 at 08:09 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -53,9 +53,22 @@ END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_hierarchy_data`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_hierarchy_data` ()   BEGIN
+    -- Result Set 1: Users
     SELECT u.id, u.name, u.position_title as title, u.position_details as details, h.level, h.type
     FROM users u JOIN hierarchy h ON u.id = h.user_id;
+
+    -- Result Set 2: Relationships
     SELECT user_id, child_user_id FROM children;
+
+    -- Result Set 3: Detailed User Actions
+    SELECT 
+        una.user_id, 
+        sa.label, 
+        sa.color, 
+        una.name as action_name, 
+        una.description as action_desc
+    FROM user_node_actions una
+    JOIN status_actions sa ON una.action_id = sa.id;
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_received_messages`$$
@@ -435,6 +448,65 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`, `position_title`, `po
 (33, 'Mr. Max Born', 'branch2_L5_33', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'Lecturer 4', 'Teaching.', '2026-04-24 09:28:20'),
 (34, 'Mr. Werner Heisenberg', 'branch2_L5_34', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'Teaching Asst 4', 'Lab.', '2026-04-24 09:28:20'),
 (100, 'Dr. Arshad Mahmood', 'level1', 'ZqSJkf0XN3u6Kvw29PmNv3ToBDnJagBT2eauC0ZQRTQ=', 'President', 'Supreme Authority of the Institution.', '2026-04-24 10:54:27');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_node_actions`
+--
+
+DROP TABLE IF EXISTS `user_node_actions`;
+CREATE TABLE IF NOT EXISTS `user_node_actions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `action_id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `user_node_actions`
+--
+
+INSERT INTO `user_node_actions` (`id`, `user_id`, `action_id`, `name`, `description`) VALUES
+(1, 8, 2, 'B Action', 'Dynamic description for user 8'),
+(2, 8, 1, 'A Action', 'Dynamic description for user 8'),
+(3, 8, 3, 'C Action', 'Dynamic description for user 8'),
+(4, 9, 4, 'D Action', 'Dynamic description for user 9'),
+(5, 9, 2, 'B Action', 'Dynamic description for user 9'),
+(6, 9, 3, 'C Action', 'Dynamic description for user 9'),
+(7, 10, 3, 'C Action', 'Dynamic description for user 10'),
+(8, 10, 4, 'D Action', 'Dynamic description for user 10'),
+(9, 11, 1, 'A Action', 'Dynamic description for user 11'),
+(10, 11, 3, 'C Action', 'Dynamic description for user 11'),
+(11, 12, 4, 'D Action', 'Dynamic description for user 12'),
+(12, 13, 3, 'C Action', 'Dynamic description for user 13'),
+(13, 13, 2, 'B Action', 'Dynamic description for user 13'),
+(14, 14, 2, 'B Action', 'Dynamic description for user 14'),
+(15, 14, 4, 'D Action', 'Dynamic description for user 14'),
+(16, 14, 3, 'C Action', 'Dynamic description for user 14'),
+(17, 15, 1, 'A Action', 'Dynamic description for user 15'),
+(18, 15, 3, 'C Action', 'Dynamic description for user 15'),
+(19, 15, 4, 'D Action', 'Dynamic description for user 15'),
+(20, 27, 3, 'C Action', 'Dynamic description for user 27'),
+(21, 27, 4, 'D Action', 'Dynamic description for user 27'),
+(22, 27, 1, 'A Action', 'Dynamic description for user 27'),
+(23, 28, 3, 'C Action', 'Dynamic description for user 28'),
+(24, 28, 2, 'B Action', 'Dynamic description for user 28'),
+(25, 28, 4, 'D Action', 'Dynamic description for user 28'),
+(26, 29, 1, 'A Action', 'Dynamic description for user 29'),
+(27, 29, 3, 'C Action', 'Dynamic description for user 29'),
+(28, 29, 4, 'D Action', 'Dynamic description for user 29'),
+(29, 30, 2, 'B Action', 'Dynamic description for user 30'),
+(30, 31, 1, 'A Action', 'Dynamic description for user 31'),
+(31, 32, 4, 'D Action', 'Dynamic description for user 32'),
+(32, 32, 2, 'B Action', 'Dynamic description for user 32'),
+(33, 33, 4, 'D Action', 'Dynamic description for user 33'),
+(34, 33, 1, 'A Action', 'Dynamic description for user 33'),
+(35, 33, 2, 'B Action', 'Dynamic description for user 33'),
+(36, 34, 2, 'B Action', 'Dynamic description for user 34'),
+(37, 34, 3, 'C Action', 'Dynamic description for user 34');
 
 -- --------------------------------------------------------
 

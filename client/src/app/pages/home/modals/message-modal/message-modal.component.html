@@ -27,7 +27,7 @@
         <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Select Category / Action</label>
         <div class="flex gap-3">
           <button 
-            *ngFor="let action of (statusActions$ | async)"
+            *ngFor="let action of (node?.actions || [])"
             (click)="selectCategory(action.id)"
             [style.borderColor]="selectedActionId === action.id ? action.color : 'transparent'"
             [style.backgroundColor]="selectedActionId === action.id ? action.color : 'transparent'"
@@ -37,6 +37,7 @@
               'bg-gray-50 dark:bg-white/5 border-gray-100 dark:border-gray-800': selectedActionId !== action.id
             }"
             class="w-10 h-10 rounded-xl border flex items-center justify-center text-xs font-black uppercase transition-all hover:scale-105"
+            [title]="action.name + (action.description ? ': ' + action.description : '')"
           >
             {{ action.label }}
           </button>

@@ -7,12 +7,25 @@ exports.getHierarchy = async (req, res) => {
         
         const rows = results[0];         // Result Set 1: Users
         const relationships = results[1]; // Result Set 2: Relationships
+        const allActions = results[2] || []; // Result Set 3: Dynamic Actions (defensive check)
 
-        // 2. Map children to parents
+        // 2. Map children and actions to parents/users
         const childrenMap = {};
         relationships.forEach(rel => {
             if (!childrenMap[rel.user_id]) childrenMap[rel.user_id] = [];
             childrenMap[rel.user_id].push(rel.child_user_id);
+        });
+
+        const actionsMap = {};
+        allActions.forEach(act => {
+            if (!actionsMap[act.user_id]) actionsMap[act.user_id] = [];
+            actionsMap[act.user_id].push({
+                id: act.id || act.action_id,
+                label: act.label,
+                color: act.color,
+                name: act.action_name,
+                description: act.action_desc
+            });
         });
 
         // 3. Build recursive tree function
@@ -23,6 +36,7 @@ exports.getHierarchy = async (req, res) => {
             const node = {
                 ...user,
                 isOpen: user.level === 1 || user.level === 2, 
+                actions: actionsMap[userId] || [],
                 children: []
             };
 

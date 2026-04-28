@@ -34,10 +34,8 @@ export class MessageModalComponent {
 
     this.isSending = true;
 
-    // Find the selected category details for offline enrichment
-    let categories: any[] = [];
-    this.statusActions$.subscribe(c => categories = c);
-    const selectedCategory = categories.find(c => c.id === this.selectedActionId);
+    // Find the selected category details for metadata enrichment
+    const selectedCategory = this.node?.actions?.find((c: any) => c.id === this.selectedActionId);
 
     this.messageService.sendMessage(
       this.node.id, 

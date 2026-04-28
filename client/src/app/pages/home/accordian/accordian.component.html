@@ -58,13 +58,14 @@
         {{node.details}}
       </p>
 
-      <!-- Action/Status Indicators (Shown for Level > 1) -->
-      <div *ngIf="node.level > 1" class="mt-4 flex gap-2">
-        <div *ngFor="let action of (statusActions$ | async)" 
+      <!-- Action/Status Indicators (Dynamic per Node) -->
+      <div *ngIf="node.level === 5 && node.actions?.length" class="mt-4 flex gap-2">
+        <div *ngFor="let action of node.actions" 
              class="w-7 h-7 rounded-md border flex items-center justify-center text-[10px] font-bold uppercase shadow-sm transition-all cursor-default"
              [style.borderColor]="action.color + '20'"
              [style.backgroundColor]="action.color + '05'"
-             [style.color]="action.color">
+             [style.color]="action.color"
+             [title]="action.name + (action.description ? ': ' + action.description : '')">
           {{ action.label }}
         </div>
       </div>
