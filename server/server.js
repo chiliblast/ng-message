@@ -41,6 +41,49 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('initiate_call', ({ to, from, callerName }) => {
+        console.log(`📞 Call initiated: From ${from} to ${to} (${callerName})`);
+        const targetSockets = connectedUsers.get(Number(to));
+        if (targetSockets) {
+            console.log(`📡 Relaying call to ${targetSockets.size} sockets of user ${to}`);
+            targetSockets.forEach(socketId => {
+                io.to(socketId).emit('incoming_call', { from, callerName });
+            });
+        } else {
+            console.log(`⚠️ Target user ${to} is not connected.`);
+        }
+    });
+
+    socket.on('accept_call', ({ to, from }) => {
+        console.log(`✅ Call accepted: By ${from} for ${to}`);
+        const targetSockets = connectedUsers.get(Number(to));
+        if (targetSockets) {
+            targetSockets.forEach(socketId => {
+                io.to(socketId).emit('call_accepted', { from });
+            });
+        }
+    });
+
+    socket.on('reject_call', ({ to, from }) => {
+        console.log(`❌ Call rejected: By ${from} for ${to}`);
+        const targetSockets = connectedUsers.get(Number(to));
+        if (targetSockets) {
+            targetSockets.forEach(socketId => {
+                io.to(socketId).emit('call_rejected', { from });
+            });
+        }
+    });
+
+    socket.on('end_call', ({ to }) => {
+        console.log(`📵 Call ended: Notification for ${to}`);
+        const targetSockets = connectedUsers.get(Number(to));
+        if (targetSockets) {
+            targetSockets.forEach(socketId => {
+                io.to(socketId).emit('call_ended');
+            });
+        }
+    });
+
     socket.on('disconnect', () => {
         if (socket.userId && connectedUsers.has(socket.userId)) {
             const userSockets = connectedUsers.get(socket.userId);

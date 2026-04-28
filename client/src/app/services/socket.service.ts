@@ -14,11 +14,19 @@ export class SocketService {
   private messageSentSubject = new Subject<any>();
   private globalFeedUpdateSubject = new Subject<any>();
   private connectedSubject = new BehaviorSubject<boolean>(false);
+  private incomingCallSubject = new Subject<any>();
+  private callAcceptedSubject = new Subject<any>();
+  private callRejectedSubject = new Subject<any>();
+  private callEndedSubject = new Subject<void>();
 
   messageReceived$ = this.messageReceivedSubject.asObservable();
   messageSent$ = this.messageSentSubject.asObservable();
   globalFeedUpdate$ = this.globalFeedUpdateSubject.asObservable();
   connected$ = this.connectedSubject.asObservable();
+  incomingCall$ = this.incomingCallSubject.asObservable();
+  callAccepted$ = this.callAcceptedSubject.asObservable();
+  callRejected$ = this.callRejectedSubject.asObservable();
+  callEnded$ = this.callEndedSubject.asObservable();
 
   private userSub: Subscription;
 
@@ -55,6 +63,11 @@ export class SocketService {
       console.log('📡 Global feed update received:', data);
       this.globalFeedUpdateSubject.next(data);
     });
+
+    this.socket.on('incoming_call', (data) => this.incomingCallSubject.next(data));
+    this.socket.on('call_accepted', (data) => this.callAcceptedSubject.next(data));
+    this.socket.on('call_rejected', (data) => this.callRejectedSubject.next(data));
+    this.socket.on('call_ended', () => this.callEndedSubject.next());
   }
 
   private disconnect() {
@@ -75,5 +88,9 @@ export class SocketService {
 
   onMessageSent(): Observable<any> {
     return this.messageSent$;
+  }
+
+  emit(event: string, data: any) {
+    this.socket?.emit(event, data);
   }
 }

@@ -6,7 +6,7 @@ import {
   _processOnChange,
   _removeFromParent,
   createGrid
-} from "./chunk-FCVPSFH7.js";
+} from "./chunk-GCMZ5NA7.js";
 import {
   Component,
   ElementRef,
@@ -30,12 +30,12 @@ import {
   ɵɵdirectiveInject,
   ɵɵgetInheritedFactory,
   ɵɵinject
-} from "./chunk-QHLJ5MVD.js";
+} from "./chunk-XZFT3VHW.js";
 import "./chunk-AVYJDDD7.js";
 import "./chunk-TDJAWKBX.js";
 import "./chunk-Y3NBB6NO.js";
 import "./chunk-UCQAVHHJ.js";
-import "./chunk-3DBEZTN3.js";
+import "./chunk-JW5A4HOV.js";
 
 // node_modules/ag-grid-angular/fesm2022/ag-grid-angular.mjs
 var AgComponentContainer = class _AgComponentContainer {

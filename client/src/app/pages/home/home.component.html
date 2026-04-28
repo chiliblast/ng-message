@@ -73,7 +73,7 @@
 
   <!-- MODALS -->
   <app-map-modal [isOpen]="showProfileModal" [node]="profileNode" (close)="closeProfile()"></app-map-modal>
-  <app-video-call-modal [isOpen]="showCallModal" [node]="callNode" (close)="closeCall()"></app-video-call-modal>
+  <app-video-call-modal [isOpen]="showCallModal" [node]="callNode" [isIncoming]="isIncomingCall" (close)="closeCall()"></app-video-call-modal>
   <app-message-modal [isOpen]="showMessageModal" [node]="messageNode" (close)="closeMessage()"></app-message-modal>
 
 </div>

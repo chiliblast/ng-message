@@ -1,4 +1,4 @@
-import "./chunk-3DBEZTN3.js";
+import "./chunk-JW5A4HOV.js";
 
 // node_modules/@amcharts/amcharts5-geodata/worldLow.js
 var map = { "type": "FeatureCollection", "features": [

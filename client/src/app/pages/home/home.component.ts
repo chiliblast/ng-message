@@ -51,6 +51,7 @@ export class HomeComponent implements OnInit {
   showProfileModal: boolean = false;
   showCallModal: boolean = false;
   showMessageModal: boolean = false;
+  isIncomingCall: boolean = false;
   popoverPosition = { top: 0, left: 0 };
 
   ngOnInit() {
@@ -60,6 +61,14 @@ export class HomeComponent implements OnInit {
         this.level1_hierarchy = data;
       },
       error: (err) => console.error('Error fetching hierarchy:', err)
+    });
+
+    // Listen for incoming calls
+    this.socketService.incomingCall$.subscribe(data => {
+      console.log('🔔 Incoming call signal received in HomeComponent:', data);
+      this.callNode = { id: data.from, name: data.callerName, title: 'Incoming Call...' };
+      this.isIncomingCall = true;
+      this.showCallModal = true;
     });
   }
 
@@ -122,6 +131,7 @@ export class HomeComponent implements OnInit {
   closeCall() {
     this.showCallModal = false;
     this.callNode = null;
+    this.isIncomingCall = false;
   }
 
   onOpenMessage(node: any) {

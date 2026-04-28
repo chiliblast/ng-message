@@ -38,7 +38,7 @@ import {
   setColor,
   softCopyProperties,
   spiralPoints
-} from "./chunk-RX7JS3QL.js";
+} from "./chunk-S2FZJOAA.js";
 import "./chunk-UCQAVHHJ.js";
 import {
   __commonJS,
@@ -47,7 +47,7 @@ import {
   __toCommonJS,
   __toESM,
   __yieldStar
-} from "./chunk-3DBEZTN3.js";
+} from "./chunk-JW5A4HOV.js";
 
 // node_modules/tinyqueue/index.js
 var tinyqueue_exports = {};
