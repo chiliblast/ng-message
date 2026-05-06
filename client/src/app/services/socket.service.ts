@@ -18,6 +18,9 @@ export class SocketService {
   private callAcceptedSubject = new Subject<any>();
   private callRejectedSubject = new Subject<any>();
   private callEndedSubject = new Subject<void>();
+  
+  public initialPresenceSubject = new BehaviorSubject<number[]>([]);
+  public presenceUpdateSubject = new Subject<{ userId: number, status: 'online' | 'offline' }>();
 
   messageReceived$ = this.messageReceivedSubject.asObservable();
   messageSent$ = this.messageSentSubject.asObservable();
@@ -27,6 +30,8 @@ export class SocketService {
   callAccepted$ = this.callAcceptedSubject.asObservable();
   callRejected$ = this.callRejectedSubject.asObservable();
   callEnded$ = this.callEndedSubject.asObservable();
+  initialPresence$ = this.initialPresenceSubject.asObservable();
+  presenceUpdate$ = this.presenceUpdateSubject.asObservable();
 
   private userSub: Subscription;
 
@@ -68,6 +73,8 @@ export class SocketService {
     this.socket.on('call_accepted', (data) => this.callAcceptedSubject.next(data));
     this.socket.on('call_rejected', (data) => this.callRejectedSubject.next(data));
     this.socket.on('call_ended', () => this.callEndedSubject.next());
+    this.socket.on('initial_presence', (onlineIds: number[]) => this.initialPresenceSubject.next(onlineIds));
+    this.socket.on('presence_update', (data: { userId: number, status: 'online' | 'offline' }) => this.presenceUpdateSubject.next(data));
   }
 
   private disconnect() {

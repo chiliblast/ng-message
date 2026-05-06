@@ -79,14 +79,22 @@ END //
 CREATE PROCEDURE sp_get_hierarchy_data()
 BEGIN
     -- Result Set 1: Users
-    SELECT 
-        u.id, u.name, u.position_title as title, u.position_details as details,
-        h.level, h.type
-    FROM users u
-    JOIN hierarchy h ON u.id = h.user_id;
-    
-    -- Result Set 2: Children/Relationships
+    SELECT u.id, u.name, u.position_title as title, u.position_details as details, h.type, h.node
+    FROM users u JOIN hierarchy h ON u.id = h.user_id;
+
+    -- Result Set 2: Relationships
     SELECT user_id, child_user_id FROM children;
+
+    -- Result Set 3: Detailed User Actions
+    SELECT 
+        una.user_id, 
+        sa.id as action_id,
+        sa.label, 
+        sa.color, 
+        una.name as action_name, 
+        una.description as action_desc
+    FROM user_node_actions una
+    JOIN status_actions sa ON una.action_id = sa.id;
 END //
 
 -- 7. Procedure to Get Status Actions

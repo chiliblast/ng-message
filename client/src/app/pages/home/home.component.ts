@@ -1,18 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordianComponent } from './accordian/accordian.component';
-
-interface HierarchyNode {
-  level: number;
-  title: string;
-  name: string;
-  details: string;
-  isOpen?: boolean;
-  children?: HierarchyNode[];
-}
-
-
-
 import { inject, OnInit } from '@angular/core';
 import { HierarchyService } from '../../services/hierarchy.service';
 import { SettingsService } from '../../services/settings.service';
@@ -23,6 +11,17 @@ import { MessageService } from '../../services/message.service';
 import { MapModalComponent } from './modals/map-modal/map-modal.component';
 import { VideoCallModalComponent } from './modals/video-call-modal/video-call-modal.component';
 import { MessageModalComponent } from './modals/message-modal/message-modal.component';
+
+interface HierarchyNode {
+  id: number;
+  type: number;
+  title: string;
+  name: string;
+  details: string;
+  isOpen?: boolean;
+  isOnline?: boolean;
+  children?: HierarchyNode[];
+}
 
 @Component({
   selector: 'app-home',
@@ -59,8 +58,27 @@ export class HomeComponent implements OnInit {
     this.hierarchyService.getHierarchy().subscribe({
       next: (data) => {
         this.level1_hierarchy = data;
+        // After hierarchy is loaded, check initial presence if already available
+        const currentOnline = this.socketService.initialPresenceSubject.value;
+        if (currentOnline.length > 0 && this.level1_hierarchy) {
+          this.applyInitialPresence(this.level1_hierarchy, currentOnline);
+        }
       },
       error: (err) => console.error('Error fetching hierarchy:', err)
+    });
+
+    // Listen for initial presence (full list of online descendants)
+    this.socketService.initialPresence$.subscribe(onlineIds => {
+      if (this.level1_hierarchy && onlineIds.length > 0) {
+        this.applyInitialPresence(this.level1_hierarchy, onlineIds);
+      }
+    });
+
+    // Listen for individual presence updates (online/offline)
+    this.socketService.presenceUpdate$.subscribe(data => {
+      if (this.level1_hierarchy) {
+        this.updatePresence(this.level1_hierarchy, data.userId, data.status === 'online');
+      }
     });
 
     // Listen for incoming calls
@@ -70,6 +88,26 @@ export class HomeComponent implements OnInit {
       this.isIncomingCall = true;
       this.showCallModal = true;
     });
+  }
+
+  private applyInitialPresence(node: any, onlineIds: number[]) {
+    node.isOnline = onlineIds.includes(node.id);
+    if (node.children) {
+      node.children.forEach((child: any) => this.applyInitialPresence(child, onlineIds));
+    }
+  }
+
+  private updatePresence(node: any, userId: number, isOnline: boolean) {
+    if (node.id === userId) {
+      node.isOnline = isOnline;
+      return true;
+    }
+    if (node.children) {
+      for (const child of node.children) {
+        if (this.updatePresence(child, userId, isOnline)) return true;
+      }
+    }
+    return false;
   }
 
   // Helper getters to split the tree into branches for the existing UI layout
@@ -144,8 +182,9 @@ export class HomeComponent implements OnInit {
     this.messageNode = null;
   }
 
-  getNodeColor(level: number): string {
-    switch (level) {
+  getNodeColor(type: any): string {
+    const numericType = Number(type);
+    switch (numericType) {
       case 1: return 'brand';
       case 2: return 'blue';
       case 3: return 'success';

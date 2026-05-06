@@ -29,35 +29,45 @@ export class MessageModalComponent {
     this.selectedActionId = id;
   }
 
+  hasAction(actionId: number) {
+    return this.node?.actions?.some((a: any) => a.id === actionId);
+  }
+
+  getAction(actionId: number) {
+    return this.node?.actions?.find((a: any) => a.id === actionId);
+  }
+
   sendMessage() {
     if (!this.node || (!this.messageText && !this.selectedActionId)) return;
 
     this.isSending = true;
 
-    // Find the selected category details for metadata enrichment
-    const selectedCategory = this.node?.actions?.find((c: any) => c.id === this.selectedActionId);
+    // Fetch all actions to find the metadata for the selected one
+    this.statusActions$.subscribe(actions => {
+        const selectedCategory = actions.find((c: any) => c.id === this.selectedActionId);
 
-    this.messageService.sendMessage(
-      this.node.id, 
-      this.selectedActionId, 
-      this.messageText,
-      {
-        recipient: this.node.name,
-        label: selectedCategory?.label || '',
-        labelColor: selectedCategory?.color || '#000000'
-      }
-    ).subscribe({
-      next: () => {
-        this.isSending = false;
-        this.close.emit();
-        this.messageText = '';
-        this.selectedActionId = null;
-      },
-      error: (err) => {
-        this.isSending = false;
-        console.error('Failed to send message:', err);
-        alert('Failed to send message. Please try again.');
-      }
+        this.messageService.sendMessage(
+          this.node.id, 
+          this.selectedActionId, 
+          this.messageText,
+          {
+            recipient: this.node.name,
+            label: selectedCategory?.label || '',
+            labelColor: selectedCategory?.color || '#000000'
+          }
+        ).subscribe({
+          next: () => {
+            this.isSending = false;
+            this.close.emit();
+            this.messageText = '';
+            this.selectedActionId = null;
+          },
+          error: (err) => {
+            this.isSending = false;
+            console.error('Failed to send message:', err);
+            alert('Failed to send message. Please try again.');
+          }
+        });
     });
   }
 }

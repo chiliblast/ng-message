@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: Apr 28, 2026 at 08:09 PM
+-- Generation Time: May 06, 2026 at 09:44 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -54,15 +54,16 @@ END$$
 DROP PROCEDURE IF EXISTS `sp_get_hierarchy_data`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_hierarchy_data` ()   BEGIN
     -- Result Set 1: Users
-    SELECT u.id, u.name, u.position_title as title, u.position_details as details, h.level, h.type
+    SELECT u.id, u.name, u.position_title as title, u.position_details as details, h.type, h.node
     FROM users u JOIN hierarchy h ON u.id = h.user_id;
 
     -- Result Set 2: Relationships
     SELECT user_id, child_user_id FROM children;
 
-    -- Result Set 3: Detailed User Actions
+    -- Result Set 3: User Actions (Includes action_id for matching)
     SELECT 
         una.user_id, 
+        sa.id as action_id,
         sa.label, 
         sa.color, 
         una.name as action_name, 
@@ -210,8 +211,8 @@ INSERT INTO `children` (`user_id`, `child_user_id`) VALUES
 DROP TABLE IF EXISTS `hierarchy`;
 CREATE TABLE IF NOT EXISTS `hierarchy` (
   `user_id` int NOT NULL,
-  `level` int NOT NULL,
-  `type` enum('ADMIN','TEACHING') NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `node` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`user_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -219,38 +220,38 @@ CREATE TABLE IF NOT EXISTS `hierarchy` (
 -- Dumping data for table `hierarchy`
 --
 
-INSERT INTO `hierarchy` (`user_id`, `level`, `type`) VALUES
-(1, 2, 'ADMIN'),
-(2, 3, 'ADMIN'),
-(3, 3, 'ADMIN'),
-(4, 4, 'ADMIN'),
-(5, 4, 'ADMIN'),
-(6, 4, 'ADMIN'),
-(7, 4, 'ADMIN'),
-(8, 5, 'ADMIN'),
-(9, 5, 'ADMIN'),
-(10, 5, 'ADMIN'),
-(11, 5, 'ADMIN'),
-(12, 5, 'ADMIN'),
-(13, 5, 'ADMIN'),
-(14, 5, 'ADMIN'),
-(15, 5, 'ADMIN'),
-(20, 2, 'TEACHING'),
-(21, 3, 'TEACHING'),
-(22, 3, 'TEACHING'),
-(23, 4, 'TEACHING'),
-(24, 4, 'TEACHING'),
-(25, 4, 'TEACHING'),
-(26, 4, 'TEACHING'),
-(27, 5, 'TEACHING'),
-(28, 5, 'TEACHING'),
-(29, 5, 'TEACHING'),
-(30, 5, 'TEACHING'),
-(31, 5, 'TEACHING'),
-(32, 5, 'TEACHING'),
-(33, 5, 'TEACHING'),
-(34, 5, 'TEACHING'),
-(100, 1, 'ADMIN');
+INSERT INTO `hierarchy` (`user_id`, `type`, `node`) VALUES
+(1, '2', 'ADMIN'),
+(2, '3', 'ADMIN'),
+(3, '3', 'ADMIN'),
+(4, '4', 'ADMIN'),
+(5, '4', 'ADMIN'),
+(6, '4', 'ADMIN'),
+(7, '4', 'ADMIN'),
+(8, '5', 'ADMIN'),
+(9, '5', 'ADMIN'),
+(10, '5', 'ADMIN'),
+(11, '5', 'ADMIN'),
+(12, '5', 'ADMIN'),
+(13, '5', 'ADMIN'),
+(14, '5', 'ADMIN'),
+(15, '5', 'ADMIN'),
+(20, '2', 'TEACHING'),
+(21, '3', 'TEACHING'),
+(22, '3', 'TEACHING'),
+(23, '4', 'TEACHING'),
+(24, '4', 'TEACHING'),
+(25, '4', 'TEACHING'),
+(26, '4', 'TEACHING'),
+(27, '5', 'TEACHING'),
+(28, '5', 'TEACHING'),
+(29, '5', 'TEACHING'),
+(30, '5', 'TEACHING'),
+(31, '5', 'TEACHING'),
+(32, '5', 'TEACHING'),
+(33, '5', 'TEACHING'),
+(34, '5', 'TEACHING'),
+(100, '1', 'ADMIN');
 
 -- --------------------------------------------------------
 

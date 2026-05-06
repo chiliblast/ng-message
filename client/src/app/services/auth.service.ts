@@ -1,20 +1,22 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { CookieService } from './cookie.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private userSubject = new BehaviorSubject<any>(null);
   public user$ = this.userSubject.asObservable();
+  private cookieService = inject(CookieService);
 
   constructor(private http: HttpClient, private router: Router) {
-    const savedUser = localStorage.getItem('user');
-    if (savedUser) this.userSubject.next(JSON.parse(savedUser));
+    const savedUser = this.cookieService.getCookie('user');
+    if (savedUser) this.userSubject.next(JSON.parse(decodeURIComponent(savedUser)));
 
-    // CROSS-TAB SYNC: Listen for storage changes
+    // CROSS-TAB SYNC: Listen for storage changes (using a dummy key for logout)
     window.addEventListener('storage', (event) => {
-      if (event.key === 'token' && !event.newValue) {
+      if (event.key === 'logout-event') {
         console.log('🚪 Logout detected in another tab. Syncing...');
         this.handleLocalLogout();
       }
@@ -24,15 +26,15 @@ export class AuthService {
   login(credentials: any) {
     return this.http.post('http://localhost:3000/api/auth/login', credentials).pipe(
       tap((res: any) => {
-        localStorage.setItem('token', res.token);
-        localStorage.setItem('user', JSON.stringify(res.user));
+        this.cookieService.setCookie('token', res.token, 7);
+        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(res.user)), 7);
         this.userSubject.next(res.user);
       })
     );
   }
 
   isLoggedIn(): boolean {
-    const token = localStorage.getItem('token');
+    const token = this.cookieService.getCookie('token');
     if (!token) return false;
 
     try {
@@ -51,12 +53,16 @@ export class AuthService {
   logout() {
     const user = this.userSubject.value;
     if (user) {
-      // Trigger global logout on server to kill all sockets
       this.http.post('http://localhost:3000/api/auth/logout-global', { userId: user.id }).subscribe();
     }
     
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    this.cookieService.deleteCookie('token');
+    this.cookieService.deleteCookie('user');
+    
+    // Trigger cross-tab sync
+    localStorage.setItem('logout-event', Date.now().toString());
+    localStorage.removeItem('logout-event');
+
     this.handleLocalLogout();
   }
 

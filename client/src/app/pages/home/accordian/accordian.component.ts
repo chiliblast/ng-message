@@ -31,6 +31,10 @@ export class AccordianComponent implements OnInit {
     this.node.isOpen = true;
   }
 
+  getAction(actionId: number) {
+    return this.node.actions?.find((a: any) => a.id === actionId);
+  }
+
   toggleAccordion() {
     this.node.isOpen = !this.node.isOpen;
   }

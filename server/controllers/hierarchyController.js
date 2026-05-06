@@ -7,7 +7,9 @@ exports.getHierarchy = async (req, res) => {
         
         const rows = results[0];         // Result Set 1: Users
         const relationships = results[1]; // Result Set 2: Relationships
-        const allActions = results[2] || []; // Result Set 3: Dynamic Actions (defensive check)
+        const allActions = Array.isArray(results[2]) ? results[2] : []; 
+
+        console.log(`📊 Hierarchy Data: Received ${results.length} items from SP. Rows: ${rows.length}, Actions: ${allActions.length}`);
 
         // 2. Map children and actions to parents/users
         const childrenMap = {};
@@ -20,7 +22,7 @@ exports.getHierarchy = async (req, res) => {
         allActions.forEach(act => {
             if (!actionsMap[act.user_id]) actionsMap[act.user_id] = [];
             actionsMap[act.user_id].push({
-                id: act.id || act.action_id,
+                id: act.action_id,
                 label: act.label,
                 color: act.color,
                 name: act.action_name,
@@ -35,7 +37,7 @@ exports.getHierarchy = async (req, res) => {
 
             const node = {
                 ...user,
-                isOpen: user.level === 1 || user.level === 2, 
+                isOpen: user.type == 1 || user.type == 2, 
                 actions: actionsMap[userId] || [],
                 children: []
             };
@@ -58,6 +60,7 @@ exports.getHierarchy = async (req, res) => {
 
         res.json(userTree);
     } catch (error) {
+        console.error('Hierarchy Error:', error);
         res.status(500).json({ message: 'Server error', error: error.message });
     }
 };

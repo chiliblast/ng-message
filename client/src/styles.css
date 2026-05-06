@@ -195,18 +195,13 @@
   }
 }
 
-@keyframes blink-glow {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { 
-    opacity: 0.8; 
-    transform: scale(1.02);
-    box-shadow: 0 0 20px rgba(70, 95, 255, 0.4);
-    border-color: #465fff;
-  }
+@keyframes blink-sharp {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
 }
 
 .animate-blink {
-  animation: blink-glow 1s ease-in-out infinite;
+  animation: blink-sharp 0.8s ease-in-out infinite;
   z-index: 10;
 }
 

@@ -1,0 +1,21 @@
+{
+  "windows": {
+    "Chrome": {
+      "32": "ChromeStandaloneSetup.exe",
+      "64": "ChromeStandaloneSetup64.exe"
+    },
+    "Firefox": {
+      "32": "Firefox Setup 150.0.1.exe",
+      "64": "Firefox Setup 150.0.1 64.exe"
+    }
+  },
+  "linux": {
+    "Chrome": {
+      "x64": "google-chrome-stable_current_amd64.deb"
+    },
+    "Firefox": {
+      "x64": "firefox-150.0.1 Linux 64.tar.xz",
+      "arm64": "firefox-150.0.1 Linux ARM64AArch64.tar.xz"
+    }
+  }
+}
