@@ -94,9 +94,18 @@
           <i class="pi pi-database text-success-500"></i>
           Locations
         </h2>
-        <span class="px-3 py-1 bg-success-50 dark:bg-success-900/20 text-success-600 dark:text-success-400 rounded-full text-xs font-bold uppercase tracking-wider">
-          {{ pagination.total }} Total
-        </span>
+        <div class="flex items-center gap-2">
+          <button (click)="addNewLocation()" 
+            class="w-10 h-10 flex items-center justify-center bg-brand-50 dark:bg-brand-900/20 text-brand-600 dark:text-brand-400 rounded-xl hover:bg-brand-100 transition-all shadow-sm"
+            title="Add New Location">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+          <span class="px-3 py-1 bg-success-50 dark:bg-success-900/20 text-success-600 dark:text-success-400 rounded-full text-xs font-bold uppercase tracking-wider">
+            {{ pagination.total }} Total
+          </span>
+        </div>
       </div>
 
       <!-- Registry Grid -->
@@ -133,4 +142,181 @@
     </div>
 
   </div>
+
+  <!-- ADD LOCATION MODAL -->
+  <app-modal [isOpen]="isAddModalOpen" (close)="isAddModalOpen = false" className="max-w-md border border-gray-100 dark:border-gray-800 shadow-2xl">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <i class="pi pi-plus-circle text-brand-500"></i>
+          Add New Location
+        </h2>
+        <button (click)="isAddModalOpen = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Name -->
+        <div>
+          <app-label>Location Name</app-label>
+          <app-input-field 
+            [(value)]="newLocationForm.name"
+            placeholder="e.g. Science Block A"
+          />
+        </div>
+
+        <!-- Coordinates -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <app-label>Latitude</app-label>
+            <app-input-field 
+              type="text" 
+              [(value)]="newLocationForm.latitude"
+              [placeholder]="'e.g. 12.123456'"
+              [error]="newLocationForm.latitude !== 0 && !validatePrecision(newLocationForm.latitude)"
+              [success]="validatePrecision(newLocationForm.latitude)"
+              [hint]="newLocationForm.latitude !== 0 && !validatePrecision(newLocationForm.latitude) ? '2-3 before, max 6 after decimal' : ''"
+            />
+          </div>
+          <div>
+            <app-label>Longitude</app-label>
+            <app-input-field 
+              type="text" 
+              [(value)]="newLocationForm.longitude"
+              [placeholder]="'e.g. 78.123456'"
+              [error]="newLocationForm.longitude !== 0 && !validatePrecision(newLocationForm.longitude)"
+              [success]="validatePrecision(newLocationForm.longitude)"
+              [hint]="newLocationForm.longitude !== 0 && !validatePrecision(newLocationForm.longitude) ? '2-3 before, max 6 after decimal' : ''"
+            />
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
+          <textarea 
+            [(ngModel)]="newLocationForm.address"
+            placeholder="Street address, building name, etc."
+            rows="3"
+            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex gap-3 mt-8">
+        <button 
+          (click)="isAddModalOpen = false"
+          class="flex-1 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all">
+          Cancel
+        </button>
+        <button 
+          (click)="confirmAddLocation()"
+          class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all">
+          Add Location
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- EDIT LOCATION MODAL -->
+  <app-modal [isOpen]="isEditModalOpen" (close)="isEditModalOpen = false" className="max-w-md border border-gray-100 dark:border-gray-800 shadow-2xl">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <i class="pi pi-pencil text-brand-500"></i>
+          Edit Location
+        </h2>
+        <button (click)="isEditModalOpen = false" class="text-gray-400 hover:text-gray-600 transition-colors">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+
+      <div *ngIf="locationToEdit" class="space-y-4">
+        <!-- Name -->
+        <div>
+          <app-label>Location Name</app-label>
+          <app-input-field 
+            [(value)]="locationToEdit.name"
+            placeholder="e.g. Science Block A"
+          />
+        </div>
+
+        <!-- Coordinates -->
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <app-label>Latitude</app-label>
+            <app-input-field 
+              type="text" 
+              [(value)]="locationToEdit.latitude"
+              [placeholder]="'e.g. 12.123456'"
+              [error]="!validatePrecision(locationToEdit.latitude)"
+              [success]="validatePrecision(locationToEdit.latitude)"
+              [hint]="!validatePrecision(locationToEdit.latitude) ? '2-3 before, max 6 after decimal' : ''"
+            />
+          </div>
+          <div>
+            <app-label>Longitude</app-label>
+            <app-input-field 
+              type="text" 
+              [(value)]="locationToEdit.longitude"
+              [placeholder]="'e.g. 78.123456'"
+              [error]="!validatePrecision(locationToEdit.longitude)"
+              [success]="validatePrecision(locationToEdit.longitude)"
+              [hint]="!validatePrecision(locationToEdit.longitude) ? '2-3 before, max 6 after decimal' : ''"
+            />
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div class="space-y-1.5">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
+          <textarea 
+            [(ngModel)]="locationToEdit.address"
+            rows="3"
+            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex gap-3 mt-8">
+        <button 
+          (click)="isEditModalOpen = false"
+          class="flex-1 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all">
+          Cancel
+        </button>
+        <button 
+          (click)="confirmEditLocation()"
+          class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-brand-500/20 transition-all">
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </app-modal>
+
+  <!-- DELETE CONFIRMATION MODAL -->
+  <app-modal [isOpen]="isDeleteModalOpen" (close)="isDeleteModalOpen = false" className="max-w-sm border border-gray-100 dark:border-gray-800 shadow-2xl">
+    <div class="p-6 text-center">
+      <div class="w-16 h-16 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+        <i class="pi pi-exclamation-triangle text-2xl"></i>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Delete Location?</h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm mb-8">
+        Are you sure you want to remove <span class="font-bold text-gray-900 dark:text-white">"{{ locationToDelete?.name }}"</span>? This action cannot be undone.
+      </p>
+
+      <div class="flex gap-3">
+        <button 
+          (click)="isDeleteModalOpen = false"
+          class="flex-1 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-all">
+          No, Keep it
+        </button>
+        <button 
+          (click)="confirmDeleteLocation()"
+          class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-bold rounded-xl shadow-lg shadow-red-500/20 transition-all">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </app-modal>
 </div>

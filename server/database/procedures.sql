@@ -109,4 +109,50 @@ BEGIN
     SELECT name FROM users WHERE id = p_user_id;
 END //
 
+-- 9. Location Procedures
+CREATE PROCEDURE sp_get_all_locations(IN p_limit INT, IN p_offset INT)
+BEGIN
+    SELECT COUNT(*) AS total FROM locations;
+    SELECT * FROM locations 
+    ORDER BY created_at DESC 
+    LIMIT p_limit OFFSET p_offset;
+END //
+
+CREATE PROCEDURE sp_save_global_location(
+    IN p_name VARCHAR(255), 
+    IN p_latitude DOUBLE, 
+    IN p_longitude DOUBLE, 
+    IN p_address TEXT
+)
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM locations 
+        WHERE latitude = p_latitude AND longitude = p_longitude
+    ) THEN
+        INSERT INTO locations (name, latitude, longitude, address)
+        VALUES (p_name, p_latitude, p_longitude, p_address);
+        SELECT 1 AS status;
+    ELSE
+        SELECT 0 AS status;
+    END IF;
+END //
+
+CREATE PROCEDURE sp_update_location(
+    IN p_id INT,
+    IN p_name VARCHAR(255),
+    IN p_latitude DOUBLE,
+    IN p_longitude DOUBLE,
+    IN p_address TEXT
+)
+BEGIN
+    UPDATE locations 
+    SET name = p_name, latitude = p_latitude, longitude = p_longitude, address = p_address
+    WHERE id = p_id;
+END //
+
+CREATE PROCEDURE sp_delete_location(IN p_id INT)
+BEGIN
+    DELETE FROM locations WHERE id = p_id;
+END //
+
 DELIMITER ;

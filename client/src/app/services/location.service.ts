@@ -41,4 +41,16 @@ export class LocationService {
       })
     );
   }
+
+  addLocation(location: any): Observable<any> {
+    return this.http.post(this.apiUrl, location);
+  }
+
+  updateLocation(id: number, location: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, location);
+  }
+
+  deleteLocation(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
 }

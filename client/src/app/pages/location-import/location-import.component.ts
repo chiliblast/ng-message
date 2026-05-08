@@ -9,6 +9,10 @@ import { ThemeService } from '../../shared/services/theme.service';
 import { OfflineStorageService } from '../../services/offline-storage.service';
 import { OfflineSyncService } from '../../services/offline-sync.service';
 
+import { FormsModule } from '@angular/forms';
+import { ModalComponent } from '../../shared/components/ui/modal/modal.component';
+import { LabelComponent } from '../../shared/components/form/label/label.component';
+import { InputFieldComponent } from '../../shared/components/form/input/input-field.component';
 import * as XLSX from 'xlsx';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
@@ -16,7 +20,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-location-import',
   standalone: true,
-  imports: [CommonModule, AgGridAngular],
+  imports: [CommonModule, AgGridAngular, FormsModule, ModalComponent, LabelComponent, InputFieldComponent],
   templateUrl: './location-import.component.html',
   styles: [`
     .grid-container { height: 400px; width: 100%; }
@@ -43,11 +47,123 @@ export class LocationImportComponent implements OnInit {
   // Right Grid (Live Registry)
   registryData: any[] = [];
   registryColumnDefs: ColDef[] = [
-    { field: 'name', headerName: 'Name', flex: 1, sortable: true, filter: true },
+    { field: 'name', headerName: 'Name', flex: 1.5, sortable: true, filter: true },
     { field: 'latitude', headerName: 'Lat', flex: 1 },
     { field: 'longitude', headerName: 'Long', flex: 1 },
-    { field: 'address', headerName: 'Address', flex: 2, sortable: true, filter: true }
+    { field: 'address', headerName: 'Address', flex: 2, sortable: true, filter: true },
+    {
+      headerName: 'Actions',
+      width: 120,
+      cellRenderer: (params: any) => {
+        const container = document.createElement('div');
+        container.className = 'flex items-center gap-2 h-full';
+
+        // Edit Button
+        const editBtn = document.createElement('button');
+        editBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        `;
+        editBtn.className = 'p-1.5 text-brand-500 hover:bg-brand-50 rounded-md transition-colors';
+        editBtn.onclick = () => this.editLocation(params.data);
+
+        // Delete Button
+        const delBtn = document.createElement('button');
+        delBtn.innerHTML = `
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        `;
+        delBtn.className = 'p-1.5 text-red-500 hover:bg-red-50 rounded-md transition-colors';
+        delBtn.onclick = () => this.deleteLocation(params.data);
+
+        container.appendChild(editBtn);
+        container.appendChild(delBtn);
+        return container;
+      }
+    }
   ];
+
+  editLocation(location: any) {
+    this.locationToEdit = { ...location };
+    this.isEditModalOpen = true;
+  }
+
+  confirmEditLocation() {
+    if (!this.locationToEdit?.id) return;
+    
+    if (!this.validatePrecision(this.locationToEdit.latitude) || !this.validatePrecision(this.locationToEdit.longitude)) {
+      this.toastService.show('Coordinates must have 2-3 digits before and up to 6 digits after decimal', 'warning');
+      return;
+    }
+
+    this.locationService.updateLocation(this.locationToEdit.id, this.locationToEdit).subscribe({
+      next: () => {
+        this.toastService.show('Location updated', 'success');
+        this.isEditModalOpen = false;
+        this.loadRegistry();
+      },
+      error: () => this.toastService.show('Failed to update location', 'error')
+    });
+  }
+
+  deleteLocation(location: any) {
+    this.locationToDelete = location;
+    this.isDeleteModalOpen = true;
+  }
+
+  confirmDeleteLocation() {
+    if (!this.locationToDelete?.id) return;
+    
+    this.locationService.deleteLocation(this.locationToDelete.id).subscribe({
+      next: () => {
+        this.toastService.show('Location deleted', 'success');
+        this.isDeleteModalOpen = false;
+        this.locationToDelete = null;
+        this.loadRegistry();
+      },
+      error: () => this.toastService.show('Failed to delete location', 'error')
+    });
+  }
+
+  addNewLocation() {
+    this.newLocationForm = {
+      name: '',
+      latitude: 0,
+      longitude: 0,
+      address: ''
+    };
+    this.isAddModalOpen = true;
+  }
+
+  validatePrecision(num: any): boolean {
+    if (num === null || num === undefined || num === '') return false;
+    // Regex: Optional negative sign, then 2-3 digits, then a dot, then 1-6 digits
+    const regex = /^-?\d{2,3}\.\d{1,6}$/;
+    return regex.test(num.toString());
+  }
+
+  confirmAddLocation() {
+    if (!this.newLocationForm.name || !this.newLocationForm.latitude || !this.newLocationForm.longitude) {
+      this.toastService.show('Please enter Name and Coordinates', 'warning');
+      return;
+    }
+
+    if (!this.validatePrecision(this.newLocationForm.latitude) || !this.validatePrecision(this.newLocationForm.longitude)) {
+      this.toastService.show('Coordinates must have 2-3 digits before and up to 6 digits after decimal', 'warning');
+      return;
+    }
+
+    this.locationService.addLocation(this.newLocationForm).subscribe({
+      next: () => {
+        this.toastService.show('Location added successfully', 'success');
+        this.isAddModalOpen = false;
+        this.loadRegistry();
+      },
+      error: () => this.toastService.show('Failed to add location', 'error')
+    });
+  }
 
   pagination = {
     page: 1,
@@ -57,6 +173,17 @@ export class LocationImportComponent implements OnInit {
   };
 
   isDragging = false;
+  isAddModalOpen = false;
+  isEditModalOpen = false;
+  isDeleteModalOpen = false;
+  locationToDelete: any = null;
+  locationToEdit: any = null;
+  newLocationForm = {
+    name: '',
+    latitude: 0,
+    longitude: 0,
+    address: ''
+  };
 
   ngOnInit() {
     this.loadRegistry();
