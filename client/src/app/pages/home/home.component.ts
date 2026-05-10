@@ -137,6 +137,29 @@ export class HomeComponent implements OnInit {
     return this.branch2_L3.flatMap((ap: any) => ap.children || []); 
   }
 
+  // Get all branches (direct children of president)
+  get branches() {
+    return this.level1_hierarchy?.children || [];
+  }
+
+  // Dynamic grid class based on number of branches
+  getBranchesGridClass(): string {
+    const count = this.branches.length;
+    if (count === 0 || count === 1) {
+      return 'grid grid-cols-1';
+    }
+    if (count === 2) {
+      return 'grid grid-cols-1 md:grid-cols-2';
+    }
+    // For 3 or 4+ branches: 2x2 grid layout on medium screens and above
+    return 'grid grid-cols-1 md:grid-cols-2';
+  }
+
+  // Helper method to get child count for responsive display
+  getChildrenCount(node: any): number {
+    return node?.children?.length || 0;
+  }
+
   // Generic Hierarchy Getters (for any logged-in user)
   get userL1() { return this.level1_hierarchy; }
   get userL2() { return this.level1_hierarchy?.children || []; }
