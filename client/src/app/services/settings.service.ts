@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
+import { environment } from '../../environments/environment';
 
 export interface StatusAction {
   id: number;
@@ -16,7 +17,7 @@ export interface StatusAction {
 export class SettingsService {
   private http = inject(HttpClient);
   private offlineStorage = inject(OfflineStorageService);
-  private apiUrl = 'http://localhost:3000/api/settings';
+  private apiUrl = `${environment.apiBaseUrl}/settings`;
 
   private statusActionsSubject = new BehaviorSubject<StatusAction[]>([]);
   statusActions$ = this.statusActionsSubject.asObservable();

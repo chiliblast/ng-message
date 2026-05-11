@@ -4,6 +4,7 @@ import { OfflineStorageService } from './offline-storage.service';
 import { SocketService } from './socket.service';
 import { BehaviorSubject, fromEvent, merge, of, Subject, firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -64,7 +65,7 @@ export class OfflineSyncService {
     for (const msg of pending) {
       try {
         console.log(`📤 Sending pending message: ${msg.localId}...`);
-        await firstValueFrom(this.http.post('http://localhost:3000/api/messages/send', {
+        await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/messages/send`, {
           receiverId: msg.receiverId,
           actionId: msg.actionId,
           messageText: msg.messageText
@@ -91,7 +92,7 @@ export class OfflineSyncService {
     for (const batch of pending) {
       try {
         console.log(`📤 Syncing location batch: ${batch.localId}...`);
-        await firstValueFrom(this.http.post('http://localhost:3000/api/locations/bulk', batch.data));
+        await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/locations/bulk`, batch.data));
         
         // Remove from IndexedDB after successful sync
         const tx = (this.storage as any).db.transaction('pendingLocations', 'readwrite');

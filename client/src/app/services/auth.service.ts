@@ -3,12 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieService } from './cookie.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private userSubject = new BehaviorSubject<any>(null);
   public user$ = this.userSubject.asObservable();
   private cookieService = inject(CookieService);
+  private apiUrl = `${environment.apiBaseUrl}/auth`;
 
   constructor(private http: HttpClient, private router: Router) {
     const savedUser = this.cookieService.getCookie('user');
@@ -24,7 +26,7 @@ export class AuthService {
   }
 
   login(credentials: any) {
-    return this.http.post('http://localhost:3000/api/auth/login', credentials).pipe(
+    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
         this.cookieService.setCookie('token', res.token, 7);
         this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(res.user)), 7);
@@ -53,7 +55,7 @@ export class AuthService {
   logout() {
     const user = this.userSubject.value;
     if (user) {
-      this.http.post('http://localhost:3000/api/auth/logout-global', { userId: user.id }).subscribe();
+      this.http.post(`${this.apiUrl}/logout-global`, { userId: user.id }).subscribe();
     }
     
     this.cookieService.deleteCookie('token');

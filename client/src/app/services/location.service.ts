@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, from, catchError, map } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,7 @@ import { OfflineStorageService } from './offline-storage.service';
 export class LocationService {
   private http = inject(HttpClient);
   private offlineStorage = inject(OfflineStorageService);
-  private readonly apiUrl = 'http://localhost:3000/api/locations';
+  private readonly apiUrl = `${environment.apiBaseUrl}/locations`;
 
   bulkSave(locations: any[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/bulk`, locations);

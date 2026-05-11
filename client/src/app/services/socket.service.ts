@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -49,7 +50,7 @@ export class SocketService {
   private connect(userId: number) {
     if (this.socket?.connected) return;
 
-    this.socket = io('http://localhost:3000');
+    this.socket = io(environment.socketUrl);
 
     this.socket.on('connect', () => {
       this.connectedSubject.next(true);

@@ -2,12 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap, catchError, from } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class HierarchyService {
   private http = inject(HttpClient);
   private storage = inject(OfflineStorageService);
-  private apiUrl = 'http://localhost:3000/api/hierarchy';
+  private apiUrl = `${environment.apiBaseUrl}/hierarchy`;
 
   getHierarchy(): Observable<any> {
     return this.http.get(this.apiUrl).pipe(

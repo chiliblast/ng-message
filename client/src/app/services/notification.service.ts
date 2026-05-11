@@ -2,6 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { SwPush } from '@angular/service-worker';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +28,7 @@ export class NotificationService {
       console.log('Successfully subscribed to notifications:', sub);
       
       // Send subscription to backend
-      await firstValueFrom(this.http.post('http://localhost:3000/api/notifications/subscribe', sub));
+      await firstValueFrom(this.http.post(`${environment.apiBaseUrl}/notifications/subscribe`, sub));
       
     } catch (err) {
       console.error('Could not subscribe to notifications', err);

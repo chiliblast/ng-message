@@ -5,6 +5,7 @@ import { SocketService } from './socket.service';
 import { ToastService } from './toast.service';
 import { OfflineStorageService } from './offline-storage.service';
 import { OfflineSyncService } from './offline-sync.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +18,7 @@ export class MessageService {
   private storage = inject(OfflineStorageService);
   private sync = inject(OfflineSyncService);
   
-  private apiUrl = 'http://localhost:3000/api/messages';
+  private apiUrl = `${environment.apiBaseUrl}/messages`;
 
   private blinkingNodesSubject = new BehaviorSubject<Set<number>>(new Set());
   blinkingNodes$ = this.blinkingNodesSubject.asObservable();
