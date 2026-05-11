@@ -1,11 +1,11 @@
 # Dependency directories
-node_modules/
-client/node_modules/
-server/node_modules/
+# node_modules/
+# client/node_modules/
+# server/node_modules/
 
 # Environment files
-.env
-server/.env
+# .env
+# server/.env
 
 # Large Assets
 server/assets/
@@ -37,4 +37,4 @@ yarn-error.log*
 Thumbs.db
 
 # Optional: SQLite databases if any
-*.sqlite
+# *.sqlite

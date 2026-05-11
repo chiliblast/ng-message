@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Generation Time: May 06, 2026 at 09:44 PM
+-- Generation Time: May 11, 2026 at 03:57 PM
 -- Server version: 9.1.0
 -- PHP Version: 8.3.14
 
@@ -25,6 +25,11 @@ DELIMITER $$
 --
 -- Procedures
 --
+DROP PROCEDURE IF EXISTS `sp_delete_location`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_location` (IN `p_id` INT)   BEGIN
+    DELETE FROM locations WHERE id = p_id;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_all_locations`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_all_locations` (IN `p_limit` INT, IN `p_offset` INT)   BEGIN
     SELECT COUNT(*) AS total FROM locations;
@@ -150,6 +155,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_send_message` (IN `p_sender_id` 
     SELECT LAST_INSERT_ID() as insertId;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_update_location`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_update_location` (IN `p_id` INT, IN `p_name` VARCHAR(255), IN `p_latitude` DECIMAL(10,8), IN `p_longitude` DECIMAL(11,8), IN `p_address` TEXT)   BEGIN
+    UPDATE locations 
+    SET name = p_name, latitude = p_latitude, longitude = p_longitude, address = p_address
+    WHERE id = p_id;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -264,24 +276,26 @@ CREATE TABLE IF NOT EXISTS `locations` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
   `number` varchar(50) DEFAULT NULL,
-  `latitude` decimal(10,8) NOT NULL,
-  `longitude` decimal(11,8) NOT NULL,
+  `latitude` double NOT NULL,
+  `longitude` double NOT NULL,
   `address` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=27 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `locations`
 --
 
 INSERT INTO `locations` (`id`, `name`, `number`, `latitude`, `longitude`, `address`, `created_at`) VALUES
-(13, 'London Eye', NULL, 51.50330000, -0.11950000, 'Riverside Building, County Hall, London SE1 7PB, UK', '2026-04-27 10:46:10'),
-(14, 'Opera House', NULL, -33.85680000, 151.21530000, 'Bennelong Point, Sydney NSW 2000, Australia', '2026-04-27 10:46:10'),
-(15, 'Colosseum', NULL, 41.89020000, 12.49220000, 'Piazza del Colosseo, 1, 00184 Roma RM, Italy', '2026-04-27 10:46:39'),
-(16, 'Taj Mahal', NULL, 27.17510000, 78.04210000, 'Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India', '2026-04-27 10:46:39'),
-(17, 'Central Park', NULL, 40.78509100, -73.96828500, '\"New York', '2026-04-27 10:51:07'),
-(18, 'Eiffel Tower', NULL, 48.85840000, 2.29450000, '\"Champ de Mars', '2026-04-27 10:51:07');
+(23, '6667', NULL, 64.44444444, 44.444444, '4444444444444', '2026-05-08 21:44:31'),
+(22, '2222222', NULL, 22.222222, 22.266565, '222222222', '2026-05-08 21:38:47'),
+(15, '44545', NULL, 11.122112, 11.212315, 'Piazza del Colosseo, 1, 00184 Roma RM, Italy555', '2026-04-27 10:46:39'),
+(16, 'Taj Mahal', NULL, 45.232323, 21.232333, 'Dharmapuri, Forest Colony, Tajganj, Agra, Uttar Pradesh 282001, India', '2026-04-27 10:46:39'),
+(21, '44535', NULL, 99.99999999, 22.222222, '44545', '2026-05-08 21:15:48'),
+(24, '222', NULL, 22.123456, 33.2345657, 'sdsdsd', '2026-05-08 21:52:08'),
+(25, '222', NULL, 22.123456, 236.22222222, 'qwqwqw', '2026-05-08 21:54:49'),
+(26, 'ssss', NULL, 23.233333, 56.123456, '2323', '2026-05-08 21:58:25');
 
 -- --------------------------------------------------------
 

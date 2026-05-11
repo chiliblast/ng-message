@@ -13,7 +13,20 @@ import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../shared/components/ui/modal/modal.component';
 import { LabelComponent } from '../../shared/components/form/label/label.component';
 import { InputFieldComponent } from '../../shared/components/form/input/input-field.component';
+import { environment } from '../../../environments/environment';
 import * as XLSX from 'xlsx';
+
+import Map from 'ol/Map';
+import View from 'ol/View';
+import TileLayer from 'ol/layer/Tile';
+import OSM from 'ol/source/OSM';
+import TileWMS from 'ol/source/TileWMS';
+import { fromLonLat, toLonLat } from 'ol/proj';
+import Feature from 'ol/Feature';
+import Point from 'ol/geom/Point';
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import { Style, Circle as CircleStyle, Fill, Stroke } from 'ol/style';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -88,13 +101,14 @@ export class LocationImportComponent implements OnInit {
   editLocation(location: any) {
     this.locationToEdit = { ...location };
     this.isEditModalOpen = true;
+    this.initEditMap();
   }
 
   confirmEditLocation() {
     if (!this.locationToEdit?.id) return;
     
     if (!this.validatePrecision(this.locationToEdit.latitude) || !this.validatePrecision(this.locationToEdit.longitude)) {
-      this.toastService.show('Coordinates must have 2-3 digits before and up to 6 digits after decimal', 'warning');
+      this.toastService.show('Coordinates must have 2-3 digits before and at least 6 digits after decimal', 'warning');
       return;
     }
 
@@ -130,17 +144,190 @@ export class LocationImportComponent implements OnInit {
   addNewLocation() {
     this.newLocationForm = {
       name: '',
-      latitude: 0,
-      longitude: 0,
+      latitude: '',
+      longitude: '',
       address: ''
     };
     this.isAddModalOpen = true;
+    this.initMap();
+  }
+
+  map: Map | undefined;
+  markerSource = new VectorSource();
+  markerLayer = new VectorLayer({
+    source: this.markerSource,
+    style: new Style({
+      image: new CircleStyle({
+        radius: 8,
+        fill: new Fill({ color: '#465fff' }), // Brand color
+        stroke: new Stroke({ color: '#ffffff', width: 3 })
+      })
+    })
+  });
+
+  initMap() {
+    setTimeout(() => {
+      if (this.map) {
+        this.map.setTarget('map');
+        this.map.updateSize();
+        return;
+      }
+
+      this.map = new Map({
+        target: 'map',
+        layers: [
+          new TileLayer({
+            source: new OSM()
+          }),
+          new TileLayer({
+            source: new TileWMS({
+              url: environment.geoserverUrl,
+              params: { 'LAYERS': 'topp:states', 'TILED': true },
+              serverType: 'geoserver',
+            }),
+          }),
+          this.markerLayer
+        ],
+        view: new View({
+          center: fromLonLat([0, 0]),
+          zoom: 2
+        })
+      });
+
+      this.map.on('singleclick', (evt: any) => {
+        // Update Form
+        const coords = toLonLat(evt.coordinate);
+        this.newLocationForm.latitude = coords[1].toFixed(6);
+        this.newLocationForm.longitude = coords[0].toFixed(6);
+
+        // Update Marker
+        this.markerSource.clear();
+        const feature = new Feature({
+          geometry: new Point(evt.coordinate)
+        });
+        this.markerSource.addFeature(feature);
+      });
+    }, 300);
+  }
+
+  editMap: Map | undefined;
+  editMarkerSource = new VectorSource();
+  editMarkerLayer = new VectorLayer({
+    source: this.editMarkerSource,
+    style: new Style({
+      image: new CircleStyle({
+        radius: 8,
+        fill: new Fill({ color: '#465fff' }),
+        stroke: new Stroke({ color: '#ffffff', width: 3 })
+      })
+    })
+  });
+
+  initEditMap() {
+    let retries = 0;
+    const maxRetries = 10;
+    
+    const tryInit = setInterval(() => {
+      const element = document.getElementById('editMap');
+      if (element) {
+        clearInterval(tryInit);
+        this.performEditMapInit();
+      } else if (retries >= maxRetries) {
+        clearInterval(tryInit);
+        console.error('Map container #editMap not found after retries');
+      }
+      retries++;
+    }, 100);
+  }
+
+  performEditMapInit() {
+    if (!this.locationToEdit) return;
+
+    const lon = parseFloat(this.locationToEdit.longitude);
+    const lat = parseFloat(this.locationToEdit.latitude);
+
+    if (isNaN(lon) || isNaN(lat)) {
+      console.warn('Invalid coordinates for edit map');
+      return;
+    }
+
+    const coords = fromLonLat([lon, lat]);
+
+    if (this.editMap) {
+      this.editMap.setTarget('editMap');
+      this.editMap.getView().setCenter(coords);
+      this.editMap.getView().setZoom(12);
+      
+      setTimeout(() => {
+        this.editMap?.updateSize();
+        this.editMarkerSource.clear();
+        this.editMarkerSource.addFeature(new Feature({ geometry: new Point(coords) }));
+      }, 50);
+      return;
+    }
+
+    this.editMap = new Map({
+      target: 'editMap',
+      layers: [
+        new TileLayer({ source: new OSM() }),
+        new TileLayer({
+          source: new TileWMS({
+            url: environment.geoserverUrl,
+            params: { 'LAYERS': 'topp:states', 'TILED': true },
+            serverType: 'geoserver',
+          }),
+        }),
+        this.editMarkerLayer
+      ],
+      view: new View({
+        center: coords,
+        zoom: 12
+      })
+    });
+
+    // Initial Marker
+    this.editMarkerSource.clear();
+    this.editMarkerSource.addFeature(new Feature({ geometry: new Point(coords) }));
+
+    this.editMap.on('singleclick', (evt: any) => {
+      const lonLat = toLonLat(evt.coordinate);
+      this.locationToEdit.latitude = lonLat[1].toFixed(6);
+      this.locationToEdit.longitude = lonLat[0].toFixed(6);
+
+      this.editMarkerSource.clear();
+      this.editMarkerSource.addFeature(new Feature({ geometry: new Point(evt.coordinate) }));
+    });
+
+    setTimeout(() => this.editMap?.updateSize(), 150);
+  }
+
+  onCoordinateChange(isEdit: boolean) {
+    const form = isEdit ? this.locationToEdit : this.newLocationForm;
+    const map = isEdit ? this.editMap : this.map;
+    const source = isEdit ? this.editMarkerSource : this.markerSource;
+
+    if (!form || !map || !source) return;
+
+    const lat = parseFloat(form.latitude);
+    const lon = parseFloat(form.longitude);
+
+    if (this.validatePrecision(form.latitude) && this.validatePrecision(form.longitude)) {
+      const coords = fromLonLat([lon, lat]);
+      
+      source.clear();
+      source.addFeature(new Feature({ geometry: new Point(coords) }));
+      
+      map.getView().animate({
+        center: coords,
+        duration: 500
+      });
+    }
   }
 
   validatePrecision(num: any): boolean {
     if (num === null || num === undefined || num === '') return false;
-    // Regex: Optional negative sign, then 2-3 digits, then a dot, then 1-6 digits
-    const regex = /^-?\d{2,3}\.\d{1,6}$/;
+    // Regex: Optional negative sign, then 2-3 digits, then a dot, then at least 6 digits
+    const regex = /^-?\d{2,3}\.\d{6,}$/;
     return regex.test(num.toString());
   }
 
@@ -151,7 +338,7 @@ export class LocationImportComponent implements OnInit {
     }
 
     if (!this.validatePrecision(this.newLocationForm.latitude) || !this.validatePrecision(this.newLocationForm.longitude)) {
-      this.toastService.show('Coordinates must have 2-3 digits before and up to 6 digits after decimal', 'warning');
+      this.toastService.show('Coordinates must have 2-3 digits before and at least 6 digits after decimal', 'warning');
       return;
     }
 
@@ -180,8 +367,8 @@ export class LocationImportComponent implements OnInit {
   locationToEdit: any = null;
   newLocationForm = {
     name: '',
-    latitude: 0,
-    longitude: 0,
+    latitude: '',
+    longitude: '',
     address: ''
   };
 

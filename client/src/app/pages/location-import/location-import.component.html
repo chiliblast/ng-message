@@ -144,7 +144,7 @@
   </div>
 
   <!-- ADD LOCATION MODAL -->
-  <app-modal [isOpen]="isAddModalOpen" (close)="isAddModalOpen = false" className="max-w-md border border-gray-100 dark:border-gray-800 shadow-2xl">
+  <app-modal [isOpen]="isAddModalOpen" (close)="isAddModalOpen = false" className="max-w-4xl border border-gray-100 dark:border-gray-800 shadow-2xl">
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -156,50 +156,66 @@
         </button>
       </div>
 
-      <div class="space-y-4">
-        <!-- Name -->
-        <div>
-          <app-label>Location Name</app-label>
-          <app-input-field 
-            [(value)]="newLocationForm.name"
-            placeholder="e.g. Science Block A"
-          />
-        </div>
-
-        <!-- Coordinates -->
-        <div class="grid grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Form Fields -->
+        <div class="space-y-4">
+          <!-- Name -->
           <div>
-            <app-label>Latitude</app-label>
+            <app-label>Location Name</app-label>
             <app-input-field 
-              type="text" 
-              [(value)]="newLocationForm.latitude"
-              [placeholder]="'e.g. 12.123456'"
-              [error]="newLocationForm.latitude !== 0 && !validatePrecision(newLocationForm.latitude)"
-              [success]="validatePrecision(newLocationForm.latitude)"
-              [hint]="newLocationForm.latitude !== 0 && !validatePrecision(newLocationForm.latitude) ? '2-3 before, max 6 after decimal' : ''"
+              [(value)]="newLocationForm.name"
+              placeholder="e.g. Science Block A"
             />
           </div>
-          <div>
-            <app-label>Longitude</app-label>
-            <app-input-field 
-              type="text" 
-              [(value)]="newLocationForm.longitude"
-              [placeholder]="'e.g. 78.123456'"
-              [error]="newLocationForm.longitude !== 0 && !validatePrecision(newLocationForm.longitude)"
-              [success]="validatePrecision(newLocationForm.longitude)"
-              [hint]="newLocationForm.longitude !== 0 && !validatePrecision(newLocationForm.longitude) ? '2-3 before, max 6 after decimal' : ''"
-            />
+
+          <!-- Coordinates -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Latitude</app-label>
+              <app-input-field 
+                type="text" 
+                [(value)]="newLocationForm.latitude"
+                (valueChange)="onCoordinateChange(false)"
+                [placeholder]="'e.g. 12.123456'"
+                [error]="newLocationForm.latitude !== '' && !validatePrecision(newLocationForm.latitude)"
+                [success]="validatePrecision(newLocationForm.latitude)"
+                [hint]="newLocationForm.latitude !== '' && !validatePrecision(newLocationForm.latitude) ? '2-3 before, min 6 after decimal' : ''"
+              />
+            </div>
+            <div>
+              <app-label>Longitude</app-label>
+              <app-input-field 
+                type="text" 
+                [(value)]="newLocationForm.longitude"
+                (valueChange)="onCoordinateChange(false)"
+                [placeholder]="'e.g. 78.123456'"
+                [error]="newLocationForm.longitude !== '' && !validatePrecision(newLocationForm.longitude)"
+                [success]="validatePrecision(newLocationForm.longitude)"
+                [hint]="newLocationForm.longitude !== '' && !validatePrecision(newLocationForm.longitude) ? '2-3 before, min 6 after decimal' : ''"
+              />
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
+            <textarea 
+              [(ngModel)]="newLocationForm.address"
+              placeholder="Street address, building name, etc."
+              rows="3"
+              class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
           </div>
         </div>
 
-        <!-- Address -->
-        <div class="space-y-1.5">
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
-          <textarea 
-            [(ngModel)]="newLocationForm.address"
-            placeholder="Street address, building name, etc."
-            rows="3"
-            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
+        <!-- Interactive Map -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Select on Map</label>
+          <div class="h-[350px] bg-gray-50 dark:bg-white/5 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 relative group">
+            <div id="map" class="w-full h-full"></div>
+            <div class="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-medium text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-gray-700 z-10 transition-opacity opacity-0 group-hover:opacity-100">
+              <i class="pi pi-map-marker mr-1 text-brand-500"></i> Click to pick coordinates
+            </div>
+          </div>
         </div>
       </div>
 
@@ -220,7 +236,7 @@
   </app-modal>
 
   <!-- EDIT LOCATION MODAL -->
-  <app-modal [isOpen]="isEditModalOpen" (close)="isEditModalOpen = false" className="max-w-md border border-gray-100 dark:border-gray-800 shadow-2xl">
+  <app-modal [isOpen]="isEditModalOpen" (close)="isEditModalOpen = false" className="max-w-4xl border border-gray-100 dark:border-gray-800 shadow-2xl">
     <div class="p-6">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
@@ -232,49 +248,65 @@
         </button>
       </div>
 
-      <div *ngIf="locationToEdit" class="space-y-4">
-        <!-- Name -->
-        <div>
-          <app-label>Location Name</app-label>
-          <app-input-field 
-            [(value)]="locationToEdit.name"
-            placeholder="e.g. Science Block A"
-          />
-        </div>
-
-        <!-- Coordinates -->
-        <div class="grid grid-cols-2 gap-4">
+      <div *ngIf="locationToEdit" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Form Fields -->
+        <div class="space-y-4">
+          <!-- Name -->
           <div>
-            <app-label>Latitude</app-label>
+            <app-label>Location Name</app-label>
             <app-input-field 
-              type="text" 
-              [(value)]="locationToEdit.latitude"
-              [placeholder]="'e.g. 12.123456'"
-              [error]="!validatePrecision(locationToEdit.latitude)"
-              [success]="validatePrecision(locationToEdit.latitude)"
-              [hint]="!validatePrecision(locationToEdit.latitude) ? '2-3 before, max 6 after decimal' : ''"
+              [(value)]="locationToEdit.name"
+              placeholder="e.g. Science Block A"
             />
           </div>
-          <div>
-            <app-label>Longitude</app-label>
-            <app-input-field 
-              type="text" 
-              [(value)]="locationToEdit.longitude"
-              [placeholder]="'e.g. 78.123456'"
-              [error]="!validatePrecision(locationToEdit.longitude)"
-              [success]="validatePrecision(locationToEdit.longitude)"
-              [hint]="!validatePrecision(locationToEdit.longitude) ? '2-3 before, max 6 after decimal' : ''"
-            />
+
+          <!-- Coordinates -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Latitude</app-label>
+              <app-input-field 
+                type="text" 
+                [(value)]="locationToEdit.latitude"
+                (valueChange)="onCoordinateChange(true)"
+                [placeholder]="'e.g. 12.123456'"
+                [error]="!validatePrecision(locationToEdit.latitude)"
+                [success]="validatePrecision(locationToEdit.latitude)"
+                [hint]="!validatePrecision(locationToEdit.latitude) ? '2-3 before, min 6 after decimal' : ''"
+              />
+            </div>
+            <div>
+              <app-label>Longitude</app-label>
+              <app-input-field 
+                type="text" 
+                [(value)]="locationToEdit.longitude"
+                (valueChange)="onCoordinateChange(true)"
+                [placeholder]="'e.g. 78.123456'"
+                [error]="!validatePrecision(locationToEdit.longitude)"
+                [success]="validatePrecision(locationToEdit.longitude)"
+                [hint]="!validatePrecision(locationToEdit.longitude) ? '2-3 before, min 6 after decimal' : ''"
+              />
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="space-y-1.5">
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
+            <textarea 
+              [(ngModel)]="locationToEdit.address"
+              rows="3"
+              class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
           </div>
         </div>
 
-        <!-- Address -->
-        <div class="space-y-1.5">
-          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
-          <textarea 
-            [(ngModel)]="locationToEdit.address"
-            rows="3"
-            class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
+        <!-- Interactive Map (Edit Mode) -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Update Location on Map</label>
+          <div class="h-[350px] bg-gray-50 dark:bg-white/5 rounded-2xl overflow-hidden border border-gray-100 dark:border-gray-800 relative group">
+            <div id="editMap" class="w-full h-full"></div>
+            <div class="absolute bottom-3 left-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-3 py-1.5 rounded-lg text-[10px] font-medium text-gray-600 dark:text-gray-300 shadow-sm border border-gray-100 dark:border-gray-700 z-10 transition-opacity opacity-0 group-hover:opacity-100">
+              <i class="pi pi-map-marker mr-1 text-brand-500"></i> Click to change position
+            </div>
+          </div>
         </div>
       </div>
 
