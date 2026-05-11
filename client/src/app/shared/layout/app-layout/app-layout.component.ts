@@ -21,14 +21,12 @@ import { LocationService } from '../../../services/location.service';
 
 export class AppLayoutComponent implements OnInit {
   readonly isExpanded$;
-  readonly isHovered$;
   readonly isMobileOpen$;
 
   private locationService = inject(LocationService);
 
   constructor(public sidebarService: SidebarService) {
     this.isExpanded$ = this.sidebarService.isExpanded$;
-    this.isHovered$ = this.sidebarService.isHovered$;
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
   }
 
@@ -43,7 +41,7 @@ export class AppLayoutComponent implements OnInit {
       'transition-all',
       'duration-300',
       'ease-in-out',
-      (this.isExpanded$ || this.isHovered$) ? 'xl:ml-[290px]' : 'xl:ml-[90px]',
+      this.isExpanded$ ? 'xl:ml-[290px]' : 'xl:ml-[90px]',
       this.isMobileOpen$ ? 'ml-0' : ''
     ];
   }

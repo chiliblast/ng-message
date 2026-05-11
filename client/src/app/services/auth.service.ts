@@ -12,6 +12,10 @@ export class AuthService {
   private cookieService = inject(CookieService);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
 
+  get currentUserValue() {
+    return this.userSubject.value;
+  }
+
   constructor(private http: HttpClient, private router: Router) {
     const savedUser = this.cookieService.getCookie('user');
     if (savedUser) this.userSubject.next(JSON.parse(decodeURIComponent(savedUser)));
