@@ -4,6 +4,7 @@ import { ModalComponent } from '../../../../shared/components/ui/modal/modal.com
 import Peer from 'peerjs';
 import { AuthService } from '../../../../services/auth.service';
 import { SocketService } from '../../../../services/socket.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-video-call-modal',
@@ -67,7 +68,13 @@ export class VideoCallModalComponent implements OnInit, OnDestroy, OnChanges {
     const user = (this.authService as any).userSubject.value;
     if (!user) return;
 
-    this.peer = new Peer(`user-${user.id}`);
+    const url = new URL(environment.socketUrl);
+    this.peer = new Peer(`user-${user.id}`, {
+      host: url.hostname,
+      port: parseInt(url.port) || (url.protocol === 'https:' ? 443 : 80),
+      path: '/peerjs',
+      secure: url.protocol === 'https:'
+    });
 
     this.peer.on('call', (call) => {
       this.currentCall = call;

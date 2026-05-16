@@ -15,6 +15,13 @@ const io = new Server(server, {
     }
 });
 
+const { ExpressPeerServer } = require('peer');
+const peerServer = ExpressPeerServer(server, {
+    debug: true,
+    path: '/'
+});
+app.use('/peerjs', peerServer);
+
 app.use(cors());
 app.use(express.json());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
