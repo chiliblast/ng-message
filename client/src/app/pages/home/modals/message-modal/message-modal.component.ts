@@ -5,6 +5,7 @@ import { ModalComponent } from '../../../../shared/components/ui/modal/modal.com
 import { SettingsService } from '../../../../services/settings.service';
 
 import { MessageService } from '../../../../services/message.service';
+import { Html5Qrcode } from 'html5-qrcode';
 
 @Component({
   selector: 'app-message-modal',
@@ -24,6 +25,8 @@ export class MessageModalComponent {
   messageText: string = '';
   selectedActionId: any = null;
   isSending = false;
+  isScanning = false;
+  private html5QrCode: Html5Qrcode | null = null;
 
   selectCategory(id: any) {
     this.selectedActionId = id;
@@ -35,6 +38,41 @@ export class MessageModalComponent {
 
   getAction(actionId: number) {
     return this.node?.actions?.find((a: any) => a.id === actionId);
+  }
+
+  startScanning() {
+    this.isScanning = true;
+    setTimeout(() => {
+      this.html5QrCode = new Html5Qrcode("qr-reader");
+      this.html5QrCode.start(
+        { facingMode: "environment" },
+        {
+          fps: 10,
+          qrbox: { width: 150, height: 150 }
+        },
+        (decodedText: string) => {
+          this.messageText = decodedText;
+          this.stopScanning();
+        },
+        () => {} // Ignore errors
+      ).catch((err) => {
+        console.error('Failed to start scanner:', err);
+        this.stopScanning();
+      });
+    }, 100);
+  }
+
+  stopScanning() {
+    if (this.html5QrCode) {
+      this.html5QrCode.stop().then(() => {
+        this.isScanning = false;
+      }).catch((err) => {
+        console.error('Failed to stop scanner:', err);
+        this.isScanning = false;
+      });
+    } else {
+      this.isScanning = false;
+    }
   }
 
   sendMessage() {
