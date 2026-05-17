@@ -17,11 +17,12 @@
         <!-- Text Input Panel -->
         <div class="space-y-2">
           <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Your Message</label>
-          <textarea 
+          <ckeditor
+            [editor]="Editor"
             [(ngModel)]="messageText"
-            placeholder="Type your message here..."
-            class="w-full h-32 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"
-          ></textarea>
+            [config]="editorConfig"
+            class="block w-full border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden text-gray-700 dark:text-gray-300"
+          ></ckeditor>
         </div>
 
         <!-- QR Code Panel -->

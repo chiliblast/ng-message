@@ -6,14 +6,22 @@ import { SettingsService } from '../../../../services/settings.service';
 
 import { MessageService } from '../../../../services/message.service';
 import { Html5Qrcode } from 'html5-qrcode';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Undo } from 'ckeditor5';
 
 @Component({
   selector: 'app-message-modal',
   standalone: true,
-  imports: [CommonModule, FormsModule, ModalComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, CKEditorModule],
   templateUrl: './message-modal.component.html'
 })
 export class MessageModalComponent {
+  public Editor = ClassicEditor;
+  public editorConfig = {
+    plugins: [ Essentials, Paragraph, Bold, Italic, Undo ],
+    toolbar: [ 'undo', 'redo', '|', 'bold', 'italic', '|', 'paragraph' ],
+    licenseKey: 'GPL'
+  };
   private settingsService = inject(SettingsService);
   private messageService = inject(MessageService);
   statusActions$ = this.settingsService.statusActions$;
