@@ -21,14 +21,16 @@ export class AccordianComponent implements OnInit {
   @Input() node: any;
   @Input() color: string = 'brand';
   @Input() isSelected: boolean = false;
+  @Input() defaultOpen: boolean = true;
+  @Input() isHighlighted: boolean = false;
   @Output() onSelect = new EventEmitter<any>();
   @Output() onShowProfile = new EventEmitter<any>();
   @Output() onShowCall = new EventEmitter<any>();
   @Output() onShowMessage = new EventEmitter<any>();
 
   ngOnInit() {
-    // Force node to be open by default
-    this.node.isOpen = true;
+    // Set default open state
+    this.node.isOpen = this.defaultOpen;
   }
 
   getAction(actionId: number) {

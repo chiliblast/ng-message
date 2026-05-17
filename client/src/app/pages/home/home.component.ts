@@ -7,6 +7,7 @@ import { SettingsService } from '../../services/settings.service';
 import { AuthService } from '../../services/auth.service';
 import { SocketService } from '../../services/socket.service';
 import { MessageService } from '../../services/message.service';
+import { SearchService } from '../../services/search.service';
 
 import { MapModalComponent } from './modals/map-modal/map-modal.component';
 import { VideoCallModalComponent } from './modals/video-call-modal/video-call-modal.component';
@@ -33,7 +34,8 @@ interface HierarchyNode {
     VideoCallModalComponent,
     MessageModalComponent
   ],
-  templateUrl: './home.component.html'
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
   private hierarchyService = inject(HierarchyService);
@@ -41,8 +43,10 @@ export class HomeComponent implements OnInit {
   private authService = inject(AuthService);
   private socketService = inject(SocketService);
   private messageService = inject(MessageService); // Keep active for socket listeners
+  private searchService = inject(SearchService);
 
   level1_hierarchy: any = null;
+  searchQuery: string = '';
   selectedNode: any = null;
   profileNode: any = null;
   callNode: any = null;
@@ -79,6 +83,11 @@ export class HomeComponent implements OnInit {
       if (this.level1_hierarchy) {
         this.updatePresence(this.level1_hierarchy, data.userId, data.status === 'online');
       }
+    });
+
+    // Listen for search queries
+    this.searchService.searchQuery$.subscribe(query => {
+      this.searchQuery = query;
     });
 
     // Listen for incoming calls
@@ -203,6 +212,14 @@ export class HomeComponent implements OnInit {
   closeMessage() {
     this.showMessageModal = false;
     this.messageNode = null;
+  }
+
+  isNodeMatched(node: any): boolean {
+    if (!this.searchQuery) return false;
+    const query = this.searchQuery.toLowerCase();
+    return node.name?.toLowerCase().includes(query) || 
+           node.details?.toLowerCase().includes(query) ||
+           node.title?.toLowerCase().includes(query);
   }
 
   getNodeColor(type: any): string {

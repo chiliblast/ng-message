@@ -1,7 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '../../../services/message.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faInbox } from '@fortawesome/free-solid-svg-icons';
 import { SocketService } from '../../../services/socket.service';
+import { MenuService } from '../../../services/menu.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef, ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
@@ -11,11 +14,13 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-received-messages',
   standalone: true,
-  imports: [CommonModule, AgGridAngular],
+  imports: [CommonModule, AgGridAngular, FontAwesomeModule],
   templateUrl: './received-messages.component.html'
 })
 export class ReceivedMessagesComponent implements OnInit {
   private messageService = inject(MessageService);
+  private menuService = inject(MenuService);
+  faInbox = this.menuService.getIcon('faInbox');
   private socketService = inject(SocketService);
   private themeService = inject(ThemeService);
   

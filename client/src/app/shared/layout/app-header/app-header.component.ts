@@ -1,12 +1,15 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { CommonModule } from '@angular/common';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faServer } from '@fortawesome/free-solid-svg-icons';
 import { RouterModule } from '@angular/router';
 import { ThemeToggleButtonComponent } from '../../components/common/theme-toggle/theme-toggle-button.component';
 import { NotificationDropdownComponent } from '../../components/header/notification-dropdown/notification-dropdown.component';
 import { UserDropdownComponent } from '../../components/header/user-dropdown/user-dropdown.component';
 import { SocketService } from '../../../services/socket.service';
 import { NotificationService } from '../../../services/notification.service';
+import { SearchService } from '../../../services/search.service';
 
 @Component({
   selector: 'app-header',
@@ -16,6 +19,7 @@ import { NotificationService } from '../../../services/notification.service';
     ThemeToggleButtonComponent,
     NotificationDropdownComponent,
     UserDropdownComponent,
+    FontAwesomeModule
   ],
   templateUrl: './app-header.component.html',
 })
@@ -23,13 +27,15 @@ export class AppHeaderComponent {
   isApplicationMenuOpen = false;
   readonly isMobileOpen$;
   readonly connected$;
+  faServer = faServer;
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     public sidebarService: SidebarService,
     private socketService: SocketService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private searchService: SearchService
   ) {
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
     this.connected$ = this.socketService.connected$;
@@ -37,6 +43,11 @@ export class AppHeaderComponent {
     // Request Push Notification Permission
     this.notificationService.subscribeToNotifications();
     this.notificationService.listenForNotifications();
+  }
+
+  onSearch(event: any) {
+    const query = event.target.value;
+    this.searchService.setSearchQuery(query);
   }
 
   handleToggle() {

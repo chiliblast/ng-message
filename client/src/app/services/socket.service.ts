@@ -37,25 +37,31 @@ export class SocketService {
   private userSub: Subscription;
 
   constructor() {
-    // Watch for auth changes to manage connection lifecycle
+    // Connect immediately to check server status
+    this.connect();
+
+    // Watch for auth changes to register user
     this.userSub = this.authService.user$.subscribe(user => {
-      if (user) {
-        this.connect(user.id);
-      } else {
-        this.disconnect();
+      if (user && this.socket?.connected) {
+        this.register(user.id);
       }
     });
   }
 
-  private connect(userId: number) {
+  private connect() {
     if (this.socket?.connected) return;
 
     this.socket = io(environment.socketUrl);
 
     this.socket.on('connect', () => {
       this.connectedSubject.next(true);
-      console.log(`🔌 Socket Connected. Registering user ${userId}...`);
-      this.register(userId);
+      console.log(`🔌 Socket Connected.`);
+      
+      const user = this.authService.currentUserValue;
+      if (user) {
+        console.log(`Registering user ${user.id}...`);
+        this.register(user.id);
+      }
     });
 
     this.socket.on('disconnect', () => {

@@ -1,7 +1,10 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MessageService } from '../../../services/message.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { SocketService } from '../../../services/socket.service';
+import { MenuService } from '../../../services/menu.service';
 import { ThemeService } from '../../../shared/services/theme.service';
 import { OfflineStorageService } from '../../../services/offline-storage.service';
 import { OfflineSyncService } from '../../../services/offline-sync.service';
@@ -13,11 +16,13 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 @Component({
   selector: 'app-sent-message',
   standalone: true,
-  imports: [CommonModule, AgGridAngular],
+  imports: [CommonModule, AgGridAngular, FontAwesomeModule],
   templateUrl: './sent-message.component.html'
 })
 export class SentMessageComponent implements OnInit {
   private messageService = inject(MessageService);
+  private menuService = inject(MenuService);
+  faPaperPlane = this.menuService.getIcon('faPaperPlane');
   private socketService = inject(SocketService);
   private themeService = inject(ThemeService);
   private storage = inject(OfflineStorageService);

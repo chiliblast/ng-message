@@ -24,7 +24,25 @@
         </div>
       </div>
     </div>
-    <div class="fixed z-50 hidden bottom-6 right-6 sm:block">
+    <div class="fixed z-50 hidden bottom-6 right-6 sm:flex items-center gap-4">
+      <div 
+        [title]="(connected$ | async) ? 'Central Online' : 'Central Server Offline'"
+        class="flex items-center gap-2 p-2 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50 shrink-0 cursor-help transition-all hover:bg-gray-100 dark:hover:bg-white/10 group">
+        
+        <div class="relative flex">
+          <fa-icon [icon]="faServer" class="text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-200"></fa-icon>
+          
+          <!-- Pulsing dot overlay (only pulses when offline) -->
+          <div class="absolute -top-1 -right-1 flex h-2 w-2">
+            <span 
+              *ngIf="!(connected$ | async)"
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-500 opacity-75"></span>
+            <span 
+              [ngClass]="(connected$ | async) ? 'bg-emerald-500' : 'bg-rose-500'"
+              class="relative inline-flex rounded-full h-2 w-2"></span>
+          </div>
+        </div>
+      </div>
       <app-theme-toggle-two />
     </div>
   </div>

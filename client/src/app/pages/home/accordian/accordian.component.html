@@ -1,13 +1,14 @@
 <div class="relative border-2 rounded-xl overflow-hidden shadow-sm transition-all duration-300 h-full"
      [ngClass]="{
-       'border-brand-500 ring-2 ring-brand-500/10': color === 'brand' && node.isOpen,
-       'border-blue-500 ring-2 ring-blue-500/10': color === 'blue' && node.isOpen,
-       'border-success-500 ring-2 ring-success-500/10': color === 'success' && node.isOpen,
-       'border-warning-500 ring-2 ring-warning-500/10': color === 'warning' && node.isOpen,
-       'border-purple-500 ring-2 ring-purple-500/10': color === 'purple' && node.isOpen,
-       'border-indigo-500 ring-2 ring-indigo-500/10': color === 'indigo' && node.isOpen,
-       'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900': !node.isOpen,
-       'animate-blink': (isBlinking$ | async)
+       'border-brand-500 ring-2 ring-brand-500/10': color === 'brand' && node.isOpen && !isHighlighted,
+       'border-blue-500 ring-2 ring-blue-500/10': color === 'blue' && node.isOpen && !isHighlighted,
+       'border-success-500 ring-2 ring-success-500/10': color === 'success' && node.isOpen && !isHighlighted,
+       'border-warning-500 ring-2 ring-warning-500/10': color === 'warning' && node.isOpen && !isHighlighted,
+       'border-purple-500 ring-2 ring-purple-500/10': color === 'purple' && node.isOpen && !isHighlighted,
+       'border-indigo-500 ring-2 ring-indigo-500/10': color === 'indigo' && node.isOpen && !isHighlighted,
+       'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900': !node.isOpen && !isHighlighted,
+       'animate-blink': (isBlinking$ | async),
+       'border-yellow-400 ring-4 ring-yellow-400/50 scale-[1.02] z-50': isHighlighted
      }">
   
   <!-- Status Indicator -->

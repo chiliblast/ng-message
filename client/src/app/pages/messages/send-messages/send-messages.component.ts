@@ -24,7 +24,7 @@ export class SendMessagesComponent implements OnInit {
 
   ngOnInit() {
     this.hierarchyService.getHierarchy().subscribe({
-      next: (data) => {console.log(" Hierarchy data:", data)
+      next: (data) => {
         this.setAllOpen(data);
         this.level1_hierarchy = data;
       },
