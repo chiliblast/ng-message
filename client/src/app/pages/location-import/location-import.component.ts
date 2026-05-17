@@ -50,12 +50,16 @@ export class LocationImportComponent implements OnInit {
 
   // Left Grid (Import Preview)
   importData: any[] = [];
-  importColumnDefs: ColDef[] = [
-    { field: 'name', headerName: 'Name', flex: 1 },
-    { field: 'latitude', headerName: 'Lat', flex: 1 },
-    { field: 'longitude', headerName: 'Long', flex: 1 },
-    { field: 'address', headerName: 'Address', flex: 2 }
+  
+  dbColumns = [
+    { key: 'name', label: 'Name' },
+    { key: 'latitude', label: 'Latitude' },
+    { key: 'longitude', label: 'Longitude' },
+    { key: 'address', label: 'Address' }
   ];
+  fileHeaders: string[] = [];
+  rawFileData: any[] = [];
+  columnMapping: { [key: string]: string } = {};
 
   // Right Grid (Live Registry)
   registryData: any[] = [];
@@ -415,58 +419,76 @@ export class LocationImportComponent implements OnInit {
   }
 
   async handleFiles(files: FileList) {
-    const allResults: any[] = [];
+    if (files.length === 0) return;
     
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const fileName = file.name.toLowerCase();
-      
-      try {
-        if (fileName.endsWith('.csv')) {
-          const text = await file.text();
-          allResults.push(...this.parseCSV(text));
-        } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-          allResults.push(...await this.parseExcel(file));
-        } else if (fileName.endsWith('.json')) {
-          const text = await file.text();
-          allResults.push(...this.parseJSON(text));
-        } else if (fileName.endsWith('.xml')) {
-          const text = await file.text();
-          allResults.push(...this.parseXML(text));
-        }
-      } catch (err) {
-        console.error(`Error parsing file ${file.name}:`, err);
-        this.toastService.show(`Failed to parse ${file.name}`, 'error');
+    const file = files[0];
+    const fileName = file.name.toLowerCase();
+    
+    let parsed: { headers: string[], data: any[] } = { headers: [], data: [] };
+    
+    try {
+      if (fileName.endsWith('.csv')) {
+        const text = await file.text();
+        parsed = this.parseCSV(text);
+      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        parsed = await this.parseExcel(file);
+      } else if (fileName.endsWith('.json')) {
+        const text = await file.text();
+        parsed = this.parseJSON(text);
+      } else if (fileName.endsWith('.xml')) {
+        const text = await file.text();
+        parsed = this.parseXML(text);
       }
+      
+      this.fileHeaders = parsed.headers;
+      this.rawFileData = parsed.data;
+      this.importData = parsed.data; // Fallback or placeholder
+      
+      this.autoMatchColumns();
+      
+    } catch (err) {
+      console.error(`Error parsing file ${file.name}:`, err);
+      this.toastService.show(`Failed to parse ${file.name}`, 'error');
     }
-    
-    this.importData = [...this.importData, ...allResults];
+  }
+
+  autoMatchColumns() {
+    this.columnMapping = {};
+    this.dbColumns.forEach(dbCol => {
+      const match = this.fileHeaders.find(fileCol => {
+        const f = fileCol.toLowerCase();
+        const d = dbCol.key.toLowerCase();
+        return f === d || f.includes(d) || d.includes(f) ||
+               (d === 'latitude' && (f === 'lat' || f === 'y')) ||
+               (d === 'longitude' && (f === 'lng' || f === 'long' || f === 'x')) ||
+               (d === 'name' && (f === 'title' || f === 'label'));
+      });
+      if (match) {
+        this.columnMapping[dbCol.key] = match;
+      }
+    });
   }
 
   parseCSV(text: string) {
     const lines = text.split('\n');
     const result = [];
-    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const rawHeaders = lines[0].split(',').map(h => h.trim());
 
     for (let i = 1; i < lines.length; i++) {
       if (!lines[i].trim()) continue;
       const obj: any = {};
       const currentline = lines[i].split(',');
 
-      headers.forEach((header, index) => {
+      rawHeaders.forEach((header, index) => {
         let val = currentline[index]?.trim();
-        if (header === 'latitude' || header === 'longitude') {
-          obj[header] = parseFloat(val);
-        } else {
-          obj[header] = val;
-        }
+        obj[header] = val;
       });
       result.push(obj);
     }
-    return result;
+    return { headers: rawHeaders, data: result };
   }
 
-  async parseExcel(file: File): Promise<any[]> {
+  async parseExcel(file: File): Promise<{ headers: string[], data: any[] }> {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (e: any) => {
@@ -474,80 +496,103 @@ export class LocationImportComponent implements OnInit {
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet);
         
-        const mappedData = jsonData.map((row: any) => {
-          const findVal = (keys: string[]) => {
-            const key = Object.keys(row).find(k => keys.includes(k.toLowerCase()));
-            return key ? row[key] : null;
-          };
-
-          return {
-            name: findVal(['name', 'location', 'title']),
-            latitude: parseFloat(findVal(['latitude', 'lat'])),
-            longitude: parseFloat(findVal(['longitude', 'lng', 'long'])),
-            address: findVal(['address', 'addr', 'location details']) || ''
-          };
-        });
+        const jsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+        if (jsonData.length === 0) {
+          resolve({ headers: [], data: [] });
+          return;
+        }
         
-        resolve(mappedData.filter(d => !isNaN(d.latitude) && !isNaN(d.longitude)));
+        const headers = Object.keys(jsonData[0]);
+        resolve({ headers, data: jsonData });
       };
       reader.readAsArrayBuffer(file);
     });
   }
 
-  parseJSON(text: string): any[] {
+  parseJSON(text: string): { headers: string[], data: any[] } {
     const data = JSON.parse(text);
     const locations = Array.isArray(data) ? data : (data.locations || []);
-    return locations.map((loc: any) => ({
-      name: loc.name || loc.title,
-      latitude: parseFloat(loc.latitude || loc.lat),
-      longitude: parseFloat(loc.longitude || loc.lng || loc.long),
-      address: loc.address || ''
-    })).filter((d: any) => !isNaN(d.latitude) && !isNaN(d.longitude));
+    
+    if (locations.length === 0) {
+      return { headers: [], data: [] };
+    }
+    
+    const headers = Object.keys(locations[0]);
+    return { headers, data: locations };
   }
 
-  parseXML(text: string): any[] {
+  parseXML(text: string): { headers: string[], data: any[] } {
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(text, "text/xml");
     const locationNodes = xmlDoc.getElementsByTagName("location");
-    const result = [];
+    const result: any[] = [];
+    const headersSet = new Set<string>();
 
     for (let i = 0; i < locationNodes.length; i++) {
       const node = locationNodes[i];
-      const getVal = (tag: string) => node.getElementsByTagName(tag)[0]?.textContent || '';
-
-      result.push({
-        name: getVal('name') || getVal('title'),
-        latitude: parseFloat(getVal('latitude') || getVal('lat')),
-        longitude: parseFloat(getVal('longitude') || getVal('lng') || getVal('long')),
-        address: getVal('address')
-      });
+      const obj: any = {};
+      const children = node.children;
+      for (let j = 0; j < children.length; j++) {
+        const child = children[j];
+        obj[child.tagName] = child.textContent;
+        headersSet.add(child.tagName);
+      }
+      result.push(obj);
     }
-    return result.filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
+    return { headers: Array.from(headersSet), data: result };
   }
 
   saveImport() {
-    if (this.importData.length === 0) {
+    if (this.rawFileData.length === 0) {
       this.toastService.show('No data to save', 'warning');
       return;
     }
 
-    this.locationService.bulkSave(this.importData).subscribe({
+    // Map data
+    const mappedData = this.rawFileData.map(row => {
+      const obj: any = {};
+      this.dbColumns.forEach(dbCol => {
+        const fileCol = this.columnMapping[dbCol.key];
+        let val = fileCol ? row[fileCol] : null;
+        
+        // Parse numbers for coordinates
+        if (dbCol.key === 'latitude' || dbCol.key === 'longitude') {
+          val = parseFloat(val);
+        }
+        
+        obj[dbCol.key] = val;
+      });
+      return obj;
+    }).filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
+
+    if (mappedData.length === 0) {
+      this.toastService.show('No valid data after mapping (Coordinates missing or invalid)', 'warning');
+      return;
+    }
+
+    this.locationService.bulkSave(mappedData).subscribe({
       next: (res) => {
         this.toastService.show(res.message, 'success');
-        this.importData = [];
+        this.rawFileData = [];
+        this.fileHeaders = [];
+        this.columnMapping = {};
         this.loadRegistry();
       },
       error: async () => {
-        await this.offlineStorage.addPendingLocations(this.importData);
+        await this.offlineStorage.addPendingLocations(mappedData);
         this.toastService.show('Offline: Locations queued for sync', 'info');
-        this.importData = [];
+        this.rawFileData = [];
+        this.fileHeaders = [];
+        this.columnMapping = {};
       }
     });
   }
 
   clearImport() {
+    this.rawFileData = [];
+    this.fileHeaders = [];
+    this.columnMapping = {};
     this.importData = [];
   }
 
