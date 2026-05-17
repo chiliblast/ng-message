@@ -880,3 +880,11 @@ pre[class*="language-"] {
 pre[class*="language-"].line-numbers {
   padding-left: 2.8em !important;
 }
+
+/* Magnifier override */
+.magnifier {
+  z-index: 100000 !important;
+  border: 3px solid #ecf01b !important; /* Premium brand border */
+  border-radius: 12px !important; /* Rounded corners */
+  box-shadow: 0 0 20px rgba(236, 240, 27, 0.6), 0 20px 25px -5px rgba(0, 0, 0, 0.1) !important; /* Glowing effect + Soft shadow */
+}

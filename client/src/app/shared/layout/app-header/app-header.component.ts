@@ -11,6 +11,8 @@ import { SocketService } from '../../../services/socket.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SearchService } from '../../../services/search.service';
 
+declare var HTMLMagnifier: any;
+
 @Component({
   selector: 'app-header',
   imports: [
@@ -28,6 +30,9 @@ export class AppHeaderComponent {
   readonly isMobileOpen$;
   readonly connected$;
   faServer = faServer;
+  
+  magnifier: any;
+  isMagnifierEnabled = false;
 
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -43,6 +48,21 @@ export class AppHeaderComponent {
     // Request Push Notification Permission
     this.notificationService.subscribeToNotifications();
     this.notificationService.listenForNotifications();
+    
+    try {
+      this.magnifier = new HTMLMagnifier({ zoom: 2, shape: 'square', width: 400, height: 300 });
+    } catch (e) {
+      console.error('Failed to initialize HTMLMagnifier:', e);
+    }
+  }
+
+  toggleMagnifier(event: MouseEvent) {
+    this.isMagnifierEnabled = !this.isMagnifierEnabled;
+    if (this.isMagnifierEnabled) {
+      this.magnifier.show(event);
+    } else {
+      this.magnifier.hide();
+    }
   }
 
   onSearch(event: any) {

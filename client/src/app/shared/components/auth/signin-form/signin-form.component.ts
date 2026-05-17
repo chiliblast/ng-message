@@ -30,6 +30,7 @@ export class SigninFormComponent {
 
   showPassword = false;
   isChecked = false;
+  loading = false;
 
   username = '';
   password = '';
@@ -39,12 +40,15 @@ export class SigninFormComponent {
   }
 
   onSignIn() {
+    this.loading = true;
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: () => {
+        this.loading = false;
         this.toastService.show('Logged in successfully!', 'success');
         this.router.navigate(['/']);
       },
       error: (err) => {
+        this.loading = false;
         this.toastService.show(err.error?.message || 'Invalid credentials', 'error');
       }
     });

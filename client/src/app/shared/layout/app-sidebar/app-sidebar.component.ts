@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, QueryList, ViewChildren, ChangeDetectorRef } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
-import { SidebarWidgetComponent } from './app-sidebar-widget.component';
 import { combineLatest, Subscription } from 'rxjs';
 import { AuthService } from '../../../services/auth.service';
 import { MenuService } from '../../../services/menu.service';
@@ -21,7 +20,6 @@ type NavItem = {
   imports: [
     CommonModule,
     RouterModule,
-    SidebarWidgetComponent,
     FontAwesomeModule
   ],
   templateUrl: './app-sidebar.component.html',
