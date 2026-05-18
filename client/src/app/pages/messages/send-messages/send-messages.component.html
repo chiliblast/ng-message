@@ -20,8 +20,9 @@
 
   <!-- Design 1: Order History -->
   <div *ngIf="!showNewMessage" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-    <!-- Left Panel: Summary/Info Cards -->
+    <!-- Left Panel: Summary/Info Cards & Progress -->
     <div class="lg:col-span-4 space-y-4">
+      <!-- Summary Cards -->
       <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
         <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
           <div class="p-5">
@@ -33,22 +34,69 @@
             <p class="text-xl font-bold text-emerald-500">98%</p>
           </div>
         </div>
-        <div class="px-5 py-3 bg-gray-50 dark:bg-gray-800/50 border-t border-gray-100 dark:border-gray-800">
-          <span class="text-[10px] text-gray-500 font-medium">↑ 12% increase from last month</span>
-        </div>
       </div>
 
-      <div class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-        <div class="grid grid-cols-2 divide-x divide-gray-100 dark:divide-gray-800">
-          <div class="p-5">
-            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">New Msgs</h3>
-            <p class="text-xl font-bold text-gray-900 dark:text-white">12</p>
-          </div>
-          <div class="p-5">
-            <h3 class="text-[10px] font-bold text-gray-400 uppercase mb-1">Avg. Response</h3>
-            <p class="text-xl font-bold text-brand-500">2h</p>
+      <!-- Progress and Reply Card -->
+      <div *ngIf="selectedOrder" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden p-5 space-y-4">
+        <div>
+          <h3 class="text-sm font-bold text-gray-900 dark:text-white">Order: {{ selectedOrder.id }}</h3>
+          <p class="text-xs text-gray-500">From: {{ selectedOrder.from }}</p>
+          <div class="mt-1">
+            <span class="text-xs px-2 py-1 rounded-full font-bold uppercase" 
+                  [class.bg-emerald-100]="selectedOrder.status === 'Completed'" 
+                  [class.text-emerald-700]="selectedOrder.status === 'Completed'"
+                  [class.bg-amber-100]="selectedOrder.status === 'In Progress'"
+                  [class.text-amber-700]="selectedOrder.status === 'In Progress'"
+                  [class.bg-gray-100]="selectedOrder.status === 'Pending'"
+                  [class.text-gray-700]="selectedOrder.status === 'Pending'">
+              {{ selectedOrder.status }}
+            </span>
           </div>
         </div>
+
+        <!-- Progress Slider -->
+        <div>
+          <label class="text-xs font-bold text-gray-400 uppercase">Progress: {{ selectedOrder.progress }}%</label>
+          <input 
+            type="range" 
+            min="0" max="100" 
+            [value]="selectedOrder.progress" 
+            (input)="updateProgress(+$any($event.target).value)"
+            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+          >
+          <div class="flex justify-between text-xs text-gray-400 mt-1">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </div>
+
+        <!-- Reply Message -->
+        <div>
+          <label class="text-xs font-bold text-gray-400 uppercase block mb-1">Write Back</label>
+          <textarea 
+            [(ngModel)]="messageText"
+            placeholder="Type your message..."
+            class="w-full p-2.5 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-brand-500 focus:border-brand-500 dark:bg-gray-800 dark:border-gray-700 dark:placeholder-gray-400 dark:text-white dark:focus:ring-brand-500 dark:focus:border-brand-500"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <button 
+          (click)="sendReply()"
+          [disabled]="!messageText || isSending"
+          class="w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-all shadow-lg shadow-brand-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          <svg *ngIf="isSending" class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          {{ isSending ? 'Sending...' : 'Send Message' }}
+        </button>
+      </div>
+
+      <div *ngIf="!selectedOrder" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm p-5 text-center text-gray-500 text-sm">
+        Select an order from the table to update progress or reply.
       </div>
     </div>
 
@@ -80,7 +128,7 @@
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ order.to }}</td>
               <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">{{ order.date }}</td>
               <td class="px-6 py-4 text-right">
-                <button class="text-brand-500 hover:text-brand-600 font-medium text-sm">View Details</button>
+                <button (click)="selectOrder(order)" class="text-brand-500 hover:text-brand-600 font-medium text-sm">View Details</button>
               </td>
             </tr>
           </tbody>

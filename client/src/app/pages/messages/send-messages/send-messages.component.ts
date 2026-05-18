@@ -2,11 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordianComponent } from '../../home/accordian/accordian.component';
 import { HierarchyService } from '../../../services/hierarchy.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-send-messages',
   standalone: true,
-  imports: [CommonModule, AccordianComponent],
+  imports: [CommonModule, AccordianComponent, FormsModule],
   templateUrl: './send-messages.component.html'
 })
 export class SendMessagesComponent implements OnInit {
@@ -15,11 +16,14 @@ export class SendMessagesComponent implements OnInit {
   openSection = 'templates';
   level1_hierarchy: any = null;
   selectedRecipient: string = '';
+  selectedOrder: any = null;
+  messageText: string = '';
+  isSending: boolean = false;
 
   orderHistory = [
-    { id: 'ORD-001', from: 'John Doe', to: 'Support', date: '2024-04-25', status: 'Delivered' },
-    { id: 'ORD-002', from: 'Jane Smith', to: 'Sales', date: '2024-04-24', status: 'Pending' },
-    { id: 'ORD-003', from: 'Bob Johnson', to: 'Billing', date: '2024-04-23', status: 'Cancelled' },
+    { id: 'ORD-001', from: 'John Doe', to: 'Support', date: '2024-04-25', status: 'Delivered', progress: 100 },
+    { id: 'ORD-002', from: 'Jane Smith', to: 'Sales', date: '2024-04-24', status: 'Pending', progress: 30 },
+    { id: 'ORD-003', from: 'Bob Johnson', to: 'Billing', date: '2024-04-23', status: 'Cancelled', progress: 0 },
   ];
 
   ngOnInit() {
@@ -52,5 +56,36 @@ export class SendMessagesComponent implements OnInit {
 
   toggleView() {
     this.showNewMessage = !this.showNewMessage;
+  }
+
+  selectOrder(order: any) {
+    this.selectedOrder = order;
+  }
+
+  updateProgress(progress: number) {
+    if (this.selectedOrder) {
+      this.selectedOrder.progress = progress;
+      if (progress === 100) {
+        this.selectedOrder.status = 'Completed';
+      } else if (progress > 0) {
+        this.selectedOrder.status = 'In Progress';
+      } else {
+        this.selectedOrder.status = 'Pending';
+      }
+    }
+  }
+
+  sendReply() {
+    if (this.selectedOrder && this.messageText) {
+      this.isSending = true;
+      console.log(`Sending reply for ${this.selectedOrder.id}: ${this.messageText}`);
+      
+      // Simulate API call
+      setTimeout(() => {
+        this.isSending = false;
+        this.messageText = '';
+        console.log('Reply sent successfully');
+      }, 2000); // 2 seconds delay
+    }
   }
 }

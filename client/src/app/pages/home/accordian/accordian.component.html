@@ -40,6 +40,29 @@
         <p class="text-[10px] text-gray-500 truncate">{{node.name}}</p>
       </div>
     </div>
+    
+    <!-- Progress & Orders Indicator for Level 1 -->
+    <div *ngIf="node.type == 1" class="hidden md:flex items-center gap-4 ml-4 flex-1 max-w-xs">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+        </div>
+        <div>
+          <p class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Orders</p>
+          <h3 class="text-xs font-black text-gray-900 dark:text-white">1,284</h3>
+        </div>
+      </div>
+      
+      <div class="flex-1">
+        <div class="flex justify-between mb-1">
+          <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Progress</span>
+          <span class="text-[8px] font-bold text-brand-500 uppercase tracking-widest">75%</span>
+        </div>
+        <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+          <div class="bg-brand-500 h-1.5 rounded-full" style="width: 75%"></div>
+        </div>
+      </div>
+    </div>
     <div class="flex items-center gap-2">
       <!-- Action Indicators for Level 1 Header -->
       <div *ngIf="node.type == 1" class="flex gap-1.5 mr-2">

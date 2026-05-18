@@ -32,9 +32,14 @@ export class AuthService {
   login(credentials: any) {
     return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
       tap((res: any) => {
+        if (res.status === 'fail') {
+          throw { error: { message: res.message || 'Login failed' } };
+        }
+        
         this.cookieService.setCookie('token', res.token, 7);
-        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(res.user)), 7);
-        this.userSubject.next(res.user);
+        const user = res.user || { id: res.userid };
+        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
+        this.userSubject.next(user);
       })
     );
   }
