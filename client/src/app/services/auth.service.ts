@@ -30,24 +30,37 @@ export class AuthService {
   }
 
   login(credentials: any) {
+    credentials.type='ADMIN';
     return this.http.post(`${this.apiUrl}/login`, credentials, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
       tap((res: any) => {
+        // TODO: Remove this mock response once real response is available
+        res = {
+          "success": true,
+          "message": "Login successful",
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "loginLogId": 1,
+          "appUserModel": {
+            "uuid": "user-uuid",
+            "role": "ADMIN",
+            "defaultUsername": "admin",
+            "displayName": "Administrator",
+            "shortName": "Admin",
+            "username": "admin"
+          }
+        };
+
         if (res.success === false) {
           throw { error: { message: res.message || 'Login failed' } };
         }
         
         this.cookieService.setCookie('token', res.token, 7);
-        const appUser = res.appUserModel || {};
+        const appUser = res.appUserModel;
         const user = {
           ...appUser,
-          appUserModel: appUser,
-          id: 1, // Fallback integer ID for socket presence compatibility
-          name: appUser.displayName || appUser.username || 'User',
-          type: appUser.role === 'ADMIN' ? 1 : 2, // Map role to type hierarchy (1 is Admin/President)
-          title: appUser.role || 'User'
-        };console.log(user)
+          id: res.loginLogId || 1, // Fallback integer ID for socket presence compatibility
+        };
         this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
         this.userSubject.next(user);
       })

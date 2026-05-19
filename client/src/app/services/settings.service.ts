@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, tap, of } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
 import { environment } from '../../environments/environment';
 
@@ -34,12 +34,23 @@ export class SettingsService {
   }
 
   loadStatusActions() {
+    // TODO: Replace this mock response with your new API response when ready
+    const actions: StatusAction[] = [
+      { id: 1, label: "Active", color: "#10b981", description: "Node is active and operational" },
+      { id: 2, label: "Pending", color: "#f59e0b", description: "Node operation is pending" },
+      { id: 3, label: "Suspended", color: "#ef4444", description: "Node is suspended" }
+    ];
+    this.statusActionsSubject.next(actions);
+    return of(actions);
+
+    /* -- Original implementation (uncomment to restore once new API is live) --
     return this.http.get<StatusAction[]>(`${this.apiUrl}/status-actions`).pipe(
       tap(actions => {
         this.statusActionsSubject.next(actions);
         this.offlineStorage.saveSettings('status_actions', actions);
       })
     );
+    */
   }
 
   get currentStatusActions() {

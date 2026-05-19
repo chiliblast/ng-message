@@ -2,6 +2,7 @@ import { Injectable, inject, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, tap, of, from, catchError, map } from 'rxjs';
 import { SocketService } from './socket.service';
+import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
 import { OfflineStorageService } from './offline-storage.service';
 import { OfflineSyncService } from './offline-sync.service';
@@ -17,6 +18,7 @@ export class MessageService {
   private ngZone = inject(NgZone);
   private storage = inject(OfflineStorageService);
   private sync = inject(OfflineSyncService);
+  private authService = inject(AuthService);
   
   private apiUrl = `${environment.apiBaseUrl}/messages`;
 
@@ -43,10 +45,10 @@ export class MessageService {
         this.addBlinkingNode(msg.receiverId);
 
         // Only show toast if user is a bystander (neither sender nor receiver)
-        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const currentUserId = Number(currentUser.id);
+        const currentUser = this.authService.currentUserValue;
+        const currentUserId = currentUser ? Number(currentUser.id) : null;
         
-        if (currentUserId !== Number(msg.senderId) && currentUserId !== Number(msg.receiverId)) {
+        if (currentUserId && currentUserId !== Number(msg.senderId) && currentUserId !== Number(msg.receiverId)) {
           this.toastService.show(`New message detected`, 'info');
         }
       });

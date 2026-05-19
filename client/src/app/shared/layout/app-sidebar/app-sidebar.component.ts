@@ -75,14 +75,14 @@ export class AppSidebarComponent {
   }
 
   get filteredNavItems() {
-    if (this.currentUser?.type === 5) {
+    if (this.currentUser?.role !== 'ADMIN') {
       return this.navItems.filter(item => item.name !== 'Home');
     }
     return this.navItems;
   }
 
   onLogoClick() {
-    if (this.currentUser?.type === 5) {
+    if (this.currentUser?.role !== 'ADMIN') {
       this.router.navigate(['/messages/send']);
     } else {
       this.router.navigate(['/']);
@@ -96,8 +96,8 @@ export class AppSidebarComponent {
         icon: this.menuService.getIcon(item.icon)
       }));
       
-      // Filter nav items for Type 5 users
-      if (this.currentUser && Number(this.currentUser.type) === 5) {
+      // Filter nav items for non-admin users
+      if (this.currentUser && this.currentUser.role !== 'ADMIN') {
         this.navItems = this.navItems.filter(item => item.name !== 'Home');
         this.logoLink = '/messages/send';
       }

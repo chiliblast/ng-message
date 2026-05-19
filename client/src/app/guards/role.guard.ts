@@ -12,9 +12,9 @@ export const roleGuard = () => {
   
   if (!user) return true;
 
-  // Type 5 users are restricted from the Home page
-  if (user.type !== undefined && Number(user.type) === 5) {
-    console.log('🚫 RoleGuard: Access restricted for Type 5 user. Redirecting to Send Messages.');
+  // Non-ADMIN users are restricted from the Home page
+  if (user.role !== undefined && user.role !== 'ADMIN') {
+    console.log('🚫 RoleGuard: Access restricted for non-ADMIN user. Redirecting to Send Messages.');
     router.navigate(['/messages/send']);
     return false;
   }

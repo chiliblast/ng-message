@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, from, catchError, map } from 'rxjs';
+import { Observable, tap, from, catchError, map, of } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
 import { environment } from '../../environments/environment';
 
@@ -17,6 +17,33 @@ export class LocationService {
   }
 
   getLocations(page: number = 1, limit: number = 10): Observable<any> {
+    // TODO: Replace this mock response with your new API response when ready
+    return of({
+      data: [
+        {
+          id: 1,
+          name: "Central Office",
+          latitude: 40.7128,
+          longitude: -74.0060,
+          address: "123 Main St, New York, NY"
+        },
+        {
+          id: 2,
+          name: "West Coast Hub",
+          latitude: 34.0522,
+          longitude: -118.2437,
+          address: "456 Sunset Blvd, Los Angeles, CA"
+        }
+      ],
+      pagination: {
+        total: 2,
+        page: page,
+        limit: limit,
+        totalPages: 1
+      }
+    });
+
+    /* -- Original implementation (uncomment to restore once new API is live) --
     return this.http.get<any>(`${this.apiUrl}?page=${page}&limit=${limit}`).pipe(
       tap(res => {
         if (res && res.data) {
@@ -41,6 +68,7 @@ export class LocationService {
         );
       })
     );
+    */
   }
 
   addLocation(location: any): Observable<any> {
