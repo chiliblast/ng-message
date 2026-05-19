@@ -30,14 +30,24 @@ export class AuthService {
   }
 
   login(credentials: any) {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post(`${this.apiUrl}/login`, credentials, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
       tap((res: any) => {
-        if (res.status === 'fail') {
+        if (res.success === false) {
           throw { error: { message: res.message || 'Login failed' } };
         }
         
         this.cookieService.setCookie('token', res.token, 7);
-        const user = res.user || { id: res.userid };
+        const appUser = res.appUserModel || {};
+        const user = {
+          ...appUser,
+          appUserModel: appUser,
+          id: 1, // Fallback integer ID for socket presence compatibility
+          name: appUser.displayName || appUser.username || 'User',
+          type: appUser.role === 'ADMIN' ? 1 : 2, // Map role to type hierarchy (1 is Admin/President)
+          title: appUser.role || 'User'
+        };console.log(user)
         this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
         this.userSubject.next(user);
       })

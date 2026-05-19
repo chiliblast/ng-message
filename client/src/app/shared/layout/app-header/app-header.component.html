@@ -103,7 +103,7 @@
       </div>
 
       <!-- UserDropdown placeholder -->
-      <app-user-dropdown />
+      <app-user-dropdown [user]="(user$ | async)?.appUserModel || (user$ | async)" />
       
     </div>
   </div>

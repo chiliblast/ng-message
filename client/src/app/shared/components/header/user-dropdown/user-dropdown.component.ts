@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { DropdownComponent } from '../../ui/dropdown/dropdown.component';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -15,6 +15,8 @@ import { AuthService } from '../../../../services/auth.service';
 export class UserDropdownComponent {
   private authService = inject(AuthService);
   user$ = this.authService.user$;
+  
+  @Input() user: any;
   isOpen = false;
 
   toggleDropdown() {

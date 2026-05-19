@@ -10,6 +10,7 @@ import { UserDropdownComponent } from '../../components/header/user-dropdown/use
 import { SocketService } from '../../../services/socket.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SearchService } from '../../../services/search.service';
+import { AuthService } from '../../../services/auth.service';
 
 declare var HTMLMagnifier: any;
 
@@ -34,14 +35,17 @@ export class AppHeaderComponent {
   magnifier: any;
   isMagnifierEnabled = false;
 
+  user$;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
   constructor(
     public sidebarService: SidebarService,
     private socketService: SocketService,
     private notificationService: NotificationService,
-    private searchService: SearchService
+    private searchService: SearchService,
+    private authService: AuthService
   ) {
+    this.user$ = this.authService.user$;
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
     this.connected$ = this.socketService.connected$;
 
