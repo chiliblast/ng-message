@@ -36,9 +36,11 @@ export class SettingsService {
   loadStatusActions() {
     // TODO: Replace this mock response with your new API response when ready
     const actions: StatusAction[] = [
-      { id: 1, label: "Active", color: "#10b981", description: "Node is active and operational" },
-      { id: 2, label: "Pending", color: "#f59e0b", description: "Node operation is pending" },
-      { id: 3, label: "Suspended", color: "#ef4444", description: "Node is suspended" }
+      { id: 1, label: "A", color: "#10b981", description: "Node is active and operational" },
+      { id: 2, label: "B", color: "#f59e0b", description: "Node operation is pending" },
+      { id: 3, label: "C", color: "#ef4444", description: "Node is suspended" },
+      { id: 4, label: "D", color: "#10b981", description: "Node is active and operational" },
+      
     ];
     this.statusActionsSubject.next(actions);
     return of(actions);

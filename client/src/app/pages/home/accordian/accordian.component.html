@@ -1,101 +1,109 @@
-<div class="relative border-2 rounded-xl overflow-hidden shadow-sm transition-all duration-300 h-full"
+<div class="relative border-2 rounded-2xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
      [ngClass]="{
-       'border-brand-500 ring-2 ring-brand-500/10': color === 'brand' && node.isOpen && !isHighlighted,
-       'border-blue-500 ring-2 ring-blue-500/10': color === 'blue' && node.isOpen && !isHighlighted,
-       'border-success-500 ring-2 ring-success-500/10': color === 'success' && node.isOpen && !isHighlighted,
-       'border-warning-500 ring-2 ring-warning-500/10': color === 'warning' && node.isOpen && !isHighlighted,
-       'border-purple-500 ring-2 ring-purple-500/10': color === 'purple' && node.isOpen && !isHighlighted,
-       'border-indigo-500 ring-2 ring-indigo-500/10': color === 'indigo' && node.isOpen && !isHighlighted,
-       'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900': !node.isOpen && !isHighlighted,
+       'border-brand-500 shadow-[0_8px_30px_rgb(70,95,255,0.15)] bg-brand-50/5 dark:bg-brand-500/5': color === 'brand' && node.isOpen && !isHighlighted,
+       'border-blue-500 shadow-[0_8px_30px_rgb(59,130,246,0.15)] bg-blue-50/5 dark:bg-blue-500/5': color === 'blue' && node.isOpen && !isHighlighted,
+       'border-success-500 shadow-[0_8px_30px_rgb(16,185,129,0.15)] bg-success-50/5 dark:bg-success-500/5': color === 'success' && node.isOpen && !isHighlighted,
+       'border-warning-500 shadow-[0_8px_30px_rgb(245,158,11,0.15)] bg-warning-50/5 dark:bg-warning-500/5': color === 'warning' && node.isOpen && !isHighlighted,
+       'border-purple-500 shadow-[0_8px_30px_rgb(168,85,247,0.15)] bg-purple-50/5 dark:bg-purple-500/5': color === 'purple' && node.isOpen && !isHighlighted,
+       'border-indigo-500 shadow-[0_8px_30px_rgb(99,102,241,0.15)] bg-indigo-50/5 dark:bg-indigo-500/5': color === 'indigo' && node.isOpen && !isHighlighted,
+       'border-gray-150 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 shadow-sm': !node.isOpen && !isHighlighted,
        'animate-blink': (isBlinking$ | async),
-       'border-yellow-400 ring-4 ring-yellow-400/50 scale-[1.02] z-50': isHighlighted
+       'border-yellow-400 ring-4 ring-yellow-400/40 scale-[1.03] z-50 shadow-[0_10px_40px_rgba(234,179,8,0.2)]': isHighlighted
      }">
   
-  <!-- Status Indicator -->
-  <div class="absolute top-1.5 left-1.5 w-2.5 h-2.5 rounded-full z-10 shadow-sm border-2 border-white dark:border-gray-900 transition-colors duration-500"
-       [ngClass]="node.isOnline ? 'bg-emerald-500 shadow-emerald-500/50' : 'bg-red-500 shadow-red-500/20'"
+  <!-- Online/Offline Glow Dot -->
+  <div class="absolute top-3 left-3 w-3 h-3 rounded-full z-20 shadow-sm border-2 border-white dark:border-gray-900 transition-all duration-500"
+       [ngClass]="node.isOnline ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'"
        [title]="node.isOnline ? 'Online' : 'Offline'">
-    <span *ngIf="node.isOnline" class="absolute inset-0 rounded-full bg-emerald-500 animate-ping opacity-75"></span>
+    <span *ngIf="node.isOnline" class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75"></span>
   </div>
   
   <button (click)="toggleAccordion()" 
-          class="w-full p-3 flex items-center justify-between text-left hover:bg-gray-50 dark:hover:bg-white/5 transition-colors focus:outline-none">
-    <div class="flex items-center gap-1">
-      <div class="w-7 h-7 rounded-lg flex items-center justify-center font-bold text-white text-[10px] shadow-sm shrink-0"
+          class="w-full p-4 flex flex-col sm:flex-row sm:items-center justify-between text-left hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all focus:outline-none select-none">
+    
+    <div class="flex items-center gap-3 w-full sm:w-auto">
+      <!-- Depth Level Indicator Badge -->
+      <div class="w-8 h-8 rounded-xl flex items-center justify-center font-black text-white text-xs shadow-md shrink-0 transition-transform duration-300 hover:rotate-12"
            [ngClass]="{
-             'bg-brand-500': color === 'brand',
-             'bg-blue-500': color === 'blue',
-             'bg-success-500': color === 'success',
-             'bg-warning-500': color === 'warning',
-             'bg-purple-500': color === 'purple',
-             'bg-indigo-500': color === 'indigo'
+             'bg-gradient-to-tr from-brand-600 to-brand-400': color === 'brand',
+             'bg-gradient-to-tr from-blue-600 to-blue-400': color === 'blue',
+             'bg-gradient-to-tr from-success-600 to-success-400': color === 'success',
+             'bg-gradient-to-tr from-warning-600 to-warning-400': color === 'warning',
+             'bg-gradient-to-tr from-purple-600 to-purple-400': color === 'purple',
+             'bg-gradient-to-tr from-indigo-600 to-indigo-400': color === 'indigo'
            }">
-        {{node.type}}
+        {{node.depthFromStart}}
       </div>
+      
       <div class="overflow-hidden min-w-0 flex-1">
-        <h4 class="font-bold text-gray-900 dark:text-white leading-tight truncate" 
-            [ngClass]="node.type == 1 ? 'text-base' : 'text-xs'">
-          {{node.title}}
-        </h4>
-        <p class="text-[10px] text-gray-500 truncate">{{node.name}}</p>
+        <div class="flex items-center gap-1.5 mb-0.5">
+          <h4 class="font-extrabold text-gray-900 dark:text-white leading-tight truncate tracking-tight text-sm">
+            {{node.displayName || node.groupName}}
+          </h4>
+          
+          <!-- Shortname Badge -->
+          <span *ngIf="node.shortName" 
+                class="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 font-mono tracking-wider shrink-0 uppercase border border-gray-200/20">
+            {{ node.shortName }}
+          </span>
+          
+          <!-- UserType Badge -->
+          <span *ngIf="node.userType" 
+                class="text-[9px] font-bold px-1.5 py-0.5 rounded-md shrink-0 uppercase tracking-wide"
+                [ngClass]="{
+                  'bg-brand-500/10 text-brand-500 border border-brand-500/20': node.userType === 'ADMIN',
+                  'bg-blue-500/10 text-blue-500 border border-blue-500/20': node.userType === 'MANAGER',
+                  'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200/10': node.userType === 'USER'
+                }">
+            {{ node.userType }}
+          </span>
+        </div>
+        <p class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 truncate">@{{node.fname || node.groupName}}</p>
       </div>
     </div>
     
-    <!-- Progress & Orders Indicator for Level 1 -->
-    <div *ngIf="node.type == 1" class="hidden md:flex items-center gap-4 ml-4 flex-1 max-w-xs">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-brand-50 dark:bg-brand-500/10 flex items-center justify-center text-brand-500">
-          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-        </div>
-        <div>
-          <p class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Orders</p>
-          <h3 class="text-xs font-black text-gray-900 dark:text-white">1,284</h3>
-        </div>
-      </div>
-      
+    <!-- Progress Indicator Bar (For ANY node that has progress > 0) -->
+    <div *ngIf="node.progress !== undefined" class="flex items-center gap-4 mt-3 sm:mt-0 sm:ml-4 flex-1 max-w-xs w-full">
       <div class="flex-1">
         <div class="flex justify-between mb-1">
-          <span class="text-[8px] font-bold text-gray-400 uppercase tracking-widest">Progress</span>
-          <span class="text-[8px] font-bold text-brand-500 uppercase tracking-widest">75%</span>
+          <span class="text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Task Progress</span>
+          <span class="text-[8px] font-black uppercase tracking-widest"
+                [ngClass]="{
+                  'text-brand-500': color === 'brand',
+                  'text-blue-500': color === 'blue',
+                  'text-success-500': color === 'success',
+                  'text-warning-500': color === 'warning',
+                  'text-purple-500': color === 'purple',
+                  'text-indigo-500': color === 'indigo'
+                }">
+            {{ node.progress }}%
+          </span>
         </div>
-        <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
-          <div class="bg-brand-500 h-1.5 rounded-full" style="width: 75%"></div>
+        <div class="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-2 shadow-inner overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-1000 ease-out" 
+               [ngClass]="{
+                 'bg-brand-500': color === 'brand',
+                 'bg-blue-500': color === 'blue',
+                 'bg-success-500': color === 'success',
+                 'bg-warning-500': color === 'warning',
+                 'bg-purple-500': color === 'purple',
+                 'bg-indigo-500': color === 'indigo'
+               }"
+               [style.width.%]="node.progress"></div>
         </div>
       </div>
     </div>
-    <div class="flex items-center gap-2">
-      <!-- Action Indicators for Level 1 Header -->
-      <div *ngIf="node.type == 1" class="flex gap-1.5 mr-2">
-        <div *ngFor="let action of (statusActions$ | async)" 
-             class="w-6 h-6 rounded-md border flex items-center justify-center text-[9px] font-black uppercase shadow-sm transition-all cursor-default"
-             [style.borderColor]="action.color + '40'"
-             [style.backgroundColor]="action.color + '10'"
-             [style.color]="action.color">
-          {{ action.label }}
-        </div>
-      </div>
+
+    <!-- Right Header Controls -->
+    <div class="flex items-center gap-2 mt-3 sm:mt-0 justify-end shrink-0">
       
-      <svg class="w-3 h-3 text-gray-400 transition-transform duration-500 shrink-0" 
-           [ngClass]="{'rotate-180': node.isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-      </svg>
-    </div>
-  </button>
-
-  <div class="transition-all duration-500 ease-in-out overflow-hidden" 
-       [style.max-height]="node.isOpen ? '300px' : '0px'">
-    <div (click)="selectNode($event)" class="p-2 pt-0 border-t border-gray-100 dark:border-gray-800 bg-gray-50/20 dark:bg-black/5 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-colors">
-      <p class="mt-2 text-[10px] leading-relaxed text-gray-600 dark:text-gray-400">
-        {{node.details}}
-      </p>
-
-      <!-- Action/Status Indicators (Global list, greyed out if not assigned) -->
-      <div *ngIf="node.type != 1" class="mt-4 flex gap-2">
+      <!-- Dynamic Actions for Logged-In User (depthFromStart === 0) -->
+      <div *ngIf="node.depthFromStart === 0" class="flex flex-wrap gap-1.5 mr-2" (click)="$event.stopPropagation()">
         <div *ngFor="let action of (statusActions$ | async)" 
-             class="w-7 h-7 rounded-md border flex items-center justify-center text-[10px] font-bold uppercase shadow-sm transition-all cursor-default"
+             class="h-7 px-2.5 rounded-lg border flex items-center justify-center text-[9px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none shrink-0"
              [ngClass]="{
                'shadow-md scale-105 border-transparent animate-blink': getAction(action.id),
-               'opacity-30': !getAction(action.id)
+               'opacity-20 border-dashed': !getAction(action.id)
              }"
              [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
              [style.backgroundColor]="getAction(action.id) ? action.color : 'transparent'"
@@ -105,19 +113,74 @@
         </div>
       </div>
 
-      <!-- Action Icons (Shown only when selected and Level > 1) -->
-      <div *ngIf="isSelected && node.type != 1" class="mt-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-        <button (click)="startCall($event)" class="w-10 h-10 text-blue-500 hover:scale-110 hover:bg-blue-500/10 rounded-xl transition-all flex items-center justify-center border border-blue-500/10 bg-blue-500/5">
+      <!-- Header Action Indicators (Shows active action badges in a small format for other nodes) -->
+      <div *ngIf="node.depthFromStart !== 0 && node.actions?.length" class="flex gap-1 mr-1">
+        <div *ngFor="let action of node.actions" 
+             class="w-5 h-5 rounded-md border flex items-center justify-center text-[8px] font-black uppercase shadow-sm transition-all"
+             [style.borderColor]="action.color + '40'"
+             [style.backgroundColor]="action.color + '10'"
+             [style.color]="action.color"
+             [title]="action.name">
+          {{ action.label }}
+        </div>
+      </div>
+      
+      <svg class="w-4 h-4 text-gray-400 transition-transform duration-500 shrink-0" 
+           [ngClass]="{'rotate-180': node.isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </button>
+
+  <!-- Accordion Body Drawer -->
+  <div class="transition-all duration-500 ease-in-out overflow-hidden" 
+       [style.max-height]="node.isOpen ? '300px' : '0px'">
+    <div (click)="selectNode($event)" 
+         class="p-4 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
+      
+      <p class="mt-3 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
+        {{node.displayName || node.groupName}} ({{node.shortName || ''}}) - {{node.userType || 'USER'}}
+      </p>
+
+      <!-- Global Actions Listing (Greyed out if not matching active node action for other nodes) -->
+      <div *ngIf="node.depthFromStart !== 0" class="mt-4 flex flex-wrap gap-2">
+        <div *ngFor="let action of (statusActions$ | async)" 
+             class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none"
+             [ngClass]="{
+               'shadow-md scale-105 border-transparent animate-blink': getAction(action.id),
+               'opacity-20 border-dashed': !getAction(action.id)
+             }"
+             [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
+             [style.backgroundColor]="getAction(action.id) ? action.color : 'transparent'"
+             [style.color]="getAction(action.id) ? 'white' : action.color"
+             [title]="getAction(action.id) ? (getAction(action.id).name + ': ' + getAction(action.id).description) : (action.label + ': ' + action.description + ' (Not assigned)')">
+          {{ action.label }}
+        </div>
+      </div>
+
+      <!-- Action Buttons Drawer (Shown when Selected) -->
+      <div *ngIf="isSelected && node.depthFromStart !== 0" 
+           class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        
+        <button (click)="startCall($event)" 
+                class="w-10 h-10 text-blue-500 hover:scale-110 hover:bg-blue-500/10 rounded-xl transition-all flex items-center justify-center border border-blue-500/10 bg-blue-500/5"
+                title="Initiate Call">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
           </svg>
         </button>
-        <button (click)="showMessage($event)" class="w-10 h-10 text-emerald-500 hover:scale-110 hover:bg-emerald-500/10 rounded-xl transition-all flex items-center justify-center border border-emerald-500/10 bg-emerald-500/5">
+        
+        <button (click)="showMessage($event)" 
+                class="w-10 h-10 text-emerald-500 hover:scale-110 hover:bg-emerald-500/10 rounded-xl transition-all flex items-center justify-center border border-emerald-500/10 bg-emerald-500/5"
+                title="Send Message">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
           </svg>
         </button>
-        <button (click)="showProfile($event)" class="w-10 h-10 text-amber-500 hover:scale-110 hover:bg-amber-500/10 rounded-xl transition-all flex items-center justify-center border border-amber-500/10 bg-amber-500/5">
+        
+        <button (click)="showProfile($event)" 
+                class="w-10 h-10 text-amber-500 hover:scale-110 hover:bg-amber-500/10 rounded-xl transition-all flex items-center justify-center border border-amber-500/10 bg-amber-500/5"
+                title="View on Map">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
           </svg>

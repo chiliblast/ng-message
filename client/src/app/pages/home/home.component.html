@@ -1,70 +1,37 @@
-<div class="home-container space-y-6 relative min-h-[calc(100vh-80px)] mx-auto p-1">
+<div class="home-container space-y-8 relative min-h-[calc(100vh-80px)] mx-auto p-1 max-w-7xl animate-in fade-in duration-500">
   
-  <!-- CASE 1: PRESIDENTIAL VIEW (Level 1 Only) -->
-  <ng-container *ngIf="level1_hierarchy?.type == 1">
-    <!-- PRESIDENTIAL LEVEL -->
-    <section>
-      <div class="grid grid-cols-8 gap-2">
-        <app-accordian [node]="level1_hierarchy" [color]="getNodeColor(level1_hierarchy.type)" [isSelected]="selectedNode === level1_hierarchy" [defaultOpen]="false" [isHighlighted]="isNodeMatched(level1_hierarchy)" class="col-span-8 mb-0" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-      </div>
-    </section>
-
-    <!-- BRANCHES GRID (Responsive: 1x1, 2x1, 2x2 based on branch count) -->
-    <div [ngClass]="getBranchesGridClass()" class="gap-2">
-      <section *ngFor="let branch of branches; let i = index">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-1 items-start">
-          <app-accordian [node]="branch" [color]="getNodeColor(branch.type)" [isSelected]="selectedNode === branch" [isHighlighted]="isNodeMatched(branch)" class="col-span-full mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-          
-          <ng-container *ngFor="let node of branch.children">
-            <app-accordian [node]="node" [color]="getNodeColor(node.type)" [isSelected]="selectedNode === node" [isHighlighted]="isNodeMatched(node)" class="col-span-4 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-          </ng-container>
-          
-          <ng-container *ngFor="let node of (branch.children || [])">
-            <ng-container *ngFor="let child of node.children">
-              <app-accordian [node]="child" [color]="getNodeColor(child.type)" [isSelected]="selectedNode === child" [isHighlighted]="isNodeMatched(child)" class="col-span-2 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-            </ng-container>
-          </ng-container>
-          
-          <ng-container *ngFor="let node of (branch.children || [])">
-            <ng-container *ngFor="let child of node.children">
-              <ng-container *ngFor="let grandchild of child.children">
-                <app-accordian [node]="grandchild" [color]="getNodeColor(grandchild.type)" [isSelected]="selectedNode === grandchild" [isHighlighted]="isNodeMatched(grandchild)" class="col-span-1 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-              </ng-container>
-            </ng-container>
-          </ng-container>
+  <!-- Recursive Node Template -->
+  <ng-template #nodeTemplate let-node>
+    <div class="space-y-2 w-full">
+      <!-- Current Accordion Card -->
+      <app-accordian [node]="node" 
+                     [color]="getNodeColor(node.depthFromStart)" 
+                     [isSelected]="selectedNode === node" 
+                     [isHighlighted]="isNodeMatched(node)" 
+                     [defaultOpen]="node.depthFromStart <= 1" 
+                     class="block mb-2 shadow-sm"
+                     (onSelect)="onSelectNode($event)" 
+                     (onShowProfile)="onOpenProfile($event)" 
+                     (onShowCall)="onOpenCall($event)" 
+                     (onShowMessage)="onOpenMessage($event)">
+      </app-accordian>
+      
+      <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
+      <div *ngIf="node.children?.length && node.isOpen" 
+           class="grid grid-cols-1 md:grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div *ngFor="let child of node.children" class="col-span-1 animate-in fade-in duration-300">
+          <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child }"></ng-container>
         </div>
-      </section>
-    </div>
-  </ng-container>
-
-  <!-- CASE 2: USER VIEW (Level > 1) -->
-  <ng-container *ngIf="level1_hierarchy && level1_hierarchy.type > 1">
-    <section>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-2 items-start">
-        
-        <!-- Me -->
-        <app-accordian [node]="userL1" [color]="getNodeColor(userL1.type)" [isSelected]="selectedNode === userL1" [isHighlighted]="isNodeMatched(userL1)" class="col-span-full mb-4" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
- 
-        <!-- My Children -->
-        <ng-container *ngFor="let node of userL2">
-          <app-accordian [node]="node" [color]="getNodeColor(node.type)" [isSelected]="selectedNode === node" [isHighlighted]="isNodeMatched(node)" class="col-span-4 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-        </ng-container>
- 
-        <!-- My Grandchildren -->
-        <ng-container *ngFor="let node of userL3">
-          <app-accordian [node]="node" [color]="getNodeColor(node.type)" [isSelected]="selectedNode === node" [isHighlighted]="isNodeMatched(node)" class="col-span-2 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-        </ng-container>
- 
-        <!-- My Great-Grandchildren -->
-        <ng-container *ngFor="let node of userL4">
-          <app-accordian [node]="node" [color]="getNodeColor(node.type)" [isSelected]="selectedNode === node" [isHighlighted]="isNodeMatched(node)" class="col-span-1 mb-1" (onSelect)="onSelectNode($event)" (onShowProfile)="onOpenProfile($event)" (onShowCall)="onOpenCall($event)" (onShowMessage)="onOpenMessage($event)"></app-accordian>
-        </ng-container>
- 
       </div>
-    </section>
-  </ng-container>
+    </div>
+  </ng-template>
 
-  <!-- MODALS -->
+  <!-- Main Dynamic Tree Render -->
+  <div *ngIf="currentUser" class="mx-auto space-y-6">
+    <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: currentUser }"></ng-container>
+  </div>
+
+  <!-- POPUP MODALS -->
   <app-map-modal [isOpen]="showProfileModal" [node]="profileNode" (close)="closeProfile()"></app-map-modal>
   <app-video-call-modal [isOpen]="showCallModal" [node]="callNode" [isIncoming]="isIncomingCall" (close)="closeCall()"></app-video-call-modal>
   <app-message-modal [isOpen]="showMessageModal" [node]="messageNode" (close)="closeMessage()"></app-message-modal>

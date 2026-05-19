@@ -13,17 +13,6 @@ import { MapModalComponent } from './modals/map-modal/map-modal.component';
 import { VideoCallModalComponent } from './modals/video-call-modal/video-call-modal.component';
 import { MessageModalComponent } from './modals/message-modal/message-modal.component';
 
-interface HierarchyNode {
-  id: number;
-  type: number;
-  title: string;
-  name: string;
-  details: string;
-  isOpen?: boolean;
-  isOnline?: boolean;
-  children?: HierarchyNode[];
-}
-
 @Component({
   selector: 'app-home',
   standalone: true,
@@ -42,10 +31,11 @@ export class HomeComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private authService = inject(AuthService);
   private socketService = inject(SocketService);
-  private messageService = inject(MessageService); // Keep active for socket listeners
+  private messageService = inject(MessageService);
   private searchService = inject(SearchService);
 
-  level1_hierarchy: any = null;
+  mockRes: any[] = [];
+  currentUser: any = null;
   searchQuery: string = '';
   selectedNode: any = null;
   profileNode: any = null;
@@ -55,128 +45,84 @@ export class HomeComponent implements OnInit {
   showCallModal: boolean = false;
   showMessageModal: boolean = false;
   isIncomingCall: boolean = false;
-  popoverPosition = { top: 0, left: 0 };
 
   ngOnInit() {
     this.settingsService.loadStatusActions().subscribe();
     this.hierarchyService.getHierarchy().subscribe({
       next: (data) => {
-        this.level1_hierarchy = data;
-        // After hierarchy is loaded, check initial presence if already available
+        this.mockRes = data;
+        
+        const user = this.authService.currentUserValue;
+        if (user) {
+          this.currentUser = {
+            groupId: user.id || 1000,
+            groupUuid: user.uuid || 'user-uuid',
+            groupName: user.username || 'admin',
+            displayName: user.displayName || 'Administrator',
+            shortName: user.shortName || 'ADM',
+            userType: user.role || 'ADMIN',
+            fname: user.displayName || 'Administrator',
+            progress: 75,
+            depthFromStart: 0,
+            isOpen: true,
+            children: this.mockRes
+          };
+        }
+
         const currentOnline = this.socketService.initialPresenceSubject.value;
-        if (currentOnline.length > 0 && this.level1_hierarchy) {
-          this.applyInitialPresence(this.level1_hierarchy, currentOnline);
+        if (currentOnline.length > 0) {
+          if (this.currentUser) this.applyInitialPresence(this.currentUser, currentOnline);
         }
       },
       error: (err) => console.error('Error fetching hierarchy:', err)
     });
 
-    // Listen for initial presence (full list of online descendants)
     this.socketService.initialPresence$.subscribe(onlineIds => {
-      if (this.level1_hierarchy && onlineIds.length > 0) {
-        this.applyInitialPresence(this.level1_hierarchy, onlineIds);
+      if (onlineIds.length > 0) {
+        if (this.currentUser) this.applyInitialPresence(this.currentUser, onlineIds);
       }
     });
 
-    // Listen for individual presence updates (online/offline)
     this.socketService.presenceUpdate$.subscribe(data => {
-      if (this.level1_hierarchy) {
-        this.updatePresence(this.level1_hierarchy, data.userId, data.status === 'online');
+      if (this.currentUser) {
+        this.updatePresence(this.currentUser, data.userId, data.status === 'online');
       }
     });
 
-    // Listen for search queries
     this.searchService.searchQuery$.subscribe(query => {
       this.searchQuery = query;
     });
 
-    // Listen for incoming calls
     this.socketService.incomingCall$.subscribe(data => {
       console.log('🔔 Incoming call signal received in HomeComponent:', data);
-      this.callNode = { id: data.from, name: data.callerName, title: 'Incoming Call...' };
+      this.callNode = { groupId: data.from, displayName: data.callerName, fname: data.callerName };
       this.isIncomingCall = true;
       this.showCallModal = true;
     });
   }
 
   private applyInitialPresence(node: any, onlineIds: number[]) {
-    node.isOnline = onlineIds.includes(node.id);
-    if (node.children) {
-      node.children.forEach((child: any) => this.applyInitialPresence(child, onlineIds));
+    if (node) {
+      node.isOnline = onlineIds.includes(node.groupId);
+      if (node.children) {
+        node.children.forEach((child: any) => this.applyInitialPresence(child, onlineIds));
+      }
     }
   }
 
   private updatePresence(node: any, userId: number, isOnline: boolean) {
-    if (node.id === userId) {
-      node.isOnline = isOnline;
-      return true;
-    }
-    if (node.children) {
-      for (const child of node.children) {
-        if (this.updatePresence(child, userId, isOnline)) return true;
+    if (node) {
+      if (node.groupId === userId) {
+        node.isOnline = isOnline;
+        return true;
+      }
+      if (node.children) {
+        for (const child of node.children) {
+          if (this.updatePresence(child, userId, isOnline)) return true;
+        }
       }
     }
     return false;
-  }
-
-  // Helper getters to split the tree into branches for the existing UI layout
-  get branch1_L1() { 
-    return this.level1_hierarchy?.children?.[0]; 
-  }
-  get branch1_L2() { 
-    return this.branch1_L1?.children || []; 
-  }
-  get branch1_L3() { 
-    return this.branch1_L2.flatMap((d: any) => d.children || []); 
-  }
-  get branch1_L4() { 
-    return this.branch1_L3.flatMap((h: any) => h.children || []); 
-  }
-
-  get branch2_L1() { 
-    return this.level1_hierarchy?.children?.[1]; 
-  }
-  get branch2_L2() { 
-    return this.branch2_L1?.children || []; 
-  }
-  get branch2_L3() { 
-    return this.branch2_L2.flatMap((a: any) => a.children || []); 
-  }
-  get branch2_L4() { 
-    return this.branch2_L3.flatMap((ap: any) => ap.children || []); 
-  }
-
-  // Get all branches (direct children of president)
-  get branches() {
-    return this.level1_hierarchy?.children || [];
-  }
-
-  // Dynamic grid class based on number of branches
-  getBranchesGridClass(): string {
-    const count = this.branches.length;
-    if (count === 0 || count === 1) {
-      return 'grid grid-cols-1';
-    }
-    if (count === 2) {
-      return 'grid grid-cols-1 md:grid-cols-2';
-    }
-    // For 3 or 4+ branches: 2x2 grid layout on medium screens and above
-    return 'grid grid-cols-1 md:grid-cols-2';
-  }
-
-  // Helper method to get child count for responsive display
-  getChildrenCount(node: any): number {
-    return node?.children?.length || 0;
-  }
-
-  // Generic Hierarchy Getters (for any logged-in user)
-  get userL1() { return this.level1_hierarchy; }
-  get userL2() { return this.level1_hierarchy?.children || []; }
-  get userL3() { return this.userL2.flatMap((c: any) => c.children || []); }
-  get userL4() { return this.userL3.flatMap((gc: any) => gc.children || []); }
-
-  toggleAccordion(node: HierarchyNode) {
-    node.isOpen = !node.isOpen;
   }
 
   onSelectNode(data: any) {
@@ -184,7 +130,14 @@ export class HomeComponent implements OnInit {
   }
 
   onOpenProfile(node: any) {
-    this.profileNode = node;
+    this.profileNode = {
+      ...node,
+      id: node.groupId,
+      uuid: node.groupUuid,
+      name: node.displayName || node.groupName,
+      title: node.displayName || node.groupName,
+      details: node.displayName + (node.shortName ? ` (${node.shortName})` : '') + ` - ${node.userType || 'USER'}`
+    };
     this.showProfileModal = true;
   }
 
@@ -194,7 +147,14 @@ export class HomeComponent implements OnInit {
   }
 
   onOpenCall(node: any) {
-    this.callNode = node;
+    this.callNode = {
+      ...node,
+      id: node.groupId,
+      uuid: node.groupUuid,
+      name: node.displayName || node.groupName,
+      title: node.displayName || node.groupName,
+      details: node.displayName + (node.shortName ? ` (${node.shortName})` : '') + ` - ${node.userType || 'USER'}`
+    };
     this.showCallModal = true;
   }
 
@@ -205,7 +165,14 @@ export class HomeComponent implements OnInit {
   }
 
   onOpenMessage(node: any) {
-    this.messageNode = node;
+    this.messageNode = {
+      ...node,
+      id: node.groupId,
+      uuid: node.groupUuid,
+      name: node.displayName || node.groupName,
+      title: node.displayName || node.groupName,
+      details: node.displayName + (node.shortName ? ` (${node.shortName})` : '') + ` - ${node.userType || 'USER'}`
+    };
     this.showMessageModal = true;
   }
 
@@ -217,18 +184,21 @@ export class HomeComponent implements OnInit {
   isNodeMatched(node: any): boolean {
     if (!this.searchQuery) return false;
     const query = this.searchQuery.toLowerCase();
-    return node.name?.toLowerCase().includes(query) || 
-           node.details?.toLowerCase().includes(query) ||
-           node.title?.toLowerCase().includes(query);
+    return node.displayName?.toLowerCase().includes(query) || 
+           node.groupName?.toLowerCase().includes(query) ||
+           node.fname?.toLowerCase().includes(query) ||
+           node.shortName?.toLowerCase().includes(query);
   }
 
-  getNodeColor(type: any): string {
-    const numericType = Number(type);
-    switch (numericType) {
-      case 1: return 'brand';
-      case 2: return 'blue';
-      case 3: return 'success';
-      case 4: return 'warning';
+  getNodeColor(depth: any): string {
+    const numericDepth = Number(depth);
+    switch (numericDepth) {
+      case 0: return 'brand';
+      case 1: return 'blue';
+      case 2: return 'success';
+      case 3: return 'warning';
+      case 4: return 'purple';
+      case 5: return 'indigo';
       default: return 'brand';
     }
   }
