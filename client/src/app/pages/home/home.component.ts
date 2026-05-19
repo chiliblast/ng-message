@@ -62,9 +62,10 @@ export class HomeComponent implements OnInit {
             shortName: user.shortName || 'ADM',
             userType: user.role || 'ADMIN',
             fname: user.displayName || 'Administrator',
-            progress: 75,
+            progress: 100,
             depthFromStart: 0,
             isOpen: true,
+            actions: [{ id: 1, name: 'Active', color: '#10b981', label: 'A' }],
             children: this.mockRes
           };
         }

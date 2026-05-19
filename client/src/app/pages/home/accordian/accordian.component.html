@@ -102,7 +102,8 @@
         <div *ngFor="let action of (statusActions$ | async)" 
              class="h-7 px-2.5 rounded-lg border flex items-center justify-center text-[9px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none shrink-0"
              [ngClass]="{
-               'shadow-md scale-105 border-transparent animate-blink': getAction(action.id),
+               'shadow-md scale-105 border-transparent': getAction(action.id),
+               'animate-blink': getAction(action.id) && node.progress < 100,
                'opacity-20 border-dashed': !getAction(action.id)
              }"
              [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
@@ -147,7 +148,8 @@
         <div *ngFor="let action of (statusActions$ | async)" 
              class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none"
              [ngClass]="{
-               'shadow-md scale-105 border-transparent animate-blink': getAction(action.id),
+               'shadow-md scale-105 border-transparent': getAction(action.id),
+               'animate-blink': getAction(action.id) && node.progress < 100,
                'opacity-20 border-dashed': !getAction(action.id)
              }"
              [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"

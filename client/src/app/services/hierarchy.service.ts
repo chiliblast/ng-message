@@ -259,7 +259,7 @@ export class HierarchyService {
     "displayName": "Root 3",
     "userType": "ADMIN",
     "fname": "L1",
-    "progress": 0,
+    "progress": 100,
     "depthFromStart": 1,
     "children": [
       {
@@ -341,7 +341,7 @@ export class HierarchyService {
                 "displayName": "Leaf B1",
                 "userType": "USER",
                 "fname": "L4",
-                "progress": 82,
+                "progress": 100,
                 "depthFromStart": 4,
                 "children": []
               },
@@ -367,9 +367,23 @@ export class HierarchyService {
   }
 ]
     const addUiFlags = (group: any): any => {
+      const actions = [];
+      const prog = group.progress || 0;
+      
+      if (prog >= 80) {
+        actions.push({ id: 1, name: 'Active', color: '#10b981', label: 'A' });
+      } else if (prog >= 40) {
+        actions.push({ id: 2, name: 'Pending', color: '#f59e0b', label: 'B' });
+      } else if (prog > 0) {
+        actions.push({ id: 3, name: 'Suspended', color: '#ef4444', label: 'C' });
+      } else {
+        actions.push({ id: 4, name: 'Active', color: '#10b981', label: 'D' });
+      }
+
       return {
         ...group,
         isOpen: true,
+        actions,
         children: (group.children || []).map((c: any) => addUiFlags(c))
       };
     };
