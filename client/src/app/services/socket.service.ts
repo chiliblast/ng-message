@@ -46,6 +46,18 @@ export class SocketService {
         this.register(user.id);
       }
     });
+
+    // Trigger a default simulated message after 5 seconds of startup for visual confirmation
+    // setTimeout(() => {
+    //   this.simulateMessageSent(11, 'Welcome! Automated system test ping.');
+    // }, 5000);
+
+    // // Also trigger it periodically by default every 15 seconds on random mock tree nodes
+    // setInterval(() => {
+    //   const mockIds = [11, 12, 21, 311, 312];
+    //   const randomId = mockIds[Math.floor(Math.random() * mockIds.length)];
+    //   this.simulateMessageSent(randomId, 'Periodic default simulation ping.');
+    // }, 15000);
   }
 
   private connect() {
@@ -106,5 +118,22 @@ export class SocketService {
 
   emit(event: string, data: any) {
     this.socket?.emit(event, data);
+  }
+
+  simulateMessageSent(receiverId: number, messageText: string) {
+    console.log('🧪 SocketService: Simulating message sent & received for nodeId:', receiverId);
+    const mockPayload = {
+      senderId: this.authService.currentUserValue?.id || 1000,
+      receiverId: Number(receiverId),
+      messageText: messageText,
+      timestamp: new Date().toISOString()
+    };
+
+    // Emit receiver event
+    this.messageReceivedSubject.next(mockPayload);
+    // Emit sender event
+    this.messageSentSubject.next(mockPayload);
+    // Emit global feed event
+    this.globalFeedUpdateSubject.next(mockPayload);
   }
 }

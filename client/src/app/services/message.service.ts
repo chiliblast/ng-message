@@ -70,14 +70,19 @@ export class MessageService {
 
     if (!this.sync.isOnline) {
       this.toastService.show('Offline: Message queued for later sync', 'warning');
+      this.socketService.simulateMessageSent(receiverId, messageText);
       return from(this.storage.addPendingMessage(enrichedMessage)).pipe(
         map(() => ({ success: true, status: 'pending' }))
       );
     }
 
     return this.http.post(`${this.apiUrl}/send`, { receiverId, actionId, messageText }).pipe(
+      tap(() => {
+        this.socketService.simulateMessageSent(receiverId, messageText);
+      }),
       catchError(() => {
         this.storage.addPendingMessage(enrichedMessage);
+        this.socketService.simulateMessageSent(receiverId, messageText);
         return of({ success: true, status: 'pending' });
       })
     );
@@ -108,7 +113,7 @@ export class MessageService {
     const current = this.blinkingNodesSubject.value;
     current.add(nodeId);
     this.blinkingNodesSubject.next(new Set(current));
-    setTimeout(() => this.removeBlinkingNode(nodeId), 5000);
+    setTimeout(() => this.removeBlinkingNode(nodeId), 3000);
   }
 
   removeBlinkingNode(nodeId: number) {
