@@ -115,7 +115,7 @@
       </div>
 
       <!-- Header Action Indicators (Shows active action badges in a small format for other nodes) -->
-      <div *ngIf="node.depthFromStart !== 0 && node.actions?.length" class="flex gap-1 mr-1">
+      <div *ngIf="node.depthFromStart !== 0 && node.actions?.length" class="flex mr-0">
         <div *ngFor="let action of node.actions" 
              class="w-5 h-5 rounded-md border flex items-center justify-center text-[8px] font-black uppercase shadow-sm transition-all"
              [style.borderColor]="action.color + '40'"

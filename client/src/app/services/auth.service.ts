@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap, Observable, of, catchError } from 'rxjs';
+import { BehaviorSubject, tap, Observable, of, catchError, map } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieService } from './cookie.service';
 import { environment } from '../../environments/environment';
@@ -44,7 +44,7 @@ export class AuthService {
     return this.http.post(`${this.apiUrl}/login`, credentials, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
-      tap((res: any) => {
+      map((res: any) => {
         // TODO: Remove this mock response once real response is available
         res = {
           "success": true,
@@ -74,6 +74,7 @@ export class AuthService {
         };
         this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
         this.userSubject.next(user);
+        return res;
       })
     );
   }
