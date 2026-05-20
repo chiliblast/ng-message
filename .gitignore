@@ -11,10 +11,10 @@
 server/assets/
 
 # Build outputs
-dist/
-client/dist/
-.angular/
-out-tsc/
+# dist/
+# client/dist/
+# .angular/
+# out-tsc/
 
 # Logs
 logs
