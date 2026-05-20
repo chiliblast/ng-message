@@ -137,14 +137,14 @@
   <div class="transition-all duration-500 ease-in-out overflow-hidden" 
        [style.max-height]="node.isOpen ? '300px' : '0px'">
     <div (click)="selectNode($event)" 
-         class="p-4 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
+         class="p-2 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
       
-      <p class="mt-3 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
+      <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
         {{node.displayName || node.groupName}} ({{node.shortName || ''}}) - {{node.userType || 'USER'}}
       </p>
 
       <!-- Global Actions Listing (Greyed out if not matching active node action for other nodes) -->
-      <div *ngIf="node.depthFromStart !== 0" class="mt-4 flex flex-wrap gap-2">
+      <div *ngIf="node.depthFromStart !== 0" class="mt-1 flex flex-wrap gap-2">
         <div *ngFor="let action of (statusActions$ | async)" 
              class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none"
              [ngClass]="{
