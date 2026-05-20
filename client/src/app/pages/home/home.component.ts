@@ -45,6 +45,7 @@ export class HomeComponent implements OnInit {
   showCallModal: boolean = false;
   showMessageModal: boolean = false;
   isIncomingCall: boolean = false;
+  selectedActionIdForModal: any = null;
 
   ngOnInit() {
     this.settingsService.loadStatusActions().subscribe();
@@ -165,7 +166,10 @@ export class HomeComponent implements OnInit {
     this.isIncomingCall = false;
   }
 
-  onOpenMessage(node: any) {
+  onOpenMessage(event: any) {
+    const node = event.node ? event.node : event;
+    const actionId = event.actionId ? event.actionId : null;
+
     this.messageNode = {
       ...node,
       id: node.groupId,
@@ -174,6 +178,7 @@ export class HomeComponent implements OnInit {
       title: node.displayName || node.groupName,
       details: node.displayName + (node.shortName ? ` (${node.shortName})` : '') + ` - ${node.userType || 'USER'}`
     };
+    this.selectedActionIdForModal = actionId;
     this.showMessageModal = true;
   }
 

@@ -64,15 +64,15 @@
           <button 
             *ngFor="let action of (statusActions$ | async)"
             (click)="selectCategory(action.id)"
-            [style.borderColor]="selectedActionId === action.id ? action.color : (hasAction(action.id) ? action.color : action.color + '40')"
-            [style.backgroundColor]="selectedActionId === action.id ? action.color : (hasAction(action.id) ? action.color + '10' : action.color + '05')"
-            [style.color]="selectedActionId === action.id ? 'white' : action.color"
+            [style.borderColor]="selectedActionId === action.id ? 'transparent' : (hasAction(action.id) ? 'transparent' : action.color)"
+            [style.backgroundColor]="selectedActionId === action.id ? action.color : (hasAction(action.id) ? action.color : 'transparent')"
+            [style.color]="selectedActionId === action.id ? 'white' : (hasAction(action.id) ? 'white' : action.color)"
             [ngClass]="{
-              'shadow-lg scale-110': selectedActionId === action.id,
-              'opacity-40': !hasAction(action.id) && selectedActionId !== action.id,
-              'border-2': hasAction(action.id) && selectedActionId !== action.id
+              'shadow-md ring-2 ring-offset-2 ring-brand-500 dark:ring-offset-gray-900 scale-105 border-transparent': selectedActionId === action.id,
+              'shadow-sm hover:scale-105': hasAction(action.id) && selectedActionId !== action.id,
+              'border-dashed opacity-60 hover:scale-105': !hasAction(action.id) && selectedActionId !== action.id
             }"
-            class="w-10 h-10 rounded-xl border flex items-center justify-center text-xs font-black uppercase transition-all hover:scale-105"
+            class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase transition-all duration-300"
             [title]="getAction(action.id) ? (getAction(action.id).name + ': ' + getAction(action.id).description) : (action.label + ': ' + action.description + ' (Not assigned)')"
           >
             {{ action.label }}

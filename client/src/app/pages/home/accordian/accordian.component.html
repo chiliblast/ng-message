@@ -100,11 +100,12 @@
       <!-- Dynamic Actions for Logged-In User (depthFromStart === 0) -->
       <div *ngIf="node.depthFromStart === 0" class="flex flex-wrap gap-1.5 mr-2" (click)="$event.stopPropagation()">
         <div *ngFor="let action of (statusActions$ | async)" 
-             class="h-7 px-2.5 rounded-lg border flex items-center justify-center text-[9px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none shrink-0"
+             (click)="onActionBadgeClick(action.id, $event)"
+             class="h-7 px-2.5 rounded-lg border flex items-center justify-center text-[9px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-105 select-none shrink-0"
              [ngClass]="{
                'shadow-md scale-105 border-transparent': getAction(action.id),
                'animate-blink': getAction(action.id) && node.progress < 100,
-               'opacity-20 border-dashed': !getAction(action.id)
+               'opacity-60 border-dashed': !getAction(action.id)
              }"
              [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
              [style.backgroundColor]="getAction(action.id) ? action.color : 'transparent'"
@@ -146,11 +147,12 @@
       <!-- Global Actions Listing (Greyed out if not matching active node action for other nodes) -->
       <div *ngIf="node.depthFromStart !== 0" class="mt-1 flex flex-wrap gap-2">
         <div *ngFor="let action of (statusActions$ | async)" 
-             class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-default select-none"
+             (click)="onActionBadgeClick(action.id, $event)"
+             class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-105 select-none"
              [ngClass]="{
                'shadow-md scale-105 border-transparent': getAction(action.id),
                'animate-blink': getAction(action.id) && node.progress < 100,
-               'opacity-20 border-dashed': !getAction(action.id)
+               'opacity-60 border-dashed': !getAction(action.id)
              }"
              [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
              [style.backgroundColor]="getAction(action.id) ? action.color : 'transparent'"

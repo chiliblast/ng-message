@@ -31,7 +31,7 @@ export class MessageModalComponent {
   @Output() close = new EventEmitter<void>();
 
   messageText: string = '';
-  selectedActionId: any = null;
+  @Input() selectedActionId: any = null;
   isSending = false;
   isScanning = false;
   private html5QrCode: Html5Qrcode | null = null;
