@@ -54,15 +54,15 @@ export class HomeComponent implements OnInit {
         this.mockRes = data;
         
         const user = this.authService.currentUserValue;
-        if (user) {
+        if (user) {console.log(user)
           this.currentUser = {
             groupId: user.id || 1000,
-            groupUuid: user.uuid || 'user-uuid',
-            groupName: user.username || 'admin',
-            displayName: user.displayName || 'Administrator',
-            shortName: user.shortName || 'ADM',
-            userType: user.role || 'ADMIN',
-            fname: user.displayName || 'Administrator',
+            groupUuid: user.uuid,
+            groupName: user.username,
+            displayName: user.displayName,
+            shortName: user.shortName,
+            userType: user.role,
+            fname: user.displayName,
             progress: 100,
             depthFromStart: 0,
             isOpen: true,
