@@ -8,13 +8,13 @@ import {
   resolveTag,
   tagDefinitions,
   tags
-} from "./chunk-NWZJ4NV5.js";
-import "./chunk-NFYDTXP6.js";
+} from "./chunk-AXHT5MJH.js";
+import "./chunk-RFFIRJYH.js";
 import {
   ATTRIBUTION,
   OSM_default,
   XYZ_default
-} from "./chunk-BEFZRSLX.js";
+} from "./chunk-FMX7Z27F.js";
 import {
   DECIMALS,
   Image_default as Image_default3,
@@ -24,7 +24,7 @@ import {
   getFeatureInfoUrl,
   getLegendUrl,
   getRequestExtent
-} from "./chunk-45NQMUTF.js";
+} from "./chunk-X2DR2URQ.js";
 import {
   TileEventType_default,
   TileGrid_default,
@@ -44,7 +44,7 @@ import {
   nullTileUrlFunction,
   pickUrl,
   renderXYZTemplate
-} from "./chunk-JM6AZYAX.js";
+} from "./chunk-URZBMD42.js";
 import {
   TileQueue_default
 } from "./chunk-AODCLWIO.js";
@@ -55,11 +55,21 @@ import {
   scale as scale3,
   translate,
   translation
-} from "./chunk-EK6YT5AN.js";
+} from "./chunk-VRBQ2NMI.js";
+import "./chunk-7EDTMLQK.js";
 import {
   Vector_default,
   loadFeaturesXhr
 } from "./chunk-RWNGKRXA.js";
+import "./chunk-SX6VJL3J.js";
+import {
+  Source_default
+} from "./chunk-LPZAUJUI.js";
+import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import "./chunk-UO2MFT2B.js";
+import "./chunk-6MQFOTFN.js";
 import {
   DataTile_default,
   LRUCache_default,
@@ -67,13 +77,8 @@ import {
   asArrayLike,
   asImageLike,
   toArray
-} from "./chunk-LPVK4BCX.js";
-import "./chunk-SX6VJL3J.js";
-import "./chunk-BSEM6EJH.js";
-import "./chunk-7EDTMLQK.js";
-import {
-  Source_default
-} from "./chunk-LPZAUJUI.js";
+} from "./chunk-FZDCB2VF.js";
+import "./chunk-YFUPEYEZ.js";
 import {
   ERROR_THRESHOLD,
   ImageTile_default,
@@ -85,26 +90,12 @@ import {
   getCacheKey,
   getKeyZXY,
   hash
-} from "./chunk-3UTUTMS6.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
-import "./chunk-UO2MFT2B.js";
-import "./chunk-6MQFOTFN.js";
-import "./chunk-PRU5CXEW.js";
-import {
-  ViewHint_default
-} from "./chunk-XEBOV32E.js";
-import "./chunk-EI6MWDKW.js";
-import "./chunk-7H5QLMDW.js";
+} from "./chunk-AY5DVSNN.js";
+import "./chunk-CGTITJPB.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
-import {
-  DEFAULT_MAX_ZOOM,
-  DEFAULT_TILE_SIZE
-} from "./chunk-UUNRDFYK.js";
-import "./chunk-ZL2AWGCB.js";
+import "./chunk-7H5QLMDW.js";
 import {
   Image_default,
   WORKER_OFFSCREEN_CANVAS,
@@ -114,6 +105,15 @@ import {
   scale as scale2,
   toSize
 } from "./chunk-54EF7IXW.js";
+import {
+  ViewHint_default
+} from "./chunk-KY6ASBZ5.js";
+import {
+  DEFAULT_MAX_ZOOM,
+  DEFAULT_TILE_SIZE
+} from "./chunk-UUNRDFYK.js";
+import "./chunk-EI6MWDKW.js";
+import "./chunk-ZL2AWGCB.js";
 import {
   Point_default
 } from "./chunk-YD3L4RHR.js";
@@ -189,7 +189,7 @@ import {
   __spreadProps,
   __spreadValues,
   __toESM
-} from "./chunk-ZTCOQUYF.js";
+} from "./chunk-B4NDS4B7.js";
 
 // browser-external:http
 var require_http = __commonJS({
@@ -3599,13 +3599,13 @@ var defaultDecoderDefinitions = [
   // No compression
   {
     cases: [void 0, 1],
-    importFn: () => import("./raw-6F4NJJMF.js").then((m) => m.default),
+    importFn: () => import("./raw-D3RBSYHL.js").then((m) => m.default),
     preferWorker: false
   },
   // LZW
   {
     cases: 5,
-    importFn: () => import("./lzw-DGVU24CO.js").then((m) => m.default)
+    importFn: () => import("./lzw-WIQSQOPQ.js").then((m) => m.default)
   },
   // Old-style JPEG
   {
@@ -3617,7 +3617,7 @@ var defaultDecoderDefinitions = [
   // JPEG
   {
     cases: 7,
-    importFn: () => import("./jpeg-YA6A3M53.js").then((m) => m.default),
+    importFn: () => import("./jpeg-PSXGU4JB.js").then((m) => m.default),
     /**
      * @param {import("../imagefiledirectory.js").ImageFileDirectory} fileDirectory
      */
@@ -3630,17 +3630,17 @@ var defaultDecoderDefinitions = [
   // Deflate / Adobe Deflate
   {
     cases: [8, 32946],
-    importFn: () => import("./deflate-3LV65NHD.js").then((m) => m.default)
+    importFn: () => import("./deflate-XCQF7275.js").then((m) => m.default)
   },
   // PackBits
   {
     cases: 32773,
-    importFn: () => import("./packbits-V6N5DLFT.js").then((m) => m.default)
+    importFn: () => import("./packbits-ZOHF5UAM.js").then((m) => m.default)
   },
   // LERC
   {
     cases: 34887,
-    importFn: () => import("./lerc-2W6OSG55.js").then((m) => __async(null, null, function* () {
+    importFn: () => import("./lerc-LIBZXYEQ.js").then((m) => __async(null, null, function* () {
       yield m.zstd.init();
       return m;
     })).then((m) => m.default),
@@ -3656,7 +3656,7 @@ var defaultDecoderDefinitions = [
   // zstd
   {
     cases: 5e4,
-    importFn: () => import("./zstd-KQVW5JJ3.js").then((m) => __async(null, null, function* () {
+    importFn: () => import("./zstd-S65BYEBO.js").then((m) => __async(null, null, function* () {
       yield m.zstd.init();
       return m;
     })).then((m) => m.default)
@@ -3664,7 +3664,7 @@ var defaultDecoderDefinitions = [
   // WebP Images
   {
     cases: 50001,
-    importFn: () => import("./webimage-4ZBAVYMW.js").then((m) => m.default),
+    importFn: () => import("./webimage-L62GRRX4.js").then((m) => m.default),
     /**
      * @param {import("../imagefiledirectory.js").ImageFileDirectory} fileDirectory
      */

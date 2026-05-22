@@ -1,7 +1,7 @@
 <div class="home-container space-y-8 relative min-h-[calc(100vh-80px)] mx-auto p-1 animate-in fade-in duration-500">
   
   <!-- Recursive Node Template -->
-  <ng-template #nodeTemplate let-node>
+  <ng-template #nodeTemplate let-node let-parent="parent">
     <div class="space-y-2 w-full">
       <!-- Current Accordion Card -->
       <app-accordian [node]="node" 
@@ -18,17 +18,20 @@
       
       <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
       <div *ngIf="node.children?.length && node.isOpen" 
-           class="grid grid-cols-1 md:grid-cols-2 gap-2 animate-in fade-in slide-in-from-top-2 duration-300">
-        <div *ngFor="let child of node.children" class="col-span-1 animate-in fade-in duration-300">
-          <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child }"></ng-container>
+           class="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-300"
+           [ngClass]="getGridClass(node)">
+        <div *ngFor="let child of node.children" 
+             class="animate-in fade-in duration-300"
+             [ngClass]="getChildSpanClass(child, node)">
+          <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, parent: node }"></ng-container>
         </div>
       </div>
     </div>
   </ng-template>
 
   <!-- Main Dynamic Tree Render -->
-  <div *ngIf="currentUser" class="mx-auto space-y-6">
-    <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: currentUser }"></ng-container>
+  <div *ngIf="currentUser" class="mx-auto space-y-6 w-full">
+    <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: currentUser, parent: null }"></ng-container>
   </div>
 
   <!-- POPUP MODALS -->

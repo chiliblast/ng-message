@@ -1,7 +1,7 @@
 import {
   __commonJS,
   __toESM
-} from "./chunk-ZTCOQUYF.js";
+} from "./chunk-B4NDS4B7.js";
 
 // node_modules/html5-qrcode/third_party/zxing-js.umd.js
 var require_zxing_js_umd = __commonJS({

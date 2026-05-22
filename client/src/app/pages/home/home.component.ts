@@ -209,6 +209,50 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  getGridClass(node: any): string {
+    if (!node.children || node.children.length <= 1) {
+      return 'grid-cols-1';
+    }
+    return 'grid-cols-1 lg:grid-cols-2';
+  }
+
+  getChildSpanClass(child: any, parent: any): string {
+    if (!parent || !parent.children || parent.children.length <= 1) {
+      return 'col-span-full';
+    }
+    
+    const index = parent.children.indexOf(child);
+    const total = parent.children.length;
+    let isFullWidth = false;
+
+    // 1. Rule: If this child has significantly more children than its siblings
+    const siblingMaxChildren = Math.max(0, ...parent.children.filter((c: any) => c !== child).map((c: any) => c.children?.length || 0));
+    const myChildren = child.children?.length || 0;
+    
+    if (myChildren > siblingMaxChildren + 2 && myChildren >= 4) {
+      isFullWidth = true;
+    }
+
+    // 2. Rule: If it's the last child, we avoid leaving a single empty column.
+    if (!isFullWidth && index === total - 1) {
+      let previousFullWidthCount = 0;
+      for (let i = 0; i < index; i++) {
+        const sib = parent.children[i];
+        const sibMax = Math.max(0, ...parent.children.filter((c: any) => c !== sib).map((c: any) => c.children?.length || 0));
+        const sibChildren = sib.children?.length || 0;
+        if (sibChildren > sibMax + 2 && sibChildren >= 4) {
+          previousFullWidthCount++;
+        }
+      }
+      const standardItemsBefore = index - previousFullWidthCount;
+      if (standardItemsBefore % 2 === 0) {
+        isFullWidth = true;
+      }
+    }
+    
+    return isFullWidth ? 'col-span-full' : 'col-span-1';
+  }
+
   closePopover() {
     this.selectedNode = null;
   }

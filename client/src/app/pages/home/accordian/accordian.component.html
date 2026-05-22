@@ -1,12 +1,18 @@
 <div class="relative border-2 rounded-2xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
      [ngClass]="{
-       'border-brand-500 shadow-[0_8px_30px_rgb(70,95,255,0.15)] bg-brand-50/5 dark:bg-brand-500/5': color === 'brand' && node.isOpen && !isHighlighted,
-       'border-blue-500 shadow-[0_8px_30px_rgb(59,130,246,0.15)] bg-blue-50/5 dark:bg-blue-500/5': color === 'blue' && node.isOpen && !isHighlighted,
-       'border-success-500 shadow-[0_8px_30px_rgb(16,185,129,0.15)] bg-success-50/5 dark:bg-success-500/5': color === 'success' && node.isOpen && !isHighlighted,
-       'border-warning-500 shadow-[0_8px_30px_rgb(245,158,11,0.15)] bg-warning-50/5 dark:bg-warning-500/5': color === 'warning' && node.isOpen && !isHighlighted,
-       'border-purple-500 shadow-[0_8px_30px_rgb(168,85,247,0.15)] bg-purple-50/5 dark:bg-purple-500/5': color === 'purple' && node.isOpen && !isHighlighted,
-       'border-indigo-500 shadow-[0_8px_30px_rgb(99,102,241,0.15)] bg-indigo-50/5 dark:bg-indigo-500/5': color === 'indigo' && node.isOpen && !isHighlighted,
-       'border-gray-150 dark:border-gray-800 bg-white/90 dark:bg-gray-900/90 shadow-sm': !node.isOpen && !isHighlighted,
+       'border-brand-500': color === 'brand' && !isHighlighted,
+       'border-blue-500': color === 'blue' && !isHighlighted,
+       'border-success-500': color === 'success' && !isHighlighted,
+       'border-warning-500': color === 'warning' && !isHighlighted,
+       'border-purple-500': color === 'purple' && !isHighlighted,
+       'border-indigo-500': color === 'indigo' && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(70,95,255,0.15)] bg-brand-50/5 dark:bg-brand-500/5': color === 'brand' && node.isOpen && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(59,130,246,0.15)] bg-blue-50/5 dark:bg-blue-500/5': color === 'blue' && node.isOpen && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(16,185,129,0.15)] bg-success-50/5 dark:bg-success-500/5': color === 'success' && node.isOpen && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(245,158,11,0.15)] bg-warning-50/5 dark:bg-warning-500/5': color === 'warning' && node.isOpen && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(168,85,247,0.15)] bg-purple-50/5 dark:bg-purple-500/5': color === 'purple' && node.isOpen && !isHighlighted,
+       'shadow-[0_8px_30px_rgb(99,102,241,0.15)] bg-indigo-50/5 dark:bg-indigo-500/5': color === 'indigo' && node.isOpen && !isHighlighted,
+       'bg-white/90 dark:bg-gray-900/90 shadow-sm': !node.isOpen && !isHighlighted,
        'animate-blink': (isBlinking$ | async),
        'border-yellow-400 ring-4 ring-yellow-400/40 scale-[1.03] z-50 shadow-[0_10px_40px_rgba(234,179,8,0.2)]': isHighlighted
      }">

@@ -15,7 +15,7 @@ import {
   ɵɵdefineInjector,
   ɵɵdefineNgModule,
   ɵɵinject
-} from "./chunk-W6ZXJTXC.js";
+} from "./chunk-TBP3F5FJ.js";
 import "./chunk-JRFR6BLO.js";
 import {
   NEVER
@@ -30,7 +30,7 @@ import {
 } from "./chunk-MARUHEWW.js";
 import {
   __spreadValues
-} from "./chunk-ZTCOQUYF.js";
+} from "./chunk-B4NDS4B7.js";
 
 // node_modules/@angular/service-worker/fesm2022/service-worker.mjs
 var ERR_SW_NOT_SUPPORTED = "Service workers are disabled or not supported by this browser";

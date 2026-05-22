@@ -11,361 +11,108 @@ export class HierarchyService {
   private storage = inject(OfflineStorageService);
   private authService = inject(AuthService);
   private apiUrl = `${environment.apiBaseUrl}/hierarchy`;
+  
+  generateTree(
+  rootCount: number = 3,
+  maxDepth: number = 4,
+  minChildren: number = 2,
+  maxChildren: number = 6
+): any[] {
+
+  let idCounter = 1;
+
+  const random = (min: number, max: number): number => {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  };
+
+  const createNode = (
+    depth: number,
+    rootIndex: number,
+    parentGroupId: number = 0,
+    parentGroupUuid: string | null = null,
+    path: string[] = []
+  ): any => {
+
+    const groupId = idCounter++;
+
+    const groupUuid =
+      depth === 1
+        ? `root-${rootIndex}`
+        : `r${rootIndex}-l${depth}-${path.join('')}`;
+
+    const shortName =
+      depth === 1
+        ? `R${rootIndex}`
+        : `R${rootIndex}${path.join('').toUpperCase()}`;
+
+    const node: any = {
+      groupId,
+      parentGroupId,
+      groupUuid,
+      parentGroupUuid,
+      groupName: groupUuid,
+      shortName,
+      displayName:
+        depth === 1
+          ? `Root ${rootIndex}`
+          : `Level ${depth} ${path.join('-').toUpperCase()}`,
+      userType: depth === 1 ? 'ADMIN' : 'USER',
+      fname: `L${depth}`,
+      progress: random(0, 100),
+      depthFromStart: depth,
+      children: []
+    };
+
+    // Create children recursively
+    if (depth < maxDepth) {
+
+      const childCount = random(minChildren, maxChildren);
+
+      for (let i = 0; i < childCount; i++) {
+
+        const char = String.fromCharCode(97 + i); // a,b,c,d...
+
+        const child = createNode(
+          depth + 1,
+          rootIndex,
+          groupId,
+          groupUuid,
+          [...path, char]
+        );
+
+        node.children.push(child);
+      }
+    }
+
+    return node;
+  };
+
+  const roots: any[] = [];
+
+  for (let i = 1; i <= rootCount; i++) {
+
+    roots.push(
+      createNode(1, i)
+    );
+  }
+
+  return roots;
+}
+
+
+
 
   getHierarchy(): Observable<any> {
     // TODO: Remove this mock response once real response is available
-    const mockRes = [
-  {
-    "groupId": 1,
-    "parentGroupId": 0,
-    "groupUuid": "root-1",
-    "parentGroupUuid": null,
-    "groupName": "root-1",
-    "shortName": "R1",
-    "displayName": "Root 1",
-    "userType": "ADMIN",
-    "fname": "L1",
-    "progress": 0,
-    "depthFromStart": 1,
-    "children": [
-      {
-        "groupId": 11,
-        "parentGroupId": 1,
-        "groupUuid": "r1-l2-a",
-        "parentGroupUuid": "root-1",
-        "groupName": "r1-l2-a",
-        "shortName": "R1A",
-        "displayName": "R1 L2 A",
-        "userType": "USER",
-        "fname": "L2",
-        "progress": 10,
-        "depthFromStart": 2,
-        "children": [
-          {
-            "groupId": 111,
-            "parentGroupId": 11,
-            "groupUuid": "r1-l3-a",
-            "parentGroupUuid": "r1-l2-a",
-            "groupName": "r1-l3-a",
-            "shortName": "R1A1",
-            "displayName": "R1 L3 A",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 20,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 1111,
-                "parentGroupId": 111,
-                "groupUuid": "r1-l4-a1",
-                "parentGroupUuid": "r1-l3-a",
-                "groupName": "r1-l4-a1",
-                "shortName": "R1A4-1",
-                "displayName": "Leaf A1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 80,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 1112,
-                "parentGroupId": 111,
-                "groupUuid": "r1-l4-a2",
-                "parentGroupUuid": "r1-l3-a",
-                "groupName": "r1-l4-a2",
-                "shortName": "R1A4-2",
-                "displayName": "Leaf A2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 81,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          },
-          {
-            "groupId": 112,
-            "parentGroupId": 11,
-            "groupUuid": "r1-l3-b",
-            "parentGroupUuid": "r1-l2-a",
-            "groupName": "r1-l3-b",
-            "shortName": "R1B1",
-            "displayName": "R1 L3 B",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 21,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 1121,
-                "parentGroupId": 112,
-                "groupUuid": "r1-l4-b1",
-                "parentGroupUuid": "r1-l3-b",
-                "groupName": "r1-l4-b1",
-                "shortName": "R1B4-1",
-                "displayName": "Leaf B1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 82,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 1122,
-                "parentGroupId": 112,
-                "groupUuid": "r1-l4-b2",
-                "parentGroupUuid": "r1-l3-b",
-                "groupName": "r1-l4-b2",
-                "shortName": "R1B4-2",
-                "displayName": "Leaf B2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 83,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
+    // Usage
+    const mockRes = this.generateTree(
+      3, // roots
+      4, // max depth
+      2, // min children
+      6  // max children
+    );
 
-  {
-    "groupId": 2,
-    "parentGroupId": 0,
-    "groupUuid": "root-2",
-    "parentGroupUuid": null,
-    "groupName": "root-2",
-    "shortName": "R2",
-    "displayName": "Root 2",
-    "userType": "ADMIN",
-    "fname": "L1",
-    "progress": 0,
-    "depthFromStart": 1,
-    "children": [
-      {
-        "groupId": 21,
-        "parentGroupId": 2,
-        "groupUuid": "r2-l2-a",
-        "parentGroupUuid": "root-2",
-        "groupName": "r2-l2-a",
-        "shortName": "R2A",
-        "displayName": "R2 L2 A",
-        "userType": "USER",
-        "fname": "L2",
-        "progress": 10,
-        "depthFromStart": 2,
-        "children": [
-          {
-            "groupId": 211,
-            "parentGroupId": 21,
-            "groupUuid": "r2-l3-a",
-            "parentGroupUuid": "r2-l2-a",
-            "groupName": "r2-l3-a",
-            "shortName": "R2A1",
-            "displayName": "R2 L3 A",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 20,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 2111,
-                "parentGroupId": 211,
-                "groupUuid": "r2-l4-a1",
-                "parentGroupUuid": "r2-l3-a",
-                "groupName": "r2-l4-a1",
-                "shortName": "R2A4-1",
-                "displayName": "Leaf A1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 80,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 2112,
-                "parentGroupId": 211,
-                "groupUuid": "r2-l4-a2",
-                "parentGroupUuid": "r2-l3-a",
-                "groupName": "r2-l4-a2",
-                "shortName": "R2A4-2",
-                "displayName": "Leaf A2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 81,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          },
-          {
-            "groupId": 212,
-            "parentGroupId": 21,
-            "groupUuid": "r2-l3-b",
-            "parentGroupUuid": "r2-l2-a",
-            "groupName": "r2-l3-b",
-            "shortName": "R2B1",
-            "displayName": "R2 L3 B",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 21,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 2121,
-                "parentGroupId": 212,
-                "groupUuid": "r2-l4-b1",
-                "parentGroupUuid": "r2-l3-b",
-                "groupName": "r2-l4-b1",
-                "shortName": "R2B4-1",
-                "displayName": "Leaf B1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 82,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 2122,
-                "parentGroupId": 212,
-                "groupUuid": "r2-l4-b2",
-                "parentGroupUuid": "r2-l3-b",
-                "groupName": "r2-l4-b2",
-                "shortName": "R2B4-2",
-                "displayName": "Leaf B2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 83,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-
-  {
-    "groupId": 3,
-    "parentGroupId": 0,
-    "groupUuid": "root-3",
-    "parentGroupUuid": null,
-    "groupName": "root-3",
-    "shortName": "R3",
-    "displayName": "Root 3",
-    "userType": "ADMIN",
-    "fname": "L1",
-    "progress": 100,
-    "depthFromStart": 1,
-    "children": [
-      {
-        "groupId": 31,
-        "parentGroupId": 3,
-        "groupUuid": "r3-l2-a",
-        "parentGroupUuid": "root-3",
-        "groupName": "r3-l2-a",
-        "shortName": "R3A",
-        "displayName": "R3 L2 A",
-        "userType": "USER",
-        "fname": "L2",
-        "progress": 10,
-        "depthFromStart": 2,
-        "children": [
-          {
-            "groupId": 311,
-            "parentGroupId": 31,
-            "groupUuid": "r3-l3-a",
-            "parentGroupUuid": "r3-l2-a",
-            "groupName": "r3-l3-a",
-            "shortName": "R3A1",
-            "displayName": "R3 L3 A",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 20,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 3111,
-                "parentGroupId": 311,
-                "groupUuid": "r3-l4-a1",
-                "parentGroupUuid": "r3-l3-a",
-                "groupName": "r3-l4-a1",
-                "shortName": "R3A4-1",
-                "displayName": "Leaf A1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 80,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 3112,
-                "parentGroupId": 311,
-                "groupUuid": "r3-l4-a2",
-                "parentGroupUuid": "r3-l3-a",
-                "groupName": "r3-l4-a2",
-                "shortName": "R3A4-2",
-                "displayName": "Leaf A2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 81,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          },
-          {
-            "groupId": 312,
-            "parentGroupId": 31,
-            "groupUuid": "r3-l3-b",
-            "parentGroupUuid": "root-3",
-            "groupName": "r3-l3-b",
-            "shortName": "R3B",
-            "displayName": "R3 L3 B",
-            "userType": "USER",
-            "fname": "L3",
-            "progress": 21,
-            "depthFromStart": 3,
-            "children": [
-              {
-                "groupId": 3121,
-                "parentGroupId": 312,
-                "groupUuid": "r3-l4-b1",
-                "parentGroupUuid": "r3-l3-b",
-                "groupName": "r3-l4-b1",
-                "shortName": "R3B4-1",
-                "displayName": "Leaf B1",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 100,
-                "depthFromStart": 4,
-                "children": []
-              },
-              {
-                "groupId": 3122,
-                "parentGroupId": 312,
-                "groupUuid": "r3-l4-b2",
-                "parentGroupUuid": "r3-l3-b",
-                "groupName": "r3-l4-b2",
-                "shortName": "R3B4-2",
-                "displayName": "Leaf B2",
-                "userType": "USER",
-                "fname": "L4",
-                "progress": 83,
-                "depthFromStart": 4,
-                "children": []
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
-]
+    console.log(mockRes);
     const addUiFlags = (group: any): any => {
       const actions = [];
       const prog = group.progress || 0;

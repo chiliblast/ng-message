@@ -1,0 +1,19 @@
+import {
+  inflate_1
+} from "./chunk-MGT2P6F7.js";
+import {
+  BaseDecoder
+} from "./chunk-RFFIRJYH.js";
+import "./chunk-B4NDS4B7.js";
+
+// node_modules/geotiff/dist-module/compression/deflate.js
+var DeflateDecoder = class extends BaseDecoder {
+  /** @param {ArrayBuffer} buffer */
+  decodeBlock(buffer) {
+    return inflate_1(new Uint8Array(buffer)).buffer;
+  }
+};
+export {
+  DeflateDecoder as default
+};
+//# sourceMappingURL=deflate-XCQF7275.js.map
