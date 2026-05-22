@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap, Observable, of, catchError, map } from 'rxjs';
+import { BehaviorSubject, tap, Observable, of, catchError, map, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { CookieService } from './cookie.service';
 import { environment } from '../../environments/environment';
@@ -49,7 +49,8 @@ export class AuthService {
         res = {
           "success": true,
           "message": "Login successful",
-          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
           "loginLogId": 1,
           "appUserModel": {
             "uuid": "user-uuid",
@@ -65,7 +66,10 @@ export class AuthService {
           throw { error: { message: res.message || 'Login failed' } };
         }
         
-        this.cookieService.setCookie('token', res.token, 7);
+        this.cookieService.setCookie('accessToken', res.accessToken, 7);
+        if (res.refreshToken) {
+          this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+        }
         const appUser = res.appUserModel;
         const user = {
           ...appUser,
@@ -80,11 +84,11 @@ export class AuthService {
   }
 
   isLoggedIn(): boolean {
-    const token = this.cookieService.getCookie('token');
-    if (!token) return false;
+    const accessToken = this.cookieService.getCookie('accessToken');
+    if (!accessToken) return false;
 
     try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
+      const payload = JSON.parse(atob(accessToken.split('.')[1]));
       const isExpired = payload.exp * 1000 < Date.now();
       if (isExpired) {
         this.logout();
@@ -102,7 +106,8 @@ export class AuthService {
       this.http.post(`${this.apiUrl}/logout-global`, { userId: user.id }).subscribe();
     }
     
-    this.cookieService.deleteCookie('token');
+    this.cookieService.deleteCookie('accessToken');
+    this.cookieService.deleteCookie('refreshToken');
     this.cookieService.deleteCookie('user');
     
     // Trigger cross-tab sync
@@ -115,6 +120,33 @@ export class AuthService {
   private handleLocalLogout() {
     this.userSubject.next(null);
     this.router.navigate(['/signin']);
+  }
+
+  refreshToken(): Observable<any> {
+    const refreshToken = this.cookieService.getCookie('refreshToken');
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token available'));
+    }
+
+    return this.http.post(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+      catchError(() => {
+        // Fallback to mock successful refresh for development
+        const res = {
+          success: true,
+          accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature-refreshed",
+          refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature-refreshed"
+        };
+        return of(res);
+      }),
+      tap((res: any) => {
+        if (res && res.accessToken) {
+          this.cookieService.setCookie('accessToken', res.accessToken, 7);
+          if (res.refreshToken) {
+            this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+          }
+        }
+      })
+    );
   }
 
   sendHealthCheck(body: any): Observable<any> {

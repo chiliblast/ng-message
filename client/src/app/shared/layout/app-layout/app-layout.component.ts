@@ -6,6 +6,7 @@ import { BackdropComponent } from '../backdrop/backdrop.component';
 import { RouterModule } from '@angular/router';
 import { AppHeaderComponent } from '../app-header/app-header.component';
 import { LocationService } from '../../../services/location.service';
+import { FooterComponent } from '../../components/footer/footer.component';
 
 @Component({
   selector: 'app-layout',
@@ -14,7 +15,8 @@ import { LocationService } from '../../../services/location.service';
     RouterModule,
     AppHeaderComponent,
     AppSidebarComponent,
-    BackdropComponent
+    BackdropComponent,
+    FooterComponent
   ],
   templateUrl: './app-layout.component.html',
 })
