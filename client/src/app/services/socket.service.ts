@@ -81,7 +81,11 @@ export class SocketService {
       console.log('🔌 Socket Disconnected.');
     });
 
-    this.socket.on('new_message', (data) => this.messageReceivedSubject.next(data));
+    this.socket.on('new_message', (data) => {
+      this.messageReceivedSubject.next(data);
+      const audio = new Audio('/sounds/universfield-new-notification-010-352755.mp3');
+      audio.play().catch(err => console.warn('Audio playback prevented by browser:', err));
+    });
     this.socket.on('message_sent', (data) => this.messageSentSubject.next(data));
     this.socket.on('global_feed_update', (data) => {
       console.log('📡 Global feed update received:', data);
