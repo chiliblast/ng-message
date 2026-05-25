@@ -106,7 +106,7 @@ export class HierarchyService {
     // TODO: Remove this mock response once real response is available
     // Usage
     const mockRes = this.generateTree(
-      3, // roots
+      1, // roots
       4, // max depth
       2, // min children
       6  // max children

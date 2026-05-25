@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
   private messageService = inject(MessageService);
   private searchService = inject(SearchService);
 
-  mockRes: any[] = [];
+  hierarchyData: any[] = [];
   currentUser: any = null;
   searchQuery: string = '';
   selectedNode: any = null;
@@ -50,8 +50,34 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.settingsService.loadStatusActions().subscribe();
     this.hierarchyService.getHierarchy().subscribe({
-      next: (data) => {
-        this.mockRes = data;
+      next: (data) => {console.log(data)
+        this.hierarchyData = data;
+
+        // Calculate max depth dynamically
+        let maxDepth = 0;
+        const findMaxDepth = (node: any) => {
+          if (node) {
+            if (node.depthFromStart > maxDepth) {
+              maxDepth = node.depthFromStart;
+            }
+            if (node.children) {
+              node.children.forEach(findMaxDepth);
+            }
+          }
+        };
+        this.hierarchyData.forEach(findMaxDepth);
+
+        // Mark each node with isLastLevel and isSecondLastLevel flags
+        const flagLastLevel = (node: any) => {
+          if (node) {
+            node.isLastLevel = (node.depthFromStart === maxDepth);
+            node.isSecondLastLevel = (node.depthFromStart === maxDepth - 1);
+            if (node.children) {
+              node.children.forEach(flagLastLevel);
+            }
+          }
+        };
+        this.hierarchyData.forEach(flagLastLevel);
         
         const user = this.authService.currentUserValue;
         if (user) {console.log(user)
@@ -67,7 +93,7 @@ export class HomeComponent implements OnInit {
             depthFromStart: 0,
             isOpen: true,
             actions: [{ id: 1, name: 'Active', color: '#10b981', label: 'A' }],
-            children: this.mockRes
+            children: this.hierarchyData
           };
         }
 

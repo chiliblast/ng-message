@@ -25,7 +25,7 @@
   </div>
   
   <button (click)="toggleAccordion()" 
-          class="w-full p-2 flex flex-col sm:flex-row sm:items-center justify-between text-left hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all focus:outline-none select-none">
+          class="w-full p-1 flex flex-col sm:flex-row sm:items-center justify-between text-left hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all focus:outline-none select-none">
     
     <div class="flex items-center gap-3 w-full sm:w-auto">
       <!-- Depth Level Indicator Badge -->
@@ -43,8 +43,8 @@
       
       <div class="overflow-hidden min-w-0 flex-1">
         <div class="flex items-center gap-1.5 mb-0.5">
-          <h4 class="font-extrabold text-gray-900 dark:text-white leading-tight truncate tracking-tight text-sm">
-            {{node.displayName || node.groupName}}
+          <h4 class="font-extrabold text-gray-900 dark:text-white leading-tight truncate tracking-wider text-base uppercase">
+            {{node.displayName || node.fname}}
           </h4>
           
           <!-- Shortname Badge -->
@@ -64,12 +64,11 @@
             {{ node.userType }}
           </span>
         </div>
-        <p class="text-[10px] font-semibold text-gray-400 dark:text-gray-500 truncate">@{{node.fname || node.groupName}}</p>
-      </div>
+       </div>
     </div>
     
     <!-- Progress Indicator Bar (For ANY node that has progress > 0) -->
-    <div *ngIf="node.progress !== undefined" class="flex items-center gap-4 mt-3 sm:mt-0 sm:ml-4 flex-1 max-w-xs w-full">
+    <div *ngIf="node.depthFromStart === 0 && node.progress !== undefined" class="flex items-center gap-4 mt-3 sm:mt-0 sm:ml-4 flex-1 max-w-xs w-full">
       <div class="flex-1">
         <div class="flex justify-between mb-1">
           <span class="text-[8px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Task Progress</span>
@@ -121,18 +120,6 @@
         </div>
       </div>
 
-      <!-- Header Action Indicators (Shows active action badges in a small format for other nodes) -->
-      <div *ngIf="node.depthFromStart !== 0 && node.actions?.length" class="flex mr-0">
-        <div *ngFor="let action of node.actions" 
-             class="w-5 h-5 rounded-md border flex items-center justify-center text-[8px] font-black uppercase shadow-sm transition-all"
-             [style.borderColor]="action.color + '40'"
-             [style.backgroundColor]="action.color + '10'"
-             [style.color]="action.color"
-             [title]="action.name">
-          {{ action.label }}
-        </div>
-      </div>
-      
       <svg class="w-4 h-4 text-gray-400 transition-transform duration-500 shrink-0" 
            [ngClass]="{'rotate-180': node.isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
@@ -147,11 +134,31 @@
          class="p-2 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
       
       <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
-        {{node.displayName || node.groupName}} ({{node.shortName || ''}}) - {{node.userType || 'USER'}}
+        {{node.groupName}} ({{node.fname || ' '}})
       </p>
 
+      <!-- Children Leaf Nodes Visualizer (Shown inside 2nd Last Level Accordion Drawer) -->
+      <div *ngIf="node.isSecondLastLevel && node.children?.length" class="mt-2 flex flex-wrap gap-1.5" (click)="$event.stopPropagation()">
+        <div *ngFor="let child of node.children; let idx = index" 
+             (click)="onChildBadgeClick(child, $event)"
+             class="h-7 w-7 rounded-lg border flex items-center justify-center font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-110 select-none shrink-0"
+             [ngClass]="{
+               'shadow-md scale-105 border-transparent': child.progress > 0,
+               'animate-blink': child.progress < 100 && child.progress > 0,
+               'opacity-60 border-dashed': child.progress === 0
+             }"
+             [style.borderColor]="child.progress > 0 ? (child.actions?.[0]?.color || '#10b981') : '#9ca3af'"
+             [style.background]="child.progress > 0 
+               ? 'linear-gradient(to top, ' + (child.actions?.[0]?.color || '#10b981') + ' ' + child.progress + '%, ' + (child.actions?.[0]?.color || '#10b981') + '40 ' + child.progress + '%)' 
+               : 'transparent'"
+             [style.color]="child.progress > 0 ? 'white' : '#9ca3af'"
+             [title]="child.displayName + ' (Progress: ' + child.progress + '%)'">
+          {{ idx + 1 }}
+        </div>
+      </div>
+
       <!-- Global Actions Listing (Greyed out if not matching active node action for other nodes) -->
-      <div *ngIf="node.depthFromStart !== 0" class="mt-1 flex flex-wrap gap-2">
+      <!-- <div *ngIf="node.isLastLevel" class="mt-1 flex flex-wrap gap-2">
         <div *ngFor="let action of (statusActions$ | async)" 
              (click)="onActionBadgeClick(action.id, $event)"
              class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-105 select-none"
@@ -166,7 +173,7 @@
              [title]="getAction(action.id) ? (getAction(action.id).name + ': ' + getAction(action.id).description) : (action.label + ': ' + action.description + ' (Not assigned)')">
           {{ action.label }}
         </div>
-      </div>
+      </div> -->
 
       <!-- Action Buttons Drawer (Shown when Selected) -->
       <div *ngIf="isSelected && node.depthFromStart !== 0" 
