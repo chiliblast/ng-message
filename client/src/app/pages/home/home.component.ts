@@ -46,6 +46,8 @@ export class HomeComponent implements OnInit {
   showMessageModal: boolean = false;
   isIncomingCall: boolean = false;
   selectedActionIdForModal: any = null;
+  showActionsModal: boolean = false;
+  actionsNode: any = null;
 
   ngOnInit() {
     this.settingsService.loadStatusActions().subscribe();
@@ -155,6 +157,33 @@ export class HomeComponent implements OnInit {
 
   onSelectNode(data: any) {
     this.selectedNode = data.node;
+    if (data.node && data.node.depthFromStart !== 0) {
+      this.actionsNode = data.node;
+      this.showActionsModal = true;
+    }
+  }
+
+  closeActionsModal() {
+    this.showActionsModal = false;
+    this.actionsNode = null;
+  }
+
+  triggerCallFromActionsModal() {
+    const node = this.actionsNode;
+    this.closeActionsModal();
+    this.onOpenCall(node);
+  }
+
+  triggerMessageFromActionsModal() {
+    const node = this.actionsNode;
+    this.closeActionsModal();
+    this.onOpenMessage(node);
+  }
+
+  triggerProfileFromActionsModal() {
+    const node = this.actionsNode;
+    this.closeActionsModal();
+    this.onOpenProfile(node);
   }
 
   onOpenProfile(node: any) {

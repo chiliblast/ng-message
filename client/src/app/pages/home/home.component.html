@@ -39,4 +39,67 @@
   <app-video-call-modal [isOpen]="showCallModal" [node]="callNode" [isIncoming]="isIncomingCall" (close)="closeCall()"></app-video-call-modal>
   <app-message-modal [isOpen]="showMessageModal" [node]="messageNode" [selectedActionId]="selectedActionIdForModal" (close)="closeMessage()"></app-message-modal>
 
+  <!-- Dynamic Actions Modal -->
+  <div *ngIf="showActionsModal && actionsNode" 
+       class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+    <div class="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl scale-in duration-300 relative mx-4">
+      
+      <!-- Close Button -->
+      <button (click)="closeActionsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <!-- Modal Header -->
+      <div class="text-center mb-6 mt-2">
+        <h3 class="text-lg font-black tracking-wider uppercase text-gray-900 dark:text-white">
+          {{ actionsNode.displayName || actionsNode.fname }}
+        </h3>
+        <p class="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest mt-1">
+          Select Action
+        </p>
+      </div>
+
+      <!-- Action Buttons Listing -->
+      <div class="grid grid-cols-3 gap-4">
+        
+        <!-- Call Action -->
+        <button (click)="triggerCallFromActionsModal()" 
+                class="flex flex-col items-center justify-center p-4 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/10 hover:border-blue-500 hover:bg-blue-500/20 active:scale-95 transition-all group">
+          <div class="w-12 h-12 text-blue-500 flex items-center justify-center rounded-xl bg-blue-500/10 group-hover:scale-110 transition-transform">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-black text-blue-500 uppercase tracking-wider mt-2">Call</span>
+        </button>
+
+        <!-- Message Action -->
+        <button (click)="triggerMessageFromActionsModal()" 
+                class="flex flex-col items-center justify-center p-4 rounded-2xl bg-emerald-500/5 dark:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500 hover:bg-emerald-500/20 active:scale-95 transition-all group">
+          <div class="w-12 h-12 text-emerald-500 flex items-center justify-center rounded-xl bg-emerald-500/10 group-hover:scale-110 transition-transform">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-black text-emerald-500 uppercase tracking-wider mt-2">Message</span>
+        </button>
+
+        <!-- Profile Action -->
+        <button (click)="triggerProfileFromActionsModal()" 
+                class="flex flex-col items-center justify-center p-4 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/10 hover:border-amber-500 hover:bg-amber-500/20 active:scale-95 transition-all group">
+          <div class="w-12 h-12 text-amber-500 flex items-center justify-center rounded-xl bg-amber-500/10 group-hover:scale-110 transition-transform">
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          </div>
+          <span class="text-[10px] font-black text-amber-500 uppercase tracking-wider mt-2">Map</span>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
 </div>

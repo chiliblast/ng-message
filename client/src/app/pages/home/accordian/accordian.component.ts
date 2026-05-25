@@ -82,6 +82,6 @@ export class AccordianComponent implements OnInit {
 
   onChildBadgeClick(child: any, event: MouseEvent) {
     event.stopPropagation();
-    this.onShowMessage.emit(child);
+    this.onSelect.emit({ node: child, event });
   }
 }

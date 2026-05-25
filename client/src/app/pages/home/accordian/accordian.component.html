@@ -120,6 +120,16 @@
         </div>
       </div>
 
+      <!-- Link Button to open Actions Modal (Shown for non-root nodes) -->
+      <button *ngIf="node.depthFromStart !== 0" 
+              (click)="selectNode($event)" 
+              class="w-7 h-7 flex items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-brand-500 hover:scale-105 transition-all mr-1"
+              title="Open Actions Menu">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+        </svg>
+      </button>
+
       <svg class="w-4 h-4 text-gray-400 transition-transform duration-500 shrink-0" 
            [ngClass]="{'rotate-180': node.isOpen}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
@@ -130,12 +140,11 @@
   <!-- Accordion Body Drawer -->
   <div class="transition-all duration-500 ease-in-out overflow-hidden" 
        [style.max-height]="node.isOpen ? '300px' : '0px'">
-    <div (click)="selectNode($event)" 
-         class="p-2 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
+    <div class="p-2 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
       
-      <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
+      <!-- <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
         {{node.groupName}} ({{node.fname || ' '}})
-      </p>
+      </p> -->
 
       <!-- Children Leaf Nodes Visualizer (Shown inside 2nd Last Level Accordion Drawer) -->
       <div *ngIf="node.isSecondLastLevel && node.children?.length" class="mt-2 flex flex-wrap gap-1.5" (click)="$event.stopPropagation()">
@@ -155,53 +164,6 @@
              [title]="child.displayName + ' (Progress: ' + child.progress + '%)'">
           {{ idx + 1 }}
         </div>
-      </div>
-
-      <!-- Global Actions Listing (Greyed out if not matching active node action for other nodes) -->
-      <!-- <div *ngIf="node.isLastLevel" class="mt-1 flex flex-wrap gap-2">
-        <div *ngFor="let action of (statusActions$ | async)" 
-             (click)="onActionBadgeClick(action.id, $event)"
-             class="h-8 px-3 rounded-lg border flex items-center justify-center text-[10px] font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-105 select-none"
-             [ngClass]="{
-               'shadow-md scale-105 border-transparent': getAction(action.id),
-               'animate-blink': getAction(action.id) && node.progress < 100,
-               'opacity-60 border-dashed': !getAction(action.id)
-             }"
-             [style.borderColor]="getAction(action.id) ? 'transparent' : action.color"
-             [style.backgroundColor]="getAction(action.id) ? action.color : 'transparent'"
-             [style.color]="getAction(action.id) ? 'white' : action.color"
-             [title]="getAction(action.id) ? (getAction(action.id).name + ': ' + getAction(action.id).description) : (action.label + ': ' + action.description + ' (Not assigned)')">
-          {{ action.label }}
-        </div>
-      </div> -->
-
-      <!-- Action Buttons Drawer (Shown when Selected) -->
-      <div *ngIf="isSelected && node.depthFromStart !== 0" 
-           class="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800 flex items-center gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
-        
-        <button (click)="startCall($event)" 
-                class="w-10 h-10 text-blue-500 hover:scale-110 hover:bg-blue-500/10 rounded-xl transition-all flex items-center justify-center border border-blue-500/10 bg-blue-500/5"
-                title="Initiate Call">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-          </svg>
-        </button>
-        
-        <button (click)="showMessage($event)" 
-                class="w-10 h-10 text-emerald-500 hover:scale-110 hover:bg-emerald-500/10 rounded-xl transition-all flex items-center justify-center border border-emerald-500/10 bg-emerald-500/5"
-                title="Send Message">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-          </svg>
-        </button>
-        
-        <button (click)="showProfile($event)" 
-                class="w-10 h-10 text-amber-500 hover:scale-110 hover:bg-amber-500/10 rounded-xl transition-all flex items-center justify-center border border-amber-500/10 bg-amber-500/5"
-                title="View on Map">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-          </svg>
-        </button>
       </div>
       
     </div>
