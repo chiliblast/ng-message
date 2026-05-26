@@ -18,7 +18,7 @@
      }">
   
   <!-- Online/Offline Glow Dot -->
-  <div class="absolute top-1 left-1 w-3 h-3 rounded-full z-20 shadow-sm border-2 border-white dark:border-gray-900 transition-all duration-500"
+  <div class="absolute w-2.5 h-2.5 rounded-full z-20 shadow-sm border-2 border-white dark:border-gray-900 transition-all duration-500"
        [ngClass]="node.isOnline ? 'bg-emerald-500 shadow-[0_0_8px_#10b981]' : 'bg-rose-500 shadow-[0_0_8px_#f43f5e]'"
        [title]="node.isOnline ? 'Online' : 'Offline'">
     <span *ngIf="node.isOnline" class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75"></span>

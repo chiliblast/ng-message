@@ -18,10 +18,10 @@
       
       <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
       <div *ngIf="node.children?.length && node.isOpen && !node.isSecondLastLevel" 
-           class="grid gap-2 animate-in fade-in slide-in-from-top-2 duration-300"
+           class="grid gap-1 animate-in fade-in slide-in-from-top-2 duration-300"
            [ngClass]="getGridClass(node)">
         <div *ngFor="let child of node.children" 
-             class="animate-in fade-in duration-300"
+             class="animate-in fade-in duration-300  ml-2"
              [ngClass]="getChildSpanClass(child, node)">
           <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, parent: node }"></ng-container>
         </div>
