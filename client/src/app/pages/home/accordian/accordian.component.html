@@ -1,5 +1,7 @@
-<div class="relative border-t-1 rounded-xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
+<div class="relative rounded-xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
      [ngClass]="{
+       'border-t-[3px]': node.depthFromStart < 1,
+       'border-t-0': node.depthFromStart >= 1,
        'border-brand-500': color === 'brand' && !isHighlighted,
        'border-blue-500': color === 'blue' && !isHighlighted,
        'border-success-500': color === 'success' && !isHighlighted,
@@ -29,12 +31,12 @@
     
     <div class="flex items-center gap-3 w-full sm:w-auto">
       <!-- Depth Level Indicator Badge -->
-      <div class="w-5 h-5 rounded-xl flex items-center justify-center font-black text-xs shadow-md shrink-0 transition-transform duration-300 hover:rotate-12 border border-black/10 dark:border-white/25 text-gray-400 dark:text-gray-600"
+      <div class="w-5 h-5 rounded-xl flex items-center justify-center font-black text-xs shadow-md shrink-0 transition-transform duration-300 hover:rotate-12 border border-black/10 dark:border-white/25 !text-gray-600"
            [ngClass]="{
              'bg-gradient-to-tr from-brand-600 to-brand-400': color === 'brand',
              'bg-gradient-to-tr from-blue-600 to-blue-400': color === 'blue',
              'bg-gradient-to-tr from-success-600 to-success-400': color === 'success',
-             'bg-gradient-to-tr from-warning-600 to-warning-400 !text-gray-900 dark:!text-white': color === 'warning',
+             'bg-gradient-to-tr from-warning-600 to-warning-400': color === 'warning',
              'bg-gradient-to-tr from-purple-600 to-purple-400': color === 'purple',
              'bg-gradient-to-tr from-indigo-600 to-indigo-400': color === 'indigo'
            }">
@@ -42,8 +44,16 @@
       </div>
       
       <div class="overflow-hidden min-w-0 flex-1">
-        <div class="flex items-center gap-1.5 mb-0.5">
-          <h4 class="font-extrabold text-gray-900 dark:text-white leading-tight truncate tracking-wider text-base uppercase">
+        <div class="flex items-center gap-1.5 ">
+          <h4 class="font-extrabold leading-tight truncate tracking-wider text-[1.2rem] uppercase"
+              [ngClass]="{
+                'text-brand-500': color === 'brand',
+                'text-blue-500': color === 'blue',
+                'text-success-500': color === 'success',
+                'text-warning-500': color === 'warning',
+                'text-purple-500': color === 'purple',
+                'text-indigo-500': color === 'indigo'
+              }">
             {{node.displayName || node.fname}}
           </h4>
           
@@ -140,7 +150,8 @@
   <!-- Accordion Body Drawer -->
   <div class="transition-all duration-500 ease-in-out overflow-hidden" 
        [style.max-height]="node.isOpen ? '300px' : '0px'">
-    <div class="p-2 pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all">
+    <div class="pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all"
+         [ngClass]="{'p-2': node.isSecondLastLevel && node.children?.length}">
       
       <!-- <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
         {{node.groupName}} ({{node.fname || ' '}})

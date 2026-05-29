@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "@fontsource/outfit/index.css";
+@import "@fontsource/inter/index.css";
 @import "swiper/css/bundle";
 @import "flatpickr/dist/flatpickr.css";
 @import "ol/ol.css";
@@ -12,7 +12,7 @@
 
 @theme {
   --font-*: initial;
-  --font-outfit: Outfit, sans-serif;
+  --font-inter: Inter, sans-serif;
 
   --breakpoint-*: initial;
   --breakpoint-2xsm: 375px;
@@ -191,7 +191,7 @@
     cursor: pointer;
   }
   body {
-    @apply relative font-normal font-outfit z-1 bg-gray-50;
+    @apply relative font-normal font-inter z-1 bg-gray-50;
     scrollbar-gutter: stable;
   }
 }

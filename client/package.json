@@ -22,6 +22,7 @@
     "@angular/router": "^21.2.4",
     "@angular/service-worker": "^21.2.4",
     "@ckeditor/ckeditor5-angular": "^11.1.2",
+    "@fontsource/inter": "^5.2.8",
     "@fontsource/outfit": "^5.2.8",
     "@fortawesome/angular-fontawesome": "^4.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
