@@ -52,6 +52,7 @@ export class AuthService {
           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
           "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
           "loginLogId": 1,
+          "groupUserUuid": "group_user_uuid",
           "appUserModel": {
             "uuid": "user-uuid",
             "role": "ADMIN",
@@ -74,7 +75,8 @@ export class AuthService {
         const user = {
           ...appUser,
           id: res.loginLogId || 1, // Fallback integer ID for socket presence compatibility
-          loginLogId: res.loginLogId || 1
+          loginLogId: res.loginLogId || 1,
+          groupUserUuid: res.groupUserUuid,
         };
         this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
         this.userSubject.next(user);

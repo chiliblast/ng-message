@@ -84,4 +84,16 @@ export class AccordianComponent implements OnInit {
     event.stopPropagation();
     this.onSelect.emit({ node: child, event });
   }
+
+  getShadowColor(color: string): string {
+    if (!color) return 'rgba(0, 0, 0, 0.15)';
+    const cleanHex = color.replace('#', '').substring(0, 6);
+    return `#${cleanHex}26`; // 26 in hex is ~15% opacity
+  }
+
+  getBgColor(color: string): string {
+    if (!color) return 'transparent';
+    const cleanHex = color.replace('#', '').substring(0, 6);
+    return `#${cleanHex}0d`; // 0d in hex is ~5% opacity
+  }
 }

@@ -164,14 +164,12 @@
              class="h-7 w-7 rounded-lg border flex items-center justify-center font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-110 select-none shrink-0"
              [ngClass]="{
                'shadow-md scale-105 border-transparent': child.progress > 0,
-               'animate-blink': child.progress < 100 && child.progress > 0,
+               'animate-blink': child.currentMessageId !== child.assignedMessageId,
                'opacity-60 border-dashed': child.progress === 0
              }"
-             [style.borderColor]="child.progress > 0 ? (child.actions?.[0]?.color || '#10b981') : '#9ca3af'"
-             [style.background]="child.progress > 0 
-               ? 'linear-gradient(to top, ' + (child.actions?.[0]?.color || '#10b981') + ' ' + child.progress + '%, ' + (child.actions?.[0]?.color || '#10b981') + '40 ' + child.progress + '%)' 
-               : 'transparent'"
-             [style.color]="child.progress > 0 ? 'white' : '#9ca3af'"
+             [style.borderColor]="child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor"
+             [style.background]="'linear-gradient(to top, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + ' ' + child.progress + '%, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + '40 ' + child.progress + '%)'"
+             [style.color]="'white'"
              [title]="child.displayName + ' (Progress: ' + child.progress + '%)'">
           {{ idx + 1 }}
         </div>

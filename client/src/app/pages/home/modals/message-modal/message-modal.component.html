@@ -1,13 +1,17 @@
 <app-modal [isOpen]="isOpen" (close)="close.emit()" className="max-w-2xl">
-  <div *ngIf="node" class="space-y-6">
+  <div *ngIf="targetNodes.length > 0" class="space-y-6">
     <!-- Header (Matches Pattern) -->
     <div class="flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 pb-6">
       <div class="w-16 h-16 rounded-2xl bg-brand-500 text-white flex items-center justify-center font-black text-2xl shadow-xl shadow-brand-500/20">
-        {{ node.name?.charAt(0) }}
+        {{ targetNodes.length > 1 ? 'M' : (targetNodes[0]?.name?.charAt(0) || targetNodes[0]?.displayName?.charAt(0) || 'U') }}
       </div>
       <div>
-        <h2 class="text-2xl font-black text-gray-900 dark:text-white">{{ node.name }}</h2>
-        <p class="text-sm font-bold text-brand-500 uppercase tracking-widest">{{ node.title }}</p>
+        <h2 class="text-2xl font-black text-gray-900 dark:text-white">
+          {{ targetNodes.length > 1 ? 'Multiple Nodes (' + targetNodes.length + ')' : (targetNodes[0]?.name || targetNodes[0]?.displayName || 'Unknown') }}
+        </h2>
+        <p class="text-sm font-bold text-brand-500 uppercase tracking-widest">
+          {{ targetNodes.length > 1 ? 'Broadcast Message' : targetNodes[0]?.title || targetNodes[0]?.displayName }}
+        </p>
       </div>
     </div>
 

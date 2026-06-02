@@ -25,6 +25,10 @@ export class HierarchyService {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   };
 
+  const randomColor = (): string => {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  };
+
   const createNode = (
     depth: number,
     rootIndex: number,
@@ -60,6 +64,14 @@ export class HierarchyService {
       fname: `L${depth}`,
       progress: random(0, 100),
       depthFromStart: depth,
+      currentMessageColor: randomColor(),
+      currentMessageName:"Active",
+      currentMessageShortName:"Act",
+      currentMessageId : random(1, 3),
+      assignedMessageColor: randomColor(),
+      assignedMessageName:"Active",
+      assignedMessageShortName:"Act",
+      assignedMessageId : random(1, 3),
       children: []
     };
 

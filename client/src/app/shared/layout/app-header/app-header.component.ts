@@ -11,6 +11,10 @@ import { SocketService } from '../../../services/socket.service';
 import { NotificationService } from '../../../services/notification.service';
 import { SearchService } from '../../../services/search.service';
 import { AuthService } from '../../../services/auth.service';
+import { HierarchyService } from '../../../services/hierarchy.service';
+import { FormsModule } from '@angular/forms';
+import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
+import { MessageModalComponent } from '../../../pages/home/modals/message-modal/message-modal.component';
 
 declare var HTMLMagnifier: any;
 
@@ -22,7 +26,10 @@ declare var HTMLMagnifier: any;
     ThemeToggleButtonComponent,
     NotificationDropdownComponent,
     UserDropdownComponent,
-    FontAwesomeModule
+    FontAwesomeModule,
+    FormsModule,
+    Tree, TreeItem, TreeItemGroup,
+    MessageModalComponent
   ],
   templateUrl: './app-header.component.html',
 })
@@ -35,6 +42,11 @@ export class AppHeaderComponent {
   magnifier: any;
   isMagnifierEnabled = false;
 
+  dropdownNodes: any[] = [];
+  selectedNodes: any[] = [];
+  isDropdownOpen = false;
+  showMessageModal = false;
+
   user$;
   @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
@@ -43,11 +55,16 @@ export class AppHeaderComponent {
     private socketService: SocketService,
     private notificationService: NotificationService,
     private searchService: SearchService,
-    private authService: AuthService
+    private authService: AuthService,
+    private hierarchyService: HierarchyService
   ) {
     this.user$ = this.authService.user$;
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
     this.connected$ = this.socketService.connected$;
+
+    this.hierarchyService.getHierarchy().subscribe(tree => {
+      this.dropdownNodes = tree;
+    });
 
     // Request Push Notification Permission
     this.notificationService.subscribeToNotifications();
@@ -67,6 +84,23 @@ export class AppHeaderComponent {
     } else {
       this.magnifier.hide();
     }
+  }
+
+  toggleNodeSelection(node: any) {
+    const index = this.selectedNodes.findIndex(n => n.groupId === node.groupId);
+    if (index > -1) {
+      this.selectedNodes.splice(index, 1);
+    } else {
+      this.selectedNodes.push(node);
+    }
+  }
+
+  isSelected(node: any): boolean {
+    return this.selectedNodes.some(n => n.groupId === node.groupId);
+  }
+
+  openMessageModal() {
+    this.showMessageModal = true;
   }
 
   onSearch(event: any) {
