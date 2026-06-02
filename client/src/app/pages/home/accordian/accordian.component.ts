@@ -2,6 +2,7 @@ import { inject, Component, Input, Output, EventEmitter, OnInit } from '@angular
 import { CommonModule } from '@angular/common';
 import { SettingsService } from '../../../services/settings.service';
 import { MessageService } from '../../../services/message.service';
+import { HierarchyService } from '../../../services/hierarchy.service';
 import { map } from 'rxjs';
 
 @Component({
@@ -13,6 +14,7 @@ import { map } from 'rxjs';
 export class AccordianComponent implements OnInit {
   private settingsService = inject(SettingsService);
   private messageService = inject(MessageService);
+  private hierarchyService = inject(HierarchyService);
   
   statusActions$ = this.settingsService.statusActions$;
   isBlinking$ = this.messageService.blinkingNodes$.pipe(
@@ -29,6 +31,14 @@ export class AccordianComponent implements OnInit {
   @Output() onShowProfile = new EventEmitter<any>();
   @Output() onShowCall = new EventEmitter<any>();
   @Output() onShowMessage = new EventEmitter<any>();
+
+  get isSelectedInDropdown(): boolean {
+    return this.hierarchyService.getSelectedNodes().some(n => n.groupId === this.node?.groupId);
+  }
+
+  isChildSelectedInDropdown(child: any): boolean {
+    return this.hierarchyService.getSelectedNodes().some(n => n.groupId === child.groupId);
+  }
 
   ngOnInit() {
     if (this.node && this.node.isOpen === undefined) {

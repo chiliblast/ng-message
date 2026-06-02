@@ -16,7 +16,14 @@
        'shadow-[0_8px_30px_rgb(99,102,241,0.15)] bg-indigo-50/5 dark:bg-indigo-500/5': color === 'indigo' && node.isOpen && !isHighlighted,
        'bg-white/90 dark:bg-gray-900/90 shadow-sm': !node.isOpen && !isHighlighted,
        'animate-blink': (isBlinking$ | async),
-       'border-yellow-400 ring-4 ring-yellow-400/40 scale-[1.03] z-50 shadow-[0_10px_40px_rgba(234,179,8,0.2)]': isHighlighted
+       'border-yellow-400 ring-4 ring-yellow-400/40 scale-[1.03] z-50 shadow-[0_10px_40px_rgba(234,179,8,0.2)]': isHighlighted,
+       'ring-4 ring-offset-2 dark:ring-offset-gray-900 scale-[1.01] z-40': isSelectedInDropdown && !isHighlighted,
+       'ring-brand-500': isSelectedInDropdown && color === 'brand' && !isHighlighted,
+       'ring-blue-500': isSelectedInDropdown && color === 'blue' && !isHighlighted,
+       'ring-success-500': isSelectedInDropdown && color === 'success' && !isHighlighted,
+       'ring-warning-500': isSelectedInDropdown && color === 'warning' && !isHighlighted,
+       'ring-purple-500': isSelectedInDropdown && color === 'purple' && !isHighlighted,
+       'ring-indigo-500': isSelectedInDropdown && color === 'indigo' && !isHighlighted
      }">
   
   <!-- Online/Offline Glow Dot -->
@@ -163,9 +170,10 @@
              (click)="onChildBadgeClick(child, $event)"
              class="h-7 w-7 rounded-lg border flex items-center justify-center font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-110 select-none shrink-0"
              [ngClass]="{
-               'shadow-md scale-105 border-transparent': child.progress > 0,
+               'shadow-md scale-105 border-transparent': child.progress > 0 && !isChildSelectedInDropdown(child),
                'animate-blink': child.currentMessageId !== child.assignedMessageId,
-               'opacity-60 border-dashed': child.progress === 0
+               'opacity-60 border-dashed': child.progress === 0 && !isChildSelectedInDropdown(child),
+               'ring-4 ring-brand-500 ring-offset-1 dark:ring-offset-gray-900 scale-[1.15] z-10': isChildSelectedInDropdown(child)
              }"
              [style.borderColor]="child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor"
              [style.background]="'linear-gradient(to top, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + ' ' + child.progress + '%, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + '40 ' + child.progress + '%)'"

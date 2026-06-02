@@ -66,6 +66,10 @@ export class AppHeaderComponent {
       this.dropdownNodes = tree;
     });
 
+    this.hierarchyService.selectedNodes$.subscribe(nodes => {
+      this.selectedNodes = nodes;
+    });
+
     // Request Push Notification Permission
     this.notificationService.subscribeToNotifications();
     this.notificationService.listenForNotifications();
@@ -87,12 +91,14 @@ export class AppHeaderComponent {
   }
 
   toggleNodeSelection(node: any) {
-    const index = this.selectedNodes.findIndex(n => n.groupId === node.groupId);
+    const currentSelected = [...this.hierarchyService.getSelectedNodes()];
+    const index = currentSelected.findIndex(n => n.groupId === node.groupId);
     if (index > -1) {
-      this.selectedNodes.splice(index, 1);
+      currentSelected.splice(index, 1);
     } else {
-      this.selectedNodes.push(node);
+      currentSelected.push(node);
     }
+    this.hierarchyService.setSelectedNodes(currentSelected);
   }
 
   isSelected(node: any): boolean {
@@ -101,6 +107,32 @@ export class AppHeaderComponent {
 
   openMessageModal() {
     this.showMessageModal = true;
+  }
+
+  getNodeColor(depth: any): string {
+    const numericDepth = Number(depth);
+    switch (numericDepth) {
+      case 0: return 'brand';
+      case 1: return 'blue';
+      case 2: return 'success';
+      case 3: return 'warning';
+      case 4: return 'purple';
+      case 5: return 'indigo';
+      default: return 'brand';
+    }
+  }
+
+  getCheckboxColorClass(node: any): string {
+    const color = this.getNodeColor(node.depthFromStart);
+    switch (color) {
+      case 'brand': return 'border-brand-500 text-brand-500 focus:ring-brand-500';
+      case 'blue': return 'border-blue-500 text-blue-500 focus:ring-blue-500';
+      case 'success': return 'border-success-500 text-success-500 focus:ring-success-500';
+      case 'warning': return 'border-warning-500 text-warning-500 focus:ring-warning-500';
+      case 'purple': return 'border-purple-500 text-purple-500 focus:ring-purple-500';
+      case 'indigo': return 'border-indigo-500 text-indigo-500 focus:ring-indigo-500';
+      default: return 'border-gray-300 text-brand-500 focus:ring-brand-500';
+    }
   }
 
   onSearch(event: any) {

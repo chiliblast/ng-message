@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap, catchError, from, of, map } from 'rxjs';
+import { Observable, tap, catchError, from, of, map, BehaviorSubject } from 'rxjs';
 import { OfflineStorageService } from './offline-storage.service';
 import { AuthService } from './auth.service';
 import { environment } from '../../environments/environment';
@@ -11,6 +11,17 @@ export class HierarchyService {
   private storage = inject(OfflineStorageService);
   private authService = inject(AuthService);
   private apiUrl = `${environment.apiBaseUrl}/hierarchy`;
+  
+  private selectedNodesSubject = new BehaviorSubject<any[]>([]);
+  public selectedNodes$ = this.selectedNodesSubject.asObservable();
+
+  setSelectedNodes(nodes: any[]) {
+    this.selectedNodesSubject.next(nodes);
+  }
+
+  getSelectedNodes(): any[] {
+    return this.selectedNodesSubject.value;
+  }
   
   generateTree(
   rootCount: number = 3,
@@ -114,7 +125,13 @@ export class HierarchyService {
 
 
 
+  private cachedHierarchy: any[] | null = null;
+
   getHierarchy(): Observable<any> {
+    if (this.cachedHierarchy) {
+      return of(this.cachedHierarchy);
+    }
+    
     // TODO: Remove this mock response once real response is available
     // Usage
     const mockRes = this.generateTree(
@@ -147,7 +164,9 @@ export class HierarchyService {
       };
     };
 
-    return of(mockRes.map(addUiFlags)).pipe(
+    this.cachedHierarchy = mockRes.map(addUiFlags);
+
+    return of(this.cachedHierarchy).pipe(
       tap(data => this.storage.saveHierarchy(data))
     );
 

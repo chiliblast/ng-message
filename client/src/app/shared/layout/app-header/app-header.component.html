@@ -91,7 +91,7 @@
                     </svg>
                   </div>
                   
-                  <input type="checkbox" [checked]="isSelected(node)" class="mr-2 rounded border-gray-300 text-brand-500 focus:ring-brand-500 pointer-events-none">
+                  <input type="checkbox" [checked]="isSelected(node)" [ngClass]="getCheckboxColorClass(node)" class="mr-2 rounded border-2 pointer-events-none">
                   <span class="text-sm text-gray-700 dark:text-gray-200 truncate">{{ node.displayName || node.name || node.groupName }} ({{ node.shortName }})</span>
                 </div>
                 
