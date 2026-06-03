@@ -52,7 +52,7 @@ export class HomeComponent implements OnInit {
   ngOnInit() {
     this.settingsService.loadStatusActions().subscribe();
     this.hierarchyService.getHierarchy().subscribe({
-      next: (data) => {console.log(data)
+      next: (data) => {
         this.hierarchyData = data;
 
         // Calculate max depth dynamically
@@ -82,26 +82,13 @@ export class HomeComponent implements OnInit {
         this.hierarchyData.forEach(flagLastLevel);
         
         const user = this.authService.currentUserValue;
-        if (user) {console.log(user)
-          this.currentUser = {
-            groupId: user.id || 1000,
-            groupUuid: user.uuid,
-            groupName: user.username,
-            displayName: user.displayName,
-            shortName: user.shortName,
-            userType: user.role,
-            fname: user.displayName,
-            progress: 100,
-            depthFromStart: 0,
-            isOpen: true,
-            actions: [{ id: 1, name: 'Active', color: '#10b981', label: 'A' }],
-            children: this.hierarchyData
-          };
+        if (user) {
+          console.log(user);
         }
 
         const currentOnline = this.socketService.initialPresenceSubject.value;
         if (currentOnline.length > 0) {
-          if (this.currentUser) this.applyInitialPresence(this.currentUser, currentOnline);
+          this.hierarchyData.forEach(node => this.applyInitialPresence(node, currentOnline));
         }
       },
       error: (err) => console.error('Error fetching hierarchy:', err)
@@ -109,13 +96,13 @@ export class HomeComponent implements OnInit {
 
     this.socketService.initialPresence$.subscribe(onlineIds => {
       if (onlineIds.length > 0) {
-        if (this.currentUser) this.applyInitialPresence(this.currentUser, onlineIds);
+        this.hierarchyData.forEach(node => this.applyInitialPresence(node, onlineIds));
       }
     });
 
     this.socketService.presenceUpdate$.subscribe(data => {
-      if (this.currentUser) {
-        this.updatePresence(this.currentUser, data.userId, data.status === 'online');
+      for (const node of this.hierarchyData) {
+        if (this.updatePresence(node, data.userId, data.status === 'online')) break;
       }
     });
 
@@ -272,6 +259,9 @@ export class HomeComponent implements OnInit {
   }
 
   getChildSpanClass(child: any, parent: any): string {
+    if (child.depthFromStart <= 0) {
+      return 'col-span-full';
+    }
     if (!parent || !parent.children || parent.children.length <= 1) {
       return 'col-span-full';
     }

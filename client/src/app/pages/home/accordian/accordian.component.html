@@ -1,6 +1,6 @@
 <div class="relative rounded-xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
      [ngClass]="{
-       'border-t-[3px]': node.depthFromStart < 1,
+       'border-t-[3px]': node.depthFromStart == 0,
        'border-t-0': node.depthFromStart >= 1,
        'border-brand-500': color === 'brand' && !isHighlighted,
        'border-blue-500': color === 'blue' && !isHighlighted,

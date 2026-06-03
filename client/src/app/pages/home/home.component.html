@@ -8,7 +8,7 @@
                      [color]="getNodeColor(node.depthFromStart)" 
                      [isSelected]="selectedNode === node" 
                      [isHighlighted]="isNodeMatched(node)" 
-                     [defaultOpen]="node.depthFromStart <= 1" 
+                     [defaultOpen]="node.depthFromStart <= 0" 
                      class="block shadow-sm"
                      (onSelect)="onSelectNode($event)" 
                      (onShowProfile)="onOpenProfile($event)" 
@@ -30,8 +30,10 @@
   </ng-template>
 
   <!-- Main Dynamic Tree Render -->
-  <div *ngIf="currentUser" class="mx-auto space-y-6 w-full">
-    <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: currentUser, parent: null }"></ng-container>
+  <div *ngIf="hierarchyData.length" class="mx-auto space-y-1 w-full">
+    <ng-container *ngFor="let rootNode of hierarchyData">
+      <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: rootNode, parent: null }"></ng-container>
+    </ng-container>
   </div>
 
   <!-- POPUP MODALS -->

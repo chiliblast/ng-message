@@ -24,11 +24,12 @@ export class HierarchyService {
   }
   
   generateTree(
-  rootCount: number = 3,
-  maxDepth: number = 4,
-  minChildren: number = 2,
-  maxChildren: number = 6
-): any[] {
+    rootCount: number = 3,
+    maxDepth: number = 4,
+    minChildren: number = 2,
+    maxChildren: number = 6,
+    startingDepthFromStart: number = 1
+  ): any[] {
 
   let idCounter = 1;
 
@@ -74,7 +75,7 @@ export class HierarchyService {
       userType: depth === 1 ? 'ADMIN' : 'USER',
       fname: `L${depth}`,
       progress: random(0, 100),
-      depthFromStart: depth,
+      depthFromStart: startingDepthFromStart + depth - 1,
       currentMessageColor: randomColor(),
       currentMessageName:"Active",
       currentMessageShortName:"Act",
@@ -135,10 +136,11 @@ export class HierarchyService {
     // TODO: Remove this mock response once real response is available
     // Usage
     const mockRes = this.generateTree(
-      1, // roots
+      3, // roots
       4, // max depth
       2, // min children
-      6  // max children
+      6, // max children
+      -1  // starting depthFromStart
     );
 
     console.log(mockRes);
