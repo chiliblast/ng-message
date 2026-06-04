@@ -46,7 +46,8 @@ export class HierarchyService {
     rootIndex: number,
     parentGroupId: number = 0,
     parentGroupUuid: string | null = null,
-    path: string[] = []
+    path: string[] = [],
+    targetMaxDepth: number = maxDepth
   ): any => {
 
     const groupId = idCounter++;
@@ -88,7 +89,7 @@ export class HierarchyService {
     };
 
     // Create children recursively
-    if (depth < maxDepth) {
+    if (depth < targetMaxDepth) {
 
       const childCount = random(minChildren, maxChildren);
 
@@ -101,7 +102,8 @@ export class HierarchyService {
           rootIndex,
           groupId,
           groupUuid,
-          [...path, char]
+          [...path, char],
+          targetMaxDepth
         );
 
         node.children.push(child);
@@ -114,9 +116,9 @@ export class HierarchyService {
   const roots: any[] = [];
 
   for (let i = 1; i <= rootCount; i++) {
-
+    const rootMaxDepth = random(1, maxDepth);
     roots.push(
-      createNode(1, i)
+      createNode(1, i, 0, null, [], rootMaxDepth)
     );
   }
 
@@ -137,10 +139,10 @@ export class HierarchyService {
     // Usage
     const mockRes = this.generateTree(
       3, // roots
-      4, // max depth
-      2, // min children
+      5, // max depth
+      3, // min children
       6, // max children
-      -1  // starting depthFromStart
+      0  // starting depthFromStart
     );
 
     console.log(mockRes);

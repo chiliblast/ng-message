@@ -55,25 +55,12 @@ export class HomeComponent implements OnInit {
       next: (data) => {
         this.hierarchyData = data;
 
-        // Calculate max depth dynamically
-        let maxDepth = 0;
-        const findMaxDepth = (node: any) => {
-          if (node) {
-            if (node.depthFromStart > maxDepth) {
-              maxDepth = node.depthFromStart;
-            }
-            if (node.children) {
-              node.children.forEach(findMaxDepth);
-            }
-          }
-        };
-        this.hierarchyData.forEach(findMaxDepth);
-
-        // Mark each node with isLastLevel and isSecondLastLevel flags
+        // Mark each node with isLastLevel and isSecondLastLevel flags dynamically
         const flagLastLevel = (node: any) => {
           if (node) {
-            node.isLastLevel = (node.depthFromStart === maxDepth);
-            node.isSecondLastLevel = (node.depthFromStart === maxDepth - 1);
+            node.isLastLevel = !node.children || node.children.length === 0;
+            node.isSecondLastLevel = node.children && node.children.length > 0 && 
+                                     node.children.every((child: any) => !child.children || child.children.length === 0);
             if (node.children) {
               node.children.forEach(flagLastLevel);
             }
