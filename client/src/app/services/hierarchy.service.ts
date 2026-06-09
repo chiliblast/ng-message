@@ -103,7 +103,7 @@ export class HierarchyService {
           groupId,
           groupUuid,
           [...path, char],
-          targetMaxDepth
+          random(depth + 1, maxDepth)
         );
 
         node.children.push(child);
@@ -140,7 +140,7 @@ export class HierarchyService {
     const mockRes = this.generateTree(
       3, // roots
       5, // max depth
-      3, // min children
+      1, // min children
       6, // max children
       0  // starting depthFromStart
     );
@@ -174,43 +174,6 @@ export class HierarchyService {
       tap(data => this.storage.saveHierarchy(data))
     );
 
-    /* -- Original implementation (uncomment to restore once new API is live) --
-    return this.http.get(this.apiUrl).pipe(
-      map((res: any) => {
-        const rawGroups = Array.isArray(res) ? res : [];
-        const currentUser = this.authService.currentUserValue;
-
-        const mapGroupNode = (group: any): any => {
-          return {
-            id: group.groupId,
-            uuid: group.groupUuid,
-            name: group.fname || group.groupName || 'Group',
-            title: group.displayName || group.groupName || 'Group',
-            details: `${group.displayName || group.groupName} (${group.shortName || ''}) - ${group.userType || 'USER'}`,
-            type: (group.depthFromStart || 1) + 1,
-            isOpen: true,
-            progress: group.progress || 0,
-            actions: [],
-            children: (group.children || []).map((c: any) => mapGroupNode(c))
-          };
-        };
-
-        return {
-          id: currentUser?.id || 1,
-          uuid: currentUser?.uuid || 'user-uuid',
-          name: currentUser?.username || 'admin',
-          title: currentUser?.displayName || 'Administrator',
-          details: `Logged in as ${currentUser?.role || 'ADMIN'}`,
-          type: 1,
-          isOpen: true,
-          progress: 75,
-          actions: [],
-          children: rawGroups.map(mapGroupNode)
-        };
-      }),
-      tap(data => this.storage.saveHierarchy(data)),
-      catchError(() => from(this.storage.getHierarchy()))
-    );
-    */
+    
   }
 }

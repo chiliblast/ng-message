@@ -1,4 +1,4 @@
-<div class="relative rounded-xl overflow-hidden transition-all duration-500 h-full backdrop-blur-md"
+<div class="relative rounded-xl overflow-hidden transition-all duration-500 h-full w-full backdrop-blur-md"
      [ngClass]="{
        'border-t-[3px]': node.depthFromStart == 0,
        'border-t-0': node.depthFromStart >= 1,
@@ -33,7 +33,7 @@
     <span *ngIf="node.isOnline" class="absolute inset-0 rounded-full bg-emerald-400 animate-ping opacity-75"></span>
   </div>
   
-  <button (click)="toggleAccordion()" 
+  <button *ngIf="node.children?.length > 0" (click)="toggleAccordion()" 
           class="w-full p-1 flex flex-col sm:flex-row sm:items-center justify-between text-left hover:bg-gray-50/80 dark:hover:bg-white/5 transition-all focus:outline-none select-none">
     
     <div class="flex items-center gap-3 w-full sm:w-auto">
@@ -155,34 +155,48 @@
   </button>
 
   <!-- Accordion Body Drawer -->
-  <div class="transition-all duration-500 ease-in-out overflow-hidden" 
-       [style.max-height]="node.isOpen ? '300px' : '0px'">
+  <div *ngIf="node.children?.length > 0" class="transition-all duration-500 ease-in-out overflow-hidden" 
+       [style.max-height]="node.isOpen ? '2000px' : '0px'">
     <div class="pt-0 border-t border-gray-105 dark:border-gray-800 bg-gray-50/30 dark:bg-black/10 cursor-pointer hover:bg-gray-100/50 dark:hover:bg-white/5 transition-all"
-         [ngClass]="{'p-2': node.isSecondLastLevel && node.children?.length}">
+         [ngClass]="{'p-2': isSecondLastLevel(node) && node.children?.length}">
       
       <!-- <p class="mt-1 text-[11px] leading-relaxed font-medium text-gray-600 dark:text-gray-300">
         {{node.groupName}} ({{node.fname || ' '}})
       </p> -->
 
-      <!-- Children Leaf Nodes Visualizer (Shown inside 2nd Last Level Accordion Drawer) -->
-      <div *ngIf="node.isSecondLastLevel && node.children?.length" class="mt-2 flex flex-wrap gap-1.5" (click)="$event.stopPropagation()">
-        <div *ngFor="let child of node.children; let idx = index" 
-             (click)="onChildBadgeClick(child, $event)"
-             class="h-7 w-7 rounded-lg border flex items-center justify-center font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-110 select-none shrink-0"
-             [ngClass]="{
-               'shadow-md scale-105 border-transparent': child.progress > 0 && !isChildSelectedInDropdown(child),
-               'animate-blink': child.currentMessageId !== child.assignedMessageId,
-               'opacity-60 border-dashed': child.progress === 0 && !isChildSelectedInDropdown(child),
-               'ring-4 ring-brand-500 ring-offset-1 dark:ring-offset-gray-900 scale-[1.15] z-10': isChildSelectedInDropdown(child)
-             }"
-             [style.borderColor]="child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor"
-             [style.background]="'linear-gradient(to top, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + ' ' + child.progress + '%, ' + (child.assignedMessageId !== child.currentMessageId ? child.assignedMessageColor : child.currentMessageColor) + '40 ' + child.progress + '%)'"
-             [style.color]="'white'"
-             [title]="child.displayName + ' (Progress: ' + child.progress + '%)'">
-          {{ idx + 1 }}
-        </div>
+      <div class="w-full">
+        <ng-content></ng-content>
       </div>
       
     </div>
   </div>
+
+  <!-- Children Leaf Nodes Visualizer (Shown inside 2nd Last Level Accordion Drawer) -->
+      <div *ngIf="node.children?.length == 0" class="flex flex-wrap gap-1.5" (click)="$event.stopPropagation()">
+        <div class="flex flex-col items-center gap-0.5">
+          <div (click)="onNodeBadgeClick(node, $event)"
+               class="h-7 px-3 rounded-none border flex items-center justify-center font-extrabold uppercase shadow-sm transition-all duration-300 cursor-pointer hover:scale-110 select-none shrink-0"
+               [ngClass]="{
+                 'shadow-md scale-105 border-transparent': node.progress > 0 && !isNodeSelectedInDropdown(node),
+                 'animate-blink': node.currentMessageId !== node.assignedMessageId,
+                 'opacity-60 border-dashed': node.progress === 0 && !isNodeSelectedInDropdown(node),
+                 'ring-4 ring-brand-500 ring-offset-1 dark:ring-offset-gray-900 scale-[1.15] z-10': isNodeSelectedInDropdown(node)
+               }"
+               [style.borderColor]="node.assignedMessageId !== node.currentMessageId ? node.assignedMessageColor : node.currentMessageColor"
+               [style.background]="node.assignedMessageId !== node.currentMessageId ? node.assignedMessageColor : node.currentMessageColor"
+               [style.color]="'white'"
+               [title]="node.displayName + ' (Progress: ' + node.progress + '%)'">
+            {{ node.displayName?.charAt(0) }}
+          </div>
+          
+          <!-- Mini Progress Bar under the badge -->
+          <div class="w-full bg-gray-200 dark:bg-gray-800 h-1 rounded-full overflow-hidden shadow-inner" style="min-width: 28px;">
+            <div class="h-full rounded-full transition-all duration-500"
+                 [style.width.%]="node.progress"
+                 [style.backgroundColor]="node.assignedMessageId !== node.currentMessageId ? node.assignedMessageColor : node.currentMessageColor">
+            </div>
+          </div>
+        </div>
+      </div>
+      
 </div>

@@ -9,23 +9,23 @@
                      [isSelected]="selectedNode === node" 
                      [isHighlighted]="isNodeMatched(node)" 
                      [defaultOpen]="node.depthFromStart <= 0" 
-                     class="block shadow-sm"
+                     class="block shadow-sm w-full"
                      (onSelect)="onSelectNode($event)" 
                      (onShowProfile)="onOpenProfile($event)" 
                      (onShowCall)="onOpenCall($event)" 
                      (onShowMessage)="onOpenMessage($event)">
-      </app-accordian>
-      
-      <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
-      <div *ngIf="node.children?.length && node.isOpen && !node.isSecondLastLevel" 
-           class="grid gap-1 animate-in fade-in slide-in-from-top-2 duration-300"
-           [ngClass]="getGridClass(node)">
-        <div *ngFor="let child of node.children" 
-             class="animate-in fade-in duration-300  ml-2"
-             [ngClass]="getChildSpanClass(child, node)">
-          <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, parent: node }"></ng-container>
+        
+        <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
+        <div *ngIf="node.children?.length && node.isOpen" 
+             class="flex flex-wrap gap-1 animate-in fade-in slide-in-from-top-2 duration-300"
+             [ngClass]="getGridClass(node)">
+          <div *ngFor="let child of node.children" 
+               class="animate-in fade-in duration-300"
+               [ngClass]="getChildSpanClass(child, node)">
+            <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, parent: node }"></ng-container>
+          </div>
         </div>
-      </div>
+      </app-accordian>
     </div>
   </ng-template>
 

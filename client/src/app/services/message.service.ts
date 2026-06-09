@@ -125,4 +125,42 @@ export class MessageService {
   isNodeBlinking(nodeId: number): boolean {
     return this.blinkingNodesSubject.value.has(nodeId);
   }
+
+  // Mock API and History Stream
+  private mockHistory = [
+    { id: 1, type: 'Alert', text: 'All nodes update complete.', time: '2026-06-09 14:30', status: 'Delivered' },
+    { id: 2, type: 'Task Reminder', text: 'Please complete the assigned tasks.', time: '2026-06-09 11:15', status: 'Delivered' },
+    { id: 3, type: 'System Update', text: 'Starting scheduled server maintenance.', time: '2026-06-08 23:00', status: 'Seen' },
+    { id: 4, type: 'Emergency Broadcast', text: 'Critical patch required immediately.', time: '2026-06-08 09:45', status: 'Delivered' }
+  ];
+  private historySubject = new BehaviorSubject<any[]>(this.mockHistory);
+  history$ = this.historySubject.asObservable();
+
+  getMessageTypes() {
+    const mockTypes = [
+      { id: 'alert', label: 'Alert' },
+      { id: 'update', label: 'System Update' },
+      { id: 'reminder', label: 'Task Reminder' },
+      { id: 'notice', label: 'General Notice' },
+      { id: 'emergency', label: 'Emergency Broadcast' },
+      { id: 'info', label: 'Informational' }
+    ];
+    return of(mockTypes);
+  }
+
+  getSentMessagesHistory() {
+    return this.history$;
+  }
+
+  addMessageToHistory(type: string, text: string) {
+    const current = this.historySubject.value;
+    const newMsg = {
+      id: Date.now(),
+      type,
+      text,
+      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      status: 'Sent'
+    };
+    this.historySubject.next([newMsg, ...current]);
+  }
 }

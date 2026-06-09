@@ -54,19 +54,6 @@ export class HomeComponent implements OnInit {
     this.hierarchyService.getHierarchy().subscribe({
       next: (data) => {
         this.hierarchyData = data;
-
-        // Mark each node with isLastLevel and isSecondLastLevel flags dynamically
-        const flagLastLevel = (node: any) => {
-          if (node) {
-            node.isLastLevel = !node.children || node.children.length === 0;
-            node.isSecondLastLevel = node.children && node.children.length > 0 && 
-                                     node.children.every((child: any) => !child.children || child.children.length === 0);
-            if (node.children) {
-              node.children.forEach(flagLastLevel);
-            }
-          }
-        };
-        this.hierarchyData.forEach(flagLastLevel);
         
         const user = this.authService.currentUserValue;
         if (user) {
@@ -238,7 +225,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  getGridClass(node: any): string {
+  getGridClass(node: any): string { 
     if (!node.children || node.children.length <= 1) {
       return 'grid-cols-1';
     }
@@ -288,4 +275,9 @@ export class HomeComponent implements OnInit {
   closePopover() {
     this.selectedNode = null;
   }
+
+  // isSecondLastLevel(node: any): boolean {
+  //   return node && node.children && node.children.length > 0 &&
+  //          node.children.every((child: any) => !child.children || child.children.length === 0);
+  // }
 }

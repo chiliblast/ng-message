@@ -36,8 +36,8 @@ export class AccordianComponent implements OnInit {
     return this.hierarchyService.getSelectedNodes().some(n => n.groupId === this.node?.groupId);
   }
 
-  isChildSelectedInDropdown(child: any): boolean {
-    return this.hierarchyService.getSelectedNodes().some(n => n.groupId === child.groupId);
+  isNodeSelectedInDropdown(node: any): boolean {
+    return this.hierarchyService.getSelectedNodes().some(n => n.groupId === node.groupId);
   }
 
   ngOnInit() {
@@ -90,9 +90,9 @@ export class AccordianComponent implements OnInit {
     }
   }
 
-  onChildBadgeClick(child: any, event: MouseEvent) {
+  onNodeBadgeClick(node: any, event: MouseEvent) {
     event.stopPropagation();
-    this.onSelect.emit({ node: child, event });
+    this.onSelect.emit({ node: node, event });
   }
 
   getShadowColor(color: string): string {
@@ -105,5 +105,10 @@ export class AccordianComponent implements OnInit {
     if (!color) return 'transparent';
     const cleanHex = color.replace('#', '').substring(0, 6);
     return `#${cleanHex}0d`; // 0d in hex is ~5% opacity
+  }
+
+  isSecondLastLevel(node: any): boolean {
+    return node && node.children && node.children.length > 0 &&
+           node.children.every((child: any) => !child.children || child.children.length === 0);
   }
 }

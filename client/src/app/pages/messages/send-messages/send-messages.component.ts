@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AccordianComponent } from '../../home/accordian/accordian.component';
 import { HierarchyService } from '../../../services/hierarchy.service';
+import { MessageService } from '../../../services/message.service';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -12,6 +13,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class SendMessagesComponent implements OnInit {
   private hierarchyService = inject(HierarchyService);
+  private messageService = inject(MessageService);
   showNewMessage = false;
   openSection = 'templates';
   level1_hierarchy: any = null;
@@ -20,11 +22,7 @@ export class SendMessagesComponent implements OnInit {
   messageText: string = '';
   isSending: boolean = false;
 
-  orderHistory = [
-    { id: 'ORD-001', from: 'John Doe', to: 'Support', date: '2024-04-25', status: 'Delivered', progress: 100 },
-    { id: 'ORD-002', from: 'Jane Smith', to: 'Sales', date: '2024-04-24', status: 'Pending', progress: 30 },
-    { id: 'ORD-003', from: 'Bob Johnson', to: 'Billing', date: '2024-04-23', status: 'Cancelled', progress: 0 },
-  ];
+  historyList: any[] = [];
 
   ngOnInit() {
     this.hierarchyService.getHierarchy().subscribe({
@@ -33,6 +31,15 @@ export class SendMessagesComponent implements OnInit {
         this.level1_hierarchy = data;
       },
       error: (err) => console.error('Error fetching hierarchy:', err)
+    });
+
+    this.messageService.getSentMessagesHistory().subscribe({
+      next: (history) => {
+        this.historyList = history;
+        if (history.length > 0 && !this.selectedOrder) {
+          this.selectedOrder = history[0];
+        }
+      }
     });
   }
 
