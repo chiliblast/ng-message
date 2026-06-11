@@ -1,6 +1,6 @@
 import { Injectable, inject, NgZone } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap, of, from, catchError, map } from 'rxjs';
+import { BehaviorSubject, tap, of, from, catchError, map, Subject, timestamp } from 'rxjs';
 import { SocketService } from './socket.service';
 import { AuthService } from './auth.service';
 import { ToastService } from './toast.service';
@@ -22,7 +22,7 @@ export class MessageService {
   
   private apiUrl = `${environment.apiBaseUrl}/messages`;
 
-  private blinkingNodesSubject = new BehaviorSubject<Set<number>>(new Set());
+  private blinkingNodesSubject = new BehaviorSubject<Set<any>>(new Set());
   blinkingNodes$ = this.blinkingNodesSubject.asObservable();
 
   constructor() {
@@ -55,35 +55,73 @@ export class MessageService {
     });
   }
 
-  sendMessage(receiverId: number, actionId: number, messageText: string, extraData: { recipient: string, label: string, labelColor: string }) {
-    const enrichedMessage = {
-      receiverId,
-      actionId,
-      messageText,
-      recipient: extraData.recipient,
-      snippet: messageText,
-      label: extraData.label,
-      labelColor: extraData.labelColor,
-      time: new Date().toISOString(),
-      status: 'pending'
-    };
+  sendMessage(receiverId: any, messageText: string, recipient: string, messageTypeId?: number, subject?: string, isGroup?: boolean ) {
+    const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+    const expiresStr = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().replace('T', ' ').substring(0, 19);
+    const currentUser = this.authService.currentUserValue;
+
+    const payload = [
+      {
+        id: 1,
+        messageTypeId: messageTypeId,
+        messagStatusId: 1,
+        senderUserUuid: currentUser?.uuid ,
+        subject: "",
+        body: messageText ,
+        priority: 1,
+        timeline: nowStr,
+        expiresAt: expiresStr,
+        ackRequired: 0,
+        allowGroup: 0,
+        allowUser: 1,
+        initiatedByUuid: currentUser?.uuid ,
+        createdByUuid: currentUser?.uuid,
+        sentAt: nowStr,
+        parentMessageId: null,
+        toUserUuid: String(receiverId) ,
+        toUserGroupUuid: "23323-2323",
+        infoContent: "some info",
+        tickerContent: "Ticker info",
+        tickerExpiresAt: expiresStr,
+        details: []
+      }
+    ];
 
     if (!this.sync.isOnline) {
       this.toastService.show('Offline: Message queued for later sync', 'warning');
       this.socketService.simulateMessageSent(receiverId, messageText);
-      return from(this.storage.addPendingMessage(enrichedMessage)).pipe(
+      return from(this.storage.addPendingMessage(payload[0])).pipe(
         map(() => ({ success: true, status: 'pending' }))
       );
     }
 
-    return this.http.post(`${this.apiUrl}/send`, { receiverId, actionId, messageText }).pipe(
+    return this.http.post(`${this.apiUrl}/send-message`, payload).pipe(
+      map(() => ({
+        status: "success",
+        message: "Message Inserted Successfully",
+        data: {
+          firtMessageId: 8,
+          lastMessageId: 120,
+          messageDetails: null
+        },
+        timestamp: "2025-06-12T07:32:12.180Z"
+      })),
       tap(() => {
         this.socketService.simulateMessageSent(receiverId, messageText);
       }),
       catchError(() => {
-        this.storage.addPendingMessage(enrichedMessage);
+        this.storage.addPendingMessage(payload[0]);
         this.socketService.simulateMessageSent(receiverId, messageText);
-        return of({ success: true, status: 'pending' });
+        return of({
+          status: "success",
+          message: "Message Inserted Successfully",
+          data: {
+            firtMessageId: 8,
+            lastMessageId: 120,
+            messageDetails: null
+          },
+          timestamp: "2025-06-12T07:32:12.180Z"
+        });
       })
     );
   }
@@ -109,20 +147,20 @@ export class MessageService {
     );
   }
 
-  addBlinkingNode(nodeId: number) {
+  addBlinkingNode(nodeId: any) {
     const current = this.blinkingNodesSubject.value;
     current.add(nodeId);
     this.blinkingNodesSubject.next(new Set(current));
     setTimeout(() => this.removeBlinkingNode(nodeId), 3000);
   }
 
-  removeBlinkingNode(nodeId: number) {
+  removeBlinkingNode(nodeId: any) {
     const current = this.blinkingNodesSubject.value;
     current.delete(nodeId);
     this.blinkingNodesSubject.next(new Set(current));
   }
 
-  isNodeBlinking(nodeId: number): boolean {
+  isNodeBlinking(nodeId: any): boolean {
     return this.blinkingNodesSubject.value.has(nodeId);
   }
 
@@ -138,12 +176,14 @@ export class MessageService {
 
   getMessageTypes() {
     const mockTypes = [
-      { id: 'alert', label: 'Alert' },
-      { id: 'update', label: 'System Update' },
-      { id: 'reminder', label: 'Task Reminder' },
-      { id: 'notice', label: 'General Notice' },
-      { id: 'emergency', label: 'Emergency Broadcast' },
-      { id: 'info', label: 'Informational' }
+      { id: 1, type: "Alert", name: "All nodes update complete.", shortName: "AL", color: "#FF472E", colorDark: "#FF472E", displayOrder: 0, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:12:12", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 2, type: "System Update", name: "Version 2.1.0 has been deployed.", shortName: "SU", color: "#3B82F6", colorDark: "#3B82F6", displayOrder: 1, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:15:22", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 3, type: "Task Reminder", name: "Please complete daily safety checks.", shortName: "TR", color: "#F59E0B", colorDark: "#F59E0B", displayOrder: 2, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:20:00", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 4, type: "General Notice", name: "Weekly sync scheduled for Thursday.", shortName: "GN", color: "#10B981", colorDark: "#10B981", displayOrder: 3, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:25:30", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 5, type: "Emergency Broadcast", name: "Critical system outage reported.", shortName: "EB", color: "#EF4444", colorDark: "#EF4444", displayOrder: 4, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:30:10", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 6, type: "Informational", name: "Standard operating procedures updated.", shortName: "IN", color: "#6B7280", colorDark: "#6B7280", displayOrder: 5, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:35:45", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 7, type: "Security Alert", name: "Unauthorized login attempt detected.", shortName: "SA", color: "#8B5CF6", colorDark: "#8B5CF6", displayOrder: 6, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:40:00", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null },
+      { id: 8, type: "Maintenance Notice", name: "Scheduled server downtime this Saturday.", shortName: "MN", color: "#EC4899", colorDark: "#EC4899", displayOrder: 7, showInLegend: 1, allowGroup: 1, allowUser: 1, userAccess: 0, createdBy: 1, createdAt: "2025-06-11 00:45:00", updatedBy: 0, updatedAt: null, deletedBy: 0, deletedAt: null }
     ];
     return of(mockTypes);
   }

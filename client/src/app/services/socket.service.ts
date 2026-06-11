@@ -124,11 +124,11 @@ export class SocketService {
     this.socket?.emit(event, data);
   }
 
-  simulateMessageSent(receiverId: number, messageText: string) {
+  simulateMessageSent(receiverId: any, messageText: string) {
     console.log('🧪 SocketService: Simulating message sent & received for nodeId:', receiverId);
     const mockPayload = {
       senderId: this.authService.currentUserValue?.id || 1000,
-      receiverId: Number(receiverId),
+      receiverId: isNaN(Number(receiverId)) ? receiverId : Number(receiverId),
       messageText: messageText,
       timestamp: new Date().toISOString()
     };

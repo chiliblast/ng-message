@@ -37,6 +37,7 @@ export class MessageModalComponent implements OnInit {
   }
 
   messageText: string = '';
+  messageSubject: string = '';
   @Input() selectedActionId: any = null;
   isSending = false;
   isScanning = false;
@@ -48,30 +49,43 @@ export class MessageModalComponent implements OnInit {
 
   templates: { [key: string]: string[] } = {
     alert: [
-      "🚨 ALERT: System maintenance is scheduled for tonight at 11:00 PM EST. Please save all active work.",
-      "⚠️ WARNING: Network latency detected. We are investigating the issue."
+      "ALERT: System maintenance is scheduled for tonight at 11:00 PM EST. Please save all active work.",
+      "WARNING: Network latency detected. We are investigating the issue."
     ],
     update: [
-      "⚙️ SYSTEM UPDATE: Version 2.1.0 has been deployed. New dashboard tools are now available.",
-      "🔄 REBOOT: Node server will restart in 5 minutes for a critical security patch."
+      "SYSTEM UPDATE: Version 2.1.0 has been deployed. New dashboard tools are now available.",
+      "REBOOT: Node server will restart in 5 minutes for a critical security patch."
     ],
     reminder: [
-      "📋 REMINDER: Please review and complete your assigned daily safety checks.",
-      "⏱️ DUE SOON: Weekly status report submission is due by 5:00 PM today."
+      "REMINDER: Please review and complete your assigned daily safety checks.",
+      "DUE SOON: Weekly status report submission is due by 5:00 PM today."
     ],
     notice: [
-      "📢 NOTICE: Welcome new team members! Let's collaborate and build amazing software.",
-      "💬 INFO: Weekly sync meeting has been moved to Thursday at 10:00 AM."
+      "NOTICE: Welcome new team members! Let's collaborate and build amazing software.",
+      "INFO: Weekly sync meeting has been moved to Thursday at 10:00 AM."
     ],
     emergency: [
-      "🔴 EMERGENCY: Fire drill in progress. Please proceed to the nearest assembly area.",
-      "❌ OUTAGE: Database connection lost. Technical teams are currently recovering services."
+      "EMERGENCY: Fire drill in progress. Please proceed to the nearest assembly area.",
+      "OUTAGE: Database connection lost. Technical teams are currently recovering services."
     ],
     info: [
-      "ℹ️ INFO: Standard operating procedures have been updated in the documentation repository.",
-      "💡 TIP: You can use keyboard shortcuts to customize your workspace preferences."
+      "INFO: Standard operating procedures have been updated in the documentation repository.",
+      "TIP: You can use keyboard shortcuts to customize your workspace preferences."
     ]
   };
+
+  getActiveTypeKey(): string {
+    const selectedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId || t.id === Number(this.selectedMessageTypeId));
+    if (!selectedType) return 'info';
+    const typeKey = (selectedType.shortName?.toLowerCase() || selectedType.type?.toLowerCase() || '');
+    if (typeKey === 'al') return 'alert';
+    if (typeKey === 'su') return 'update';
+    if (typeKey === 'tr') return 'reminder';
+    if (typeKey === 'gn') return 'notice';
+    if (typeKey === 'eb') return 'emergency';
+    if (typeKey === 'in') return 'info';
+    return 'info';
+  }
 
   ngOnInit() {
     this.loadMessageTypes();
@@ -93,11 +107,43 @@ export class MessageModalComponent implements OnInit {
     });
   }
 
-  onMessageTypeChange(typeId: string) {
+  get activeTemplates(): string[] {
+    const selectedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId || t.id === Number(this.selectedMessageTypeId));
+    if (!selectedType) return [];
+    
+    const typeKey = (selectedType.shortName?.toLowerCase() || selectedType.type?.toLowerCase() || '');
+    let templateKey = typeKey;
+    if (typeKey === 'al') templateKey = 'alert';
+    else if (typeKey === 'su') templateKey = 'update';
+    else if (typeKey === 'tr') templateKey = 'reminder';
+    else if (typeKey === 'gn') templateKey = 'notice';
+    else if (typeKey === 'eb') templateKey = 'emergency';
+    else if (typeKey === 'in') templateKey = 'info';
+
+    return this.templates[templateKey] || [];
+  }
+  getTypeColor(type: any): string {
+    if (!type) return '';
+    const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark');
+    return isDark ? (type.colorDark || type.color) : type.color;
+  }
+
+  getSelectedTypeColor(): string {
+    const selectedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId || t.id === Number(this.selectedMessageTypeId));
+    return this.getTypeColor(selectedType);
+  }
+
+  getSelectedTypeName(): string {
+    const selectedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId || t.id === Number(this.selectedMessageTypeId));
+    return selectedType ? selectedType.name : '';
+  }
+  onMessageTypeChange(typeId: any) {
     this.selectedMessageTypeId = typeId;
-    const typeTemplates = this.templates[typeId];
-    if (typeTemplates && typeTemplates.length > 0) {
-      this.messageText = typeTemplates[0];
+    const currentTemplates = this.activeTemplates;
+    if (currentTemplates && currentTemplates.length > 0) {
+      this.messageText = currentTemplates[0];
+    } else {
+      this.messageText = '';
     }
   }
 
@@ -154,48 +200,45 @@ export class MessageModalComponent implements OnInit {
 
   sendMessage() {
     const targets = this.targetNodes;
-    if (targets.length === 0 || (!this.messageText && !this.selectedActionId)) return;
+    if (targets.length === 0 || !this.messageText) return;
 
     this.isSending = true;
 
-    // Fetch all actions to find the metadata for the selected one
-    this.statusActions$.subscribe(actions => {
-        const selectedCategory = actions.find((c: any) => c.id === this.selectedActionId);
+    const requests = targets.map(target => 
+      this.messageService.sendMessage(
+        target.uuid, 
+        this.messageText,
+        
+          target.name || target.displayName || target.groupName,
+      
+          Number(this.selectedMessageTypeId),
+          this.messageSubject,
+          targets.length > 1 || !!target.groupId
+        
+      )
+    );
 
-        const requests = targets.map(target => 
-          this.messageService.sendMessage(
-            target.id || target.groupId, 
-            this.selectedActionId, 
-            this.messageText,
-            {
-              recipient: target.name || target.displayName || target.groupName,
-              label: selectedCategory?.label || '',
-              labelColor: selectedCategory?.color || '#000000'
-            }
-          )
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.isSending = false;
+        
+        // Append to history list in the service
+        const matchedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId);
+        this.messageService.addMessageToHistory(
+          matchedType ? matchedType.label : 'General',
+          this.messageText
         );
 
-        forkJoin(requests).subscribe({
-          next: () => {
-            this.isSending = false;
-            
-            // Append to history list in the service
-            const matchedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId);
-            this.messageService.addMessageToHistory(
-              matchedType ? matchedType.label : 'General',
-              this.messageText
-            );
-
-            this.close.emit();
-            this.messageText = '';
-            this.selectedActionId = null;
-          },
-          error: (err) => {
-            this.isSending = false;
-            console.error('Failed to send message:', err);
-            alert('Failed to send message to one or more nodes. Please try again.');
-          }
-        });
+        this.close.emit();
+        this.messageText = '';
+        this.messageSubject = '';
+        this.selectedActionId = null;
+      },
+      error: (err) => {
+        this.isSending = false;
+        console.error('Failed to send message:', err);
+        alert('Failed to send message to one or more nodes. Please try again.');
+      }
     });
   }
 }

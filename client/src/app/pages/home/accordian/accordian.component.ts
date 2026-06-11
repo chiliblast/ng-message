@@ -18,7 +18,7 @@ export class AccordianComponent implements OnInit {
   
   statusActions$ = this.settingsService.statusActions$;
   isBlinking$ = this.messageService.blinkingNodes$.pipe(
-    map(nodes => nodes.has(this.node?.groupId))
+    map(nodes => nodes.has(this.node?.groupId) || nodes.has(this.node?.groupUuid))
   );
   
   @Input() node: any;
@@ -57,6 +57,7 @@ export class AccordianComponent implements OnInit {
   }
 
   selectNode(event: MouseEvent) {
+    event.stopPropagation();
     if (this.node) {
       this.onSelect.emit({ node: this.node, event });
     }
