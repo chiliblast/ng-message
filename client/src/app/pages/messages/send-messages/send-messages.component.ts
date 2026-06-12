@@ -61,6 +61,13 @@ export class SendMessagesComponent implements OnInit {
     this.selectedRecipient = node.name;
   }
 
+  getTypeColor(type: any): string {
+    if (!type) return '';
+    if (typeof type === 'string') return '#6B7280';
+    const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark');
+    return isDark ? (type.colorDark || type.color) : type.color;
+  }
+
   toggleView() {
     this.showNewMessage = !this.showNewMessage;
   }

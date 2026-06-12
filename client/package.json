@@ -23,6 +23,8 @@
     "@angular/router": "^21.2.4",
     "@angular/service-worker": "^21.2.4",
     "@ckeditor/ckeditor5-angular": "^11.1.2",
+    "@digitalpersona/core": "^0.2.6",
+    "@digitalpersona/devices": "^0.2.6",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/outfit": "^5.2.8",
     "@fortawesome/angular-fontawesome": "^4.0.0",

@@ -1,10 +1,10 @@
 import {
   DomSanitizer
-} from "./chunk-JSZZVCV7.js";
+} from "./chunk-G7PG6GTQ.js";
+import "./chunk-Z4HEMYZS.js";
 import {
   isPlatformBrowser
 } from "./chunk-RU4NSEM6.js";
-import "./chunk-Z4HEMYZS.js";
 import "./chunk-BLEKNJ5W.js";
 import {
   APP_ID,

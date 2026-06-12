@@ -39,17 +39,17 @@
       <!-- Progress and Reply Card -->
       <div *ngIf="selectedOrder" class="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden p-5 space-y-4">
         <div>
-          <h3 class="text-sm font-bold text-gray-900 dark:text-white">Broadcast: {{ selectedOrder.type }}</h3>
-          <p class="text-xs text-gray-500">Sent: {{ selectedOrder.time }}</p>
+          <h3 class="text-sm font-bold text-gray-900 dark:text-white">Broadcast: {{ selectedOrder.type?.messageType || selectedOrder.type }}</h3>
+          <p class="text-xs text-gray-500">Sent: {{ selectedOrder.sentAt }}</p>
           <div class="mt-1">
             <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase" 
-                  [class.bg-emerald-100]="selectedOrder.status === 'Delivered' || selectedOrder.status === 'Completed' || selectedOrder.status === 'Sent'" 
-                  [class.text-emerald-700]="selectedOrder.status === 'Delivered' || selectedOrder.status === 'Completed' || selectedOrder.status === 'Sent'"
+                  [class.bg-emerald-100]="selectedOrder.status === 'Delivered' || selectedOrder.status === 'Completed' || selectedOrder.status === 'Sent' || !selectedOrder.status" 
+                  [class.text-emerald-700]="selectedOrder.status === 'Delivered' || selectedOrder.status === 'Completed' || selectedOrder.status === 'Sent' || !selectedOrder.status"
                   [class.bg-amber-100]="selectedOrder.status === 'In Progress' || selectedOrder.status === 'Seen'"
                   [class.text-amber-700]="selectedOrder.status === 'In Progress' || selectedOrder.status === 'Seen'"
                   [class.bg-gray-100]="selectedOrder.status === 'Pending'"
                   [class.text-gray-700]="selectedOrder.status === 'Pending'">
-              {{ selectedOrder.status }}
+              {{ selectedOrder.status || 'Delivered' }}
             </span>
           </div>
         </div>
@@ -116,21 +116,26 @@
              [class.ring-2]="selectedOrder === msg"
              [class.ring-brand-500]="selectedOrder === msg">
           <div class="flex justify-between items-center">
-            <span class="text-[10px] font-black px-2 py-0.5 rounded bg-brand-500/10 text-brand-500 uppercase tracking-wider">
-              {{ msg.type }}
+            <span 
+              [style.color]="getTypeColor(msg.type)"
+              [style.backgroundColor]="getTypeColor(msg.type) + '12'" 
+              [style.borderColor]="getTypeColor(msg.type) + '30'"
+              class="text-[10px] font-black px-2 py-0.5 rounded border uppercase tracking-wider"
+            >
+              {{ msg.type?.messageType || msg.type }}
             </span>
             <span class="text-xs text-gray-400 dark:text-gray-500">
-              {{ msg.time }}
+              {{ msg.sentAt }}
             </span>
           </div>
           <p class="text-sm text-gray-700 dark:text-white leading-relaxed">
-            {{ msg.text }}
+            {{ msg.body }}
           </p>
           <div class="flex justify-between items-center pt-1">
             <span class="text-xs text-gray-500 dark:text-gray-400">Delivery Status</span>
             <span class="text-xs font-bold uppercase tracking-widest text-emerald-500 dark:text-gray-400 flex items-center gap-1">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-gray-400"></span>
-              {{ msg.status }}
+              {{ msg.status || 'Delivered' }}
             </span>
           </div>
         </div>

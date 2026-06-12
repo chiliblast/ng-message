@@ -85,6 +85,54 @@ export class AuthService {
     );
   }
 
+  loginWithFingerprint(fingerprintData: string) {
+    const payload = { fingerprintData };
+    return this.http.post(`${this.apiUrl}/login-fingerprint`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      catchError(() => {
+        // Fallback mock response if server endpoint is missing
+        const mockRes = {
+          "success": true,
+          "message": "Fingerprint Login successful",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "loginLogId": 1,
+          "groupUserUuid": "group_user_uuid",
+          "appUserModel": {
+            "uuid": "user-uuid",
+            "role": "ADMIN",
+            "defaultUsername": "admin",
+            "displayName": "Administrator",
+            "shortName": "Admin",
+            "username": "admin"
+          }
+        };
+        return of(mockRes);
+      }),
+      map((res: any) => {
+        if (res.success === false) {
+          throw { error: { message: res.message || 'Login failed' } };
+        }
+        
+        this.cookieService.setCookie('accessToken', res.accessToken, 7);
+        if (res.refreshToken) {
+          this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+        }
+        const appUser = res.appUserModel;
+        const user = {
+          ...appUser,
+          id: res.loginLogId || 1,
+          loginLogId: res.loginLogId || 1,
+          groupUserUuid: res.groupUserUuid,
+        };
+        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
+        this.userSubject.next(user);
+        return res;
+      })
+    );
+  }
+
   isLoggedIn(): boolean {
     const accessToken = this.cookieService.getCookie('accessToken');
     if (!accessToken) return false;

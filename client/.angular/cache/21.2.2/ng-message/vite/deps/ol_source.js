@@ -11,11 +11,6 @@ import {
 } from "./chunk-AXHT5MJH.js";
 import "./chunk-RFFIRJYH.js";
 import {
-  ATTRIBUTION,
-  OSM_default,
-  XYZ_default
-} from "./chunk-SMCFCQ6N.js";
-import {
   DECIMALS,
   Image_default as Image_default3,
   TileWMS_default,
@@ -24,7 +19,12 @@ import {
   getFeatureInfoUrl,
   getLegendUrl,
   getRequestExtent
-} from "./chunk-U6JT7U2C.js";
+} from "./chunk-45NQMUTF.js";
+import {
+  ATTRIBUTION,
+  OSM_default,
+  XYZ_default
+} from "./chunk-BEFZRSLX.js";
 import {
   TileEventType_default,
   TileGrid_default,
@@ -44,7 +44,7 @@ import {
   nullTileUrlFunction,
   pickUrl,
   renderXYZTemplate
-} from "./chunk-JMGCBW7S.js";
+} from "./chunk-JM6AZYAX.js";
 import {
   TileQueue_default
 } from "./chunk-AODCLWIO.js";
@@ -55,7 +55,11 @@ import {
   scale as scale3,
   translate,
   translation
-} from "./chunk-2FNG2U5K.js";
+} from "./chunk-K37GLM7U.js";
+import {
+  Vector_default,
+  loadFeaturesXhr
+} from "./chunk-RWNGKRXA.js";
 import {
   DataTile_default,
   LRUCache_default,
@@ -63,9 +67,13 @@ import {
   asArrayLike,
   asImageLike,
   toArray
-} from "./chunk-LJD3PA6Z.js";
-import "./chunk-GWWCGAQD.js";
+} from "./chunk-FJFVTSZB.js";
+import "./chunk-SX6VJL3J.js";
+import "./chunk-DTGEUEQ7.js";
 import "./chunk-7EDTMLQK.js";
+import {
+  Source_default
+} from "./chunk-LPZAUJUI.js";
 import {
   ERROR_THRESHOLD,
   ImageTile_default,
@@ -77,20 +85,26 @@ import {
   getCacheKey,
   getKeyZXY,
   hash
-} from "./chunk-NYFEOOHI.js";
+} from "./chunk-3UTUTMS6.js";
 import {
-  Vector_default,
-  loadFeaturesXhr
-} from "./chunk-Z62S5ZOV.js";
-import "./chunk-SX6VJL3J.js";
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import "./chunk-UO2MFT2B.js";
+import "./chunk-6MQFOTFN.js";
+import "./chunk-4KDWRKEG.js";
 import {
-  Source_default
-} from "./chunk-VLAIQMRX.js";
-import "./chunk-YUSLVFRR.js";
+  ViewHint_default
+} from "./chunk-OTOAFGMZ.js";
+import "./chunk-EI6MWDKW.js";
+import "./chunk-7H5QLMDW.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
-import "./chunk-7H5QLMDW.js";
+import {
+  DEFAULT_MAX_ZOOM,
+  DEFAULT_TILE_SIZE
+} from "./chunk-UUNRDFYK.js";
+import "./chunk-ZL2AWGCB.js";
 import {
   Image_default,
   WORKER_OFFSCREEN_CANVAS,
@@ -100,20 +114,9 @@ import {
   scale as scale2,
   toSize
 } from "./chunk-54EF7IXW.js";
-import "./chunk-UO2MFT2B.js";
-import "./chunk-6MQFOTFN.js";
-import {
-  ViewHint_default
-} from "./chunk-UK7UYFT4.js";
-import {
-  DEFAULT_MAX_ZOOM,
-  DEFAULT_TILE_SIZE
-} from "./chunk-UUNRDFYK.js";
-import "./chunk-SN7LJ3EI.js";
-import "./chunk-555HNW5N.js";
 import {
   Point_default
-} from "./chunk-U23BO6VG.js";
+} from "./chunk-YD3L4RHR.js";
 import {
   apply,
   create,
@@ -159,15 +162,12 @@ import {
   transform,
   transformExtent,
   wrapAndSliceX
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   clamp,
   modulo,
   round
 } from "./chunk-WN76SNZK.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
 import {
   Disposable_default,
   EventType_default,
