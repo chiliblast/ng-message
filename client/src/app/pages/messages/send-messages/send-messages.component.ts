@@ -33,7 +33,7 @@ export class SendMessagesComponent implements OnInit {
       error: (err) => console.error('Error fetching hierarchy:', err)
     });
 
-    this.messageService.getSentMessagesHistory().subscribe({
+    this.messageService.getMessagesHistory().subscribe({
       next: (history) => {
         this.historyList = history;
         if (history.length > 0 && !this.selectedOrder) {

@@ -89,7 +89,9 @@ export class MessageModalComponent implements OnInit {
 
   ngOnInit() {
     this.loadMessageTypes();
-    this.loadHistory();
+    this.messageService.history$.subscribe((history) => {
+      this.historyList = history;
+    });
   }
 
   loadMessageTypes() {
@@ -98,13 +100,19 @@ export class MessageModalComponent implements OnInit {
       if (this.messageTypes.length > 0 && !this.selectedMessageTypeId) {
         this.onMessageTypeChange(this.messageTypes[0].id);
       }
+      this.loadHistory();
     });
   }
 
   loadHistory() {
-    this.messageService.getSentMessagesHistory().subscribe((history) => {
-      this.historyList = history;
-    });
+    const uuid = this.targetNodes[0]?.uuid || '';
+    const messageTypeId = Number(this.selectedMessageTypeId) || 1;
+    const payload = {
+      uuid: uuid,
+      hierarchyNeeded: 0,
+      messageTypeId: messageTypeId
+    };
+    this.messageService.getMessagesHistory(payload).subscribe();
   }
 
   get activeTemplates(): string[] {
@@ -124,6 +132,11 @@ export class MessageModalComponent implements OnInit {
   }
   getTypeColor(type: any): string {
     if (!type) return '';
+    if (typeof type === 'string') {
+      const matched = this.messageTypes.find(t => t.type === type || t.name === type || t.shortName === type);
+      if (matched) type = matched;
+      else return '#6B7280';
+    }
     const isDark = document.body.classList.contains('dark') || document.documentElement.classList.contains('dark');
     return isDark ? (type.colorDark || type.color) : type.color;
   }
@@ -145,6 +158,7 @@ export class MessageModalComponent implements OnInit {
     } else {
       this.messageText = '';
     }
+    this.loadHistory();
   }
 
   selectTemplate(template: string) {
@@ -225,7 +239,7 @@ export class MessageModalComponent implements OnInit {
         // Append to history list in the service
         const matchedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId);
         this.messageService.addMessageToHistory(
-          matchedType ? matchedType.label : 'General',
+          matchedType,
           this.messageText
         );
 

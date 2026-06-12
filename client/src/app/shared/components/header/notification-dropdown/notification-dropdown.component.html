@@ -62,22 +62,25 @@
           (itemClick)="closeDropdown()"
           [className]="'w-full text-left text-sm text-gray-700 hover:text-gray-900 flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5'"
         >
-          <span class="relative block w-full h-10 rounded-full z-1 max-w-10 flex items-center justify-center bg-brand-500 text-white font-bold text-base uppercase shadow-sm">
-            {{ msg.type ? msg.type.charAt(0) : 'M' }}
+          <span 
+            [style.backgroundColor]="msg.type?.color || '#3B82F6'"
+            class="relative block w-full h-10 rounded-full z-1 max-w-10 flex items-center justify-center text-white font-bold text-base uppercase shadow-sm"
+          >
+            {{ msg.type?.messageType ? msg.type.messageType.charAt(0) : 'M' }}
           </span>
           <span class="block flex-1 min-w-0">
             <span class="mb-1 block text-theme-sm text-gray-500 dark:text-gray-400">
               <span class="font-bold text-gray-800 dark:text-white/90">
-                {{ msg.type || 'System Notification' }}
+                {{ msg.type?.messageType || msg.type || 'System Notification' }}
               </span>
             </span>
             <p class="mb-1 text-xs text-gray-700 dark:text-gray-300 leading-normal line-clamp-2 pr-2">
-              {{ msg.text }}
+              {{ msg.body }}
             </p>
             <span class="flex items-center gap-1.5 text-gray-400 text-theme-xs dark:text-gray-500">
-              <span>Status: {{ msg.status }}</span>
+              <span>Status: Delivered</span>
               <span class="w-1 h-1 bg-gray-300 dark:bg-gray-750 rounded-full"></span>
-              <span>{{ formatTime(msg.time) }}</span>
+              <span>{{ formatTime(msg.sentAt) }}</span>
             </span>
           </span>
         </app-dropdown-item>

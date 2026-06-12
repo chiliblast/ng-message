@@ -121,20 +121,25 @@
             
             <div *ngFor="let msg of historyList" class="p-2.5 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800/50 shadow-sm space-y-1.5 animate-in fade-in duration-300">
               <div class="flex justify-between items-center">
-                <span class="text-xs font-black px-1.5 py-0.5 rounded bg-brand-500/10 text-brand-500 uppercase tracking-wider">
-                  {{ msg.type }}
+                <span 
+                  [style.color]="getTypeColor(msg.type)"
+                  [style.backgroundColor]="getTypeColor(msg.type) + '12'" 
+                  [style.borderColor]="getTypeColor(msg.type) + '30'"
+                  class="text-xs font-black px-1.5 py-0.5 rounded border uppercase tracking-wider"
+                >
+                  {{ msg.type?.messageType || msg.type }}
                 </span>
                 <span class="text-xs font-medium text-gray-400 dark:text-gray-500">
-                  {{ msg.time }}
+                  {{ msg.sentAt }}
                 </span>
               </div>
               <p class="text-base text-gray-700 dark:text-gray-300 leading-normal line-clamp-2">
-                {{ msg.text }}
+                {{ msg.body }}
               </p>
               <div class="flex justify-end">
                 <span class="text-xs font-bold uppercase tracking-widest text-emerald-500 flex items-center gap-1">
                   <span class="w-1 h-1 rounded-full bg-emerald-500"></span>
-                  {{ msg.status }}
+                  Delivered
                 </span>
               </div>
             </div>

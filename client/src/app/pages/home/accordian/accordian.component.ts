@@ -57,7 +57,7 @@ export class AccordianComponent implements OnInit {
   }
 
   selectNode(event: MouseEvent) {
-    event.stopPropagation();
+    event.stopPropagation(); //stop accordian from closing or opening
     if (this.node) {
       this.onSelect.emit({ node: this.node, event });
     }

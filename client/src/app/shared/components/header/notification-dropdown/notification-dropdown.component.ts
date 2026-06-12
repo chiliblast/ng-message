@@ -29,7 +29,7 @@ export class NotificationDropdownComponent implements OnInit {
   }
 
   loadMessages() {
-    this.messageService.getSentMessagesHistory().subscribe(data => {
+    this.messageService.getMessagesHistory().subscribe(data => {
       this.messages = data;
       // Show notifying indicator if there are messages
       if (this.messages.length > 0) {

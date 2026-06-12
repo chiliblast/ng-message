@@ -166,11 +166,100 @@ export class MessageService {
 
   // Mock API and History Stream
   private mockHistory = [
-    { id: 1, type: 'Alert', text: 'All nodes update complete.', time: '2026-06-09 14:30', status: 'Delivered' },
-    { id: 2, type: 'Task Reminder', text: 'Please complete the assigned tasks.', time: '2026-06-09 11:15', status: 'Delivered' },
-    { id: 3, type: 'System Update', text: 'Starting scheduled server maintenance.', time: '2026-06-08 23:00', status: 'Seen' },
-    { id: 4, type: 'Emergency Broadcast', text: 'Critical patch required immediately.', time: '2026-06-08 09:45', status: 'Delivered' }
+    {
+      body: "All nodes update complete.",
+      type: {
+        color: "#FF472E",
+        allowUser: 1,
+        colorDark: "#FF472E",
+        allowGroup: 1,
+        messageType: "Alert",
+        messageTypeId: 1,
+        messageTypeName: "Alert",
+        messageTypeShortName: "AL"
+      },
+      sentAt: "2026-06-09 14:30",
+      subject: "Action Required",
+      priority: 3,
+      progress: null,
+      timeline: null,
+      expiresAt: null,
+      messageId: 2,
+      recipients: [{ recipientUserId: null, slectedGroupId: null, recipientGroupId: 33 }],
+      messageUuid: "some-uuid-1",
+      messageDetails: []
+    },
+    {
+      body: "Please complete the assigned tasks.",
+      type: {
+        color: "#F59E0B",
+        allowUser: 1,
+        colorDark: "#F59E0B",
+        allowGroup: 1,
+        messageType: "Task Reminder",
+        messageTypeId: 3,
+        messageTypeName: "Task Reminder",
+        messageTypeShortName: "TR"
+      },
+      sentAt: "2026-06-09 11:15",
+      subject: "Reminder",
+      priority: 2,
+      progress: null,
+      timeline: null,
+      expiresAt: null,
+      messageId: 3,
+      recipients: [{ recipientUserId: null, slectedGroupId: null, recipientGroupId: 33 }],
+      messageUuid: "some-uuid-2",
+      messageDetails: []
+    },
+    {
+      body: "Starting scheduled server maintenance.",
+      type: {
+        color: "#3B82F6",
+        allowUser: 1,
+        colorDark: "#3B82F6",
+        allowGroup: 1,
+        messageType: "System Update",
+        messageTypeId: 2,
+        messageTypeName: "System Update",
+        messageTypeShortName: "SU"
+      },
+      sentAt: "2026-06-08 23:00",
+      subject: "Maintenance",
+      priority: 1,
+      progress: null,
+      timeline: null,
+      expiresAt: null,
+      messageId: 4,
+      recipients: [{ recipientUserId: null, slectedGroupId: null, recipientGroupId: 33 }],
+      messageUuid: "some-uuid-3",
+      messageDetails: []
+    },
+    {
+      body: "Critical patch required immediately.",
+      type: {
+        color: "#EF4444",
+        allowUser: 1,
+        colorDark: "#EF4444",
+        allowGroup: 1,
+        messageType: "Emergency Broadcast",
+        messageTypeId: 5,
+        messageTypeName: "Emergency Broadcast",
+        messageTypeShortName: "EB"
+      },
+      sentAt: "2026-06-08 09:45",
+      subject: "Urgent",
+      priority: 5,
+      progress: null,
+      timeline: null,
+      expiresAt: null,
+      messageId: 5,
+      recipients: [{ recipientUserId: null, slectedGroupId: null, recipientGroupId: 33 }],
+      messageUuid: "some-uuid-4",
+      messageDetails: []
+    }
   ];
+
   private historySubject = new BehaviorSubject<any[]>(this.mockHistory);
   history$ = this.historySubject.asObservable();
 
@@ -188,18 +277,70 @@ export class MessageService {
     return of(mockTypes);
   }
 
-  getSentMessagesHistory() {
-    return this.history$;
+  getMessagesHistory(payload?: { uuid?: string; hierarchyNeeded?: number; messageTypeId?: number }) {
+    const finalPayload = {
+      uuid: payload?.uuid || '',
+      hierarchyNeeded: payload?.hierarchyNeeded ?? 0,
+      messageTypeId: payload?.messageTypeId ?? 0
+    };
+    return this.http.post<any[]>(`${this.apiUrl}/history`, finalPayload).pipe(
+      tap(history => {
+        this.historySubject.next(history);
+      }),
+      catchError(() => {
+        // Fallback to local mockHistory matching messageTypeId if set
+        const filtered = this.mockHistory.filter(item => 
+          !finalPayload.messageTypeId || item.type?.messageTypeId === finalPayload.messageTypeId
+        );
+        this.historySubject.next(filtered);
+        return of(filtered);
+      })
+    );
   }
 
-  addMessageToHistory(type: string, text: string) {
+  addMessageToHistory(type: any, text: string) {
     const current = this.historySubject.value;
+    
+    let typeObj = {
+      color: "#6B7280",
+      allowUser: 1,
+      colorDark: "#6B7280",
+      allowGroup: 1,
+      messageType: "General",
+      messageTypeId: 99,
+      messageTypeName: "General",
+      messageTypeShortName: "GN"
+    };
+
+    if (type && typeof type === 'object') {
+      typeObj = {
+        color: type.color || "#6B7280",
+        allowUser: type.allowUser ?? 1,
+        colorDark: type.colorDark || type.color || "#6B7280",
+        allowGroup: type.allowGroup ?? 1,
+        messageType: type.type || "General",
+        messageTypeId: type.id || 99,
+        messageTypeName: type.name || type.type || "General",
+        messageTypeShortName: type.shortName || "GN"
+      };
+    } else if (typeof type === 'string') {
+      typeObj.messageType = type;
+      typeObj.messageTypeName = type;
+    }
+
     const newMsg = {
-      id: Date.now(),
-      type,
-      text,
-      time: new Date().toISOString().replace('T', ' ').substring(0, 16),
-      status: 'Sent'
+      body: text,
+      type: typeObj,
+      sentAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+      subject: "",
+      priority: 1,
+      progress: null,
+      timeline: null,
+      expiresAt: null,
+      messageId: Date.now(),
+      recipients: [],
+      messageUuid: "",
+      messageDetails: []
     };
     this.historySubject.next([newMsg, ...current]);
   }
