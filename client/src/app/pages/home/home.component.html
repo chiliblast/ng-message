@@ -15,9 +15,9 @@
                      (onShowCall)="onOpenCall($event)" 
                      (onShowMessage)="onOpenMessage($event)">
         
-        <!-- Children Grid (Indented and side-by-side, only rendered when parent node is open) -->
-        <div *ngIf="node.children?.length && node.isOpen" 
-             class="flex flex-wrap gap-1 animate-in fade-in slide-in-from-top-2 duration-300"
+        <!-- ONLY last leaf nodes are projected INSIDE their parent accordion body drawer -->
+        <div *ngIf="isSecondLastLevel(node) && node.children?.length && node.isOpen" 
+             class="flex flex-wrap gap-1 animate-in fade-in slide-in-from-top-2 duration-300 w-full"
              [ngClass]="getGridClass(node)">
           <div *ngFor="let child of node.children" 
                class="animate-in fade-in duration-300"
@@ -26,6 +26,18 @@
           </div>
         </div>
       </app-accordian>
+
+      <!-- Intermediate accordion levels are rendered OUTSIDE/under their parent accordion for performance -->
+      <div *ngIf="!isSecondLastLevel(node) && node.children?.length" 
+           class="overflow-hidden transition-all duration-500 ease-in-out border-l border-dashed border-gray-200 dark:border-gray-800/80 w-full"
+           [ngClass]="node.isOpen ? 'pl-4 sm:pl-6 mt-2 max-w-[2000px] opacity-100 translate-x-0' : 'pl-0 mt-0 max-w-0 opacity-0 -translate-x-10 pointer-events-none border-l-0'">
+        <div class="flex flex-wrap gap-4 w-full">
+          <div *ngFor="let child of node.children" 
+               class="animate-in fade-in duration-300 flex-1 min-w-[280px] sm:min-w-[320px] max-w-full">
+            <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, parent: node }"></ng-container>
+          </div>
+        </div>
+      </div>
     </div>
   </ng-template>
 

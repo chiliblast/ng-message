@@ -276,8 +276,8 @@ export class HomeComponent implements OnInit {
     this.selectedNode = null;
   }
 
-  // isSecondLastLevel(node: any): boolean {
-  //   return node && node.children && node.children.length > 0 &&
-  //          node.children.every((child: any) => !child.children || child.children.length === 0);
-  // }
+  isSecondLastLevel(node: any): boolean {
+    return node && node.children && node.children.length > 0 &&
+           node.children.every((child: any) => !child.children || child.children.length === 0);
+  }
 }
