@@ -1,33 +1,10 @@
 import {
-  TileQueue_default,
-  getTilePriority
-} from "./chunk-AODCLWIO.js";
-import {
   GroupEvent,
   Group_default
-} from "./chunk-LMAW7IKW.js";
+} from "./chunk-QCPOKF3B.js";
 import {
   BaseVector_default
-} from "./chunk-7ZLY3WAE.js";
-import {
-  CollectionEventType_default,
-  Collection_default
-} from "./chunk-UO2MFT2B.js";
-import "./chunk-6MQFOTFN.js";
-import {
-  EventType_default as EventType_default2,
-  Event_default as Event_default2,
-  Layer_default,
-  inView
-} from "./chunk-4KDWRKEG.js";
-import {
-  ViewHint_default,
-  View_default,
-  disable
-} from "./chunk-OTOAFGMZ.js";
-import {
-  Polygon_default
-} from "./chunk-EI6MWDKW.js";
+} from "./chunk-QYQEKRKH.js";
 import {
   CLASS_COLLAPSED,
   CLASS_CONTROL,
@@ -35,14 +12,24 @@ import {
   CLASS_UNSELECTABLE,
   checkedFonts,
   shared
-} from "./chunk-SEDETUIR.js";
-import "./chunk-7H5QLMDW.js";
-import "./chunk-3U7ETZD3.js";
+} from "./chunk-VTXTTWN7.js";
 import {
-  easeOut,
-  linear
-} from "./chunk-UUNRDFYK.js";
-import "./chunk-ZL2AWGCB.js";
+  TileQueue_default,
+  getTilePriority
+} from "./chunk-5XARQ4UY.js";
+import {
+  EventType_default as EventType_default2,
+  Event_default as Event_default2,
+  Layer_default,
+  inView
+} from "./chunk-BN5ZRY26.js";
+import "./chunk-UMQE2TWP.js";
+import {
+  ViewHint_default,
+  View_default,
+  disable
+} from "./chunk-MYLQZXDJ.js";
+import "./chunk-3U7ETZD3.js";
 import {
   DEVICE_PIXEL_RATIO,
   MAC,
@@ -55,19 +42,32 @@ import {
   removeChildren,
   replaceChildren,
   replaceNode
-} from "./chunk-54EF7IXW.js";
-import "./chunk-YD3L4RHR.js";
+} from "./chunk-RVMJBYZQ.js";
+import {
+  easeOut,
+  linear
+} from "./chunk-UUNRDFYK.js";
+import {
+  CollectionEventType_default,
+  Collection_default
+} from "./chunk-MSBHZPFG.js";
+import "./chunk-6MQFOTFN.js";
+import {
+  Polygon_default
+} from "./chunk-3UFJNU4D.js";
+import "./chunk-555HNW5N.js";
+import "./chunk-NVEWV32H.js";
 import {
   apply,
   compose,
   create,
   fromString,
   makeInverse
-} from "./chunk-NSVQGFP6.js";
+} from "./chunk-M3P7OBJC.js";
 import {
   clone,
   createOrUpdateEmpty,
-  equals as equals2,
+  equals,
   fromUserCoordinate,
   getForViewAndSize,
   getWidth,
@@ -77,7 +77,7 @@ import {
   toUserCoordinate,
   warn,
   wrapX2 as wrapX
-} from "./chunk-SI74V2AK.js";
+} from "./chunk-3V33AXQY.js";
 import {
   clamp
 } from "./chunk-WN76SNZK.js";
@@ -93,12 +93,12 @@ import {
   VOID,
   abstract,
   assert,
-  equals,
+  equals as equals2,
   getUid,
   listen,
   toPromise,
   unlistenByKey
-} from "./chunk-R2H6PGDU.js";
+} from "./chunk-VD4LBHIQ.js";
 import "./chunk-HXCEJZED.js";
 import {
   __async
@@ -765,7 +765,7 @@ var Attribution = class extends Control_default {
         this.element.style.display = visible ? "" : "none";
         this.renderedVisible_ = visible;
       }
-      if (equals(attributions, this.renderedAttributions_)) {
+      if (equals2(attributions, this.renderedAttributions_)) {
         return;
       }
       removeChildren(this.ulElement_);
@@ -4022,7 +4022,7 @@ var Map = class extends Object_default {
         frameState.postRenderFunctions
       );
       if (previousFrameState) {
-        const moveStart = !this.previousExtent_ || !isEmpty(this.previousExtent_) && !equals2(frameState.extent, this.previousExtent_);
+        const moveStart = !this.previousExtent_ || !isEmpty(this.previousExtent_) && !equals(frameState.extent, this.previousExtent_);
         if (moveStart) {
           this.dispatchEvent(
             new MapEvent_default(MapEventType_default.MOVESTART, this, previousFrameState)
@@ -4030,7 +4030,7 @@ var Map = class extends Object_default {
           this.previousExtent_ = createOrUpdateEmpty(this.previousExtent_);
         }
       }
-      const idle = this.previousExtent_ && !frameState.viewHints[ViewHint_default.ANIMATING] && !frameState.viewHints[ViewHint_default.INTERACTING] && !equals2(frameState.extent, this.previousExtent_);
+      const idle = this.previousExtent_ && !frameState.viewHints[ViewHint_default.ANIMATING] && !frameState.viewHints[ViewHint_default.INTERACTING] && !equals(frameState.extent, this.previousExtent_);
       if (idle) {
         this.dispatchEvent(
           new MapEvent_default(MapEventType_default.MOVEEND, this, frameState)
@@ -4131,7 +4131,7 @@ var Map = class extends Object_default {
       }
     }
     const oldSize = this.getSize();
-    if (size && (!oldSize || !equals(size, oldSize))) {
+    if (size && (!oldSize || !equals2(size, oldSize))) {
       this.updateViewportSize_(size);
       this.setSize(size);
     }

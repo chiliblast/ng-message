@@ -5,25 +5,19 @@ import {
   HIT_DETECT_RESOLUTION,
   Immediate_default,
   VectorLayer_default,
-  Vector_default as Vector_default2,
+  Vector_default,
   createHitDetectionImageData,
   getSquaredTolerance,
   hitDetect,
   renderFeature
-} from "./chunk-S6SCOKZ5.js";
+} from "./chunk-GYDXOBCZ.js";
 import {
   ImageCanvas_default,
   ImageLayer_default,
   Image_default,
   create as create2,
   fromTransform
-} from "./chunk-K37GLM7U.js";
-import {
-  Feature_default as Feature_default2,
-  LineString_default,
-  VectorEventType_default,
-  Vector_default
-} from "./chunk-RWNGKRXA.js";
+} from "./chunk-WMTYACTW.js";
 import {
   BaseTile_default,
   DataTile_default,
@@ -33,29 +27,32 @@ import {
   Tile_default as Tile_default2,
   asArrayLike,
   asImageLike
-} from "./chunk-FJFVTSZB.js";
-import "./chunk-SX6VJL3J.js";
+} from "./chunk-MVY3IU7U.js";
 import {
   Layer_default as Layer_default2,
   ZIndexContext_default
-} from "./chunk-DTGEUEQ7.js";
+} from "./chunk-NXO35WYL.js";
 import {
   fromResolutionLike
 } from "./chunk-7EDTMLQK.js";
-import "./chunk-LPZAUJUI.js";
 import {
   ImageTile_default,
   TileRange_default,
   Tile_default2 as Tile_default,
   createOrUpdate2 as createOrUpdate,
   getKey
-} from "./chunk-3UTUTMS6.js";
+} from "./chunk-47VL2XO3.js";
 import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
+  Feature_default as Feature_default2,
+  LineString_default,
+  VectorEventType_default,
+  Vector_default as Vector_default2
+} from "./chunk-5EV3RQ6S.js";
+import "./chunk-SX6VJL3J.js";
+import "./chunk-PESFG5SZ.js";
 import {
   Group_default
-} from "./chunk-LMAW7IKW.js";
+} from "./chunk-QCPOKF3B.js";
 import {
   BaseVector_default,
   BooleanType,
@@ -71,49 +68,49 @@ import {
   newParsingContext,
   parse,
   typeName
-} from "./chunk-7ZLY3WAE.js";
-import {
-  Collection_default
-} from "./chunk-UO2MFT2B.js";
-import {
-  RBush
-} from "./chunk-6MQFOTFN.js";
-import {
-  EventType_default as EventType_default2,
-  Event_default,
-  Layer_default,
-  Property_default
-} from "./chunk-4KDWRKEG.js";
-import {
-  ViewHint_default
-} from "./chunk-OTOAFGMZ.js";
-import {
-  inflateEnds
-} from "./chunk-EI6MWDKW.js";
+} from "./chunk-QYQEKRKH.js";
 import {
   Fill_default,
   Stroke_default,
   Style_default,
   Text_default
-} from "./chunk-SEDETUIR.js";
+} from "./chunk-VTXTTWN7.js";
+import {
+  EventType_default as EventType_default2,
+  Event_default,
+  Layer_default,
+  Property_default
+} from "./chunk-BN5ZRY26.js";
 import {
   asArray
-} from "./chunk-7H5QLMDW.js";
+} from "./chunk-UMQE2TWP.js";
+import {
+  ViewHint_default
+} from "./chunk-MYLQZXDJ.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
-import "./chunk-UUNRDFYK.js";
-import "./chunk-ZL2AWGCB.js";
 import {
   ImageState_default,
   SAFARI_BUG_237906,
   createCanvasContext2D,
   toSize
-} from "./chunk-54EF7IXW.js";
+} from "./chunk-RVMJBYZQ.js";
+import "./chunk-UUNRDFYK.js";
+import {
+  Collection_default
+} from "./chunk-MSBHZPFG.js";
+import {
+  RBush
+} from "./chunk-6MQFOTFN.js";
+import {
+  inflateEnds
+} from "./chunk-3UFJNU4D.js";
+import "./chunk-555HNW5N.js";
 import {
   Point_default,
   transform2D
-} from "./chunk-YD3L4RHR.js";
+} from "./chunk-NVEWV32H.js";
 import {
   apply,
   compose,
@@ -125,7 +122,7 @@ import {
   scale,
   setFromArray,
   translate
-} from "./chunk-NSVQGFP6.js";
+} from "./chunk-M3P7OBJC.js";
 import {
   applyTransform,
   approximatelyEquals,
@@ -135,7 +132,7 @@ import {
   containsExtent,
   createEmpty,
   degreesToStringHDMS,
-  equals as equals2,
+  equals,
   equivalent,
   fromUserCoordinate,
   fromUserExtent,
@@ -157,11 +154,14 @@ import {
   transformExtent,
   wrapX,
   wrapX2
-} from "./chunk-SI74V2AK.js";
+} from "./chunk-3V33AXQY.js";
 import {
   clamp,
   squaredSegmentDistance
 } from "./chunk-WN76SNZK.js";
+import {
+  Feature_default
+} from "./chunk-26Q57NXL.js";
 import {
   Disposable_default,
   EventType_default,
@@ -170,11 +170,11 @@ import {
   ascending,
   assert,
   descending,
-  equals,
+  equals as equals2,
   getUid,
   listen,
   unlistenByKey
-} from "./chunk-R2H6PGDU.js";
+} from "./chunk-VD4LBHIQ.js";
 import {
   clear
 } from "./chunk-HXCEJZED.js";
@@ -315,7 +315,7 @@ var INTERVALS = [
   2 / 3600,
   1 / 3600
 ];
-var Graticule = class extends Vector_default2 {
+var Graticule = class extends Vector_default {
   /**
    * @param {Options} [options] Options.
    */
@@ -411,7 +411,7 @@ var Graticule = class extends Vector_default2 {
     }
     this.intervals_ = options.intervals !== void 0 ? options.intervals : INTERVALS;
     this.setSource(
-      new Vector_default({
+      new Vector_default2({
         loader: this.loaderFunction.bind(this),
         strategy: this.strategyFunction.bind(this),
         features: new Collection_default(),
@@ -466,7 +466,7 @@ var Graticule = class extends Vector_default2 {
       Infinity
     ];
     const renderExtent = getIntersection(layerExtent, extent);
-    if (this.renderedExtent_ && equals2(this.renderedExtent_, renderExtent) && this.renderedResolution_ === resolution) {
+    if (this.renderedExtent_ && equals(this.renderedExtent_, renderExtent) && this.renderedResolution_ === resolution) {
       return;
     }
     this.renderedExtent_ = renderExtent;
@@ -7107,7 +7107,7 @@ var WebGLRenderTarget = class {
    * @param {Array<number>} size Expected size of the render target texture
    */
   setSize(size) {
-    if (equals(size, this.size_)) {
+    if (equals2(size, this.size_)) {
       return;
     }
     this.size_[0] = size[0];
@@ -7513,7 +7513,7 @@ var WebGLVectorLayerRenderer = class extends Layer_default3 {
     const vectorSource = layer.getSource();
     const viewState = frameState.viewState;
     const viewNotMoving = !frameState.viewHints[ViewHint_default.ANIMATING] && !frameState.viewHints[ViewHint_default.INTERACTING];
-    const extentChanged = !equals2(this.previousExtent_, frameState.extent);
+    const extentChanged = !equals(this.previousExtent_, frameState.extent);
     const sourceChanged = this.sourceRevision_ < vectorSource.getRevision();
     if (sourceChanged) {
       this.sourceRevision_ = vectorSource.getRevision();
@@ -8273,7 +8273,7 @@ var CanvasVectorTileLayerRenderer = class extends TileLayer_default {
         layer.getRenderBuffer() * resolution,
         this.tempExtent
       );
-      const bufferedExtent = equals2(sourceTileExtent, sharedExtent) ? null : builderExtent;
+      const bufferedExtent = equals(sourceTileExtent, sharedExtent) ? null : builderExtent;
       const builderGroup = new BuilderGroup_default(
         0,
         sharedExtent,
@@ -9361,7 +9361,7 @@ var WebGLPointsLayerRenderer = class extends Layer_default3 {
     const vectorSource = layer.getSource();
     const viewState = frameState.viewState;
     const viewNotMoving = !frameState.viewHints[ViewHint_default.ANIMATING] && !frameState.viewHints[ViewHint_default.INTERACTING];
-    const extentChanged = !equals2(this.previousExtent_, frameState.extent);
+    const extentChanged = !equals(this.previousExtent_, frameState.extent);
     const sourceChanged = this.sourceRevision_ < vectorSource.getRevision();
     if (sourceChanged) {
       this.sourceRevision_ = vectorSource.getRevision();
@@ -9992,7 +9992,7 @@ export {
   Image_default as Image,
   Layer_default as Layer,
   Tile_default2 as Tile,
-  Vector_default2 as Vector,
+  Vector_default as Vector,
   VectorImage_default as VectorImage,
   VectorTile_default as VectorTile,
   WebGLPoints_default as WebGLPoints,

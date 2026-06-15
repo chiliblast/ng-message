@@ -7,6 +7,7 @@ import { SettingsService } from '../../../../services/settings.service';
 
 import { MessageService } from '../../../../services/message.service';
 import { Html5Qrcode } from 'html5-qrcode';
+import * as QRCode from 'qrcode';
 //import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 //import { ClassicEditor, Essentials, Paragraph, Bold, Italic, Undo } from 'ckeditor5';
 
@@ -27,7 +28,18 @@ export class MessageModalComponent implements OnInit {
   private messageService = inject(MessageService);
   statusActions$ = this.settingsService.statusActions$;
 
-  @Input() isOpen = false;
+  private _isOpen = false;
+  @Input()
+  set isOpen(value: boolean) {
+    this._isOpen = value;
+    if (value) {
+      this.updateQrCode();
+    }
+  }
+  get isOpen(): boolean {
+    return this._isOpen;
+  }
+
   @Input() node: any = null;
   @Input() nodes: any[] = [];
   @Output() close = new EventEmitter<void>();
@@ -159,10 +171,12 @@ export class MessageModalComponent implements OnInit {
       this.messageText = '';
     }
     this.loadHistory();
+    this.updateQrCode();
   }
 
   selectTemplate(template: string) {
     this.messageText = template;
+    this.updateQrCode();
   }
 
   selectCategory(id: any) {
@@ -210,6 +224,67 @@ export class MessageModalComponent implements OnInit {
     } else {
       this.isScanning = false;
     }
+  }
+
+  getQrCodeDataJson(): string {
+    const selectedType = this.messageTypes.find(t => t.id === this.selectedMessageTypeId || t.id === Number(this.selectedMessageTypeId));
+    const jsonObject = {
+      type: selectedType ? selectedType.name : '',
+      subject: this.messageSubject,
+      body: this.messageText
+    };
+    return JSON.stringify(jsonObject, null, 2);
+  }
+
+  generateQrCode() {
+    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    if (!this.messageText) return;
+
+    const data = JSON.stringify({
+      type: this.getSelectedTypeName(),
+      subject: this.messageSubject,
+      body: this.messageText
+    });
+
+    QRCode.toCanvas(canvas, data, {
+      width: 160,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#ffffff'
+      }
+    }, (error) => {
+      if (error) console.error('Error generating QR code:', error);
+    });
+  }
+
+  updateQrCode() {
+    setTimeout(() => {
+      this.generateQrCode();
+    }, 50);
+  }
+
+  downloadQrCode() {
+    const canvas = document.getElementById('qr-canvas') as HTMLCanvasElement;
+    if (!canvas) return;
+    
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `message-qr-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  copyPayload() {
+    const json = this.getQrCodeDataJson();
+    navigator.clipboard.writeText(json).then(() => {
+      alert('Payload JSON copied to clipboard!');
+    }).catch(err => {
+      console.error('Could not copy text: ', err);
+    });
   }
 
   sendMessage() {
