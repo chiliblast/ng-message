@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { faHome, faPaperPlane, faInbox, faInfoCircle, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+import { faHome, faPaperPlane, faInbox, faInfoCircle, faMapMarkerAlt, faQrcode } from '@fortawesome/free-solid-svg-icons';
 
 @Injectable({ providedIn: 'root' })
 export class MenuService {
@@ -9,7 +9,8 @@ export class MenuService {
     'faPaperPlane': faPaperPlane,
     'faInbox': faInbox,
     'faInfoCircle': faInfoCircle,
-    'faMapMarkerAlt': faMapMarkerAlt
+    'faMapMarkerAlt': faMapMarkerAlt,
+    'faQrcode': faQrcode
   };
 
   getMenuItems(): Observable<any[]> {
@@ -26,7 +27,8 @@ export class MenuService {
 
   getOthersItems(): Observable<any[]> {
     const othersItems = [
-      { name: 'Location Import', icon: 'faMapMarkerAlt', path: '/location-import' }
+      { name: 'Location Import', icon: 'faMapMarkerAlt', path: '/location-import' },
+      { name: 'QR Generator', icon: 'faQrcode', path: '/qrcode' }
     ];
     return of(othersItems);
   }

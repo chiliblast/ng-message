@@ -24,6 +24,7 @@ import { SentMessageComponent } from './pages/messages/sent-message/sent-message
 import { InfoMessagesComponent } from './pages/messages/info-messages/info-messages.component';
 import { SendMessagesComponent } from './pages/messages/send-messages/send-messages.component';
 import { LocationImportComponent } from './pages/location-import/location-import.component';
+import { QrCodeGeneratorComponent } from './pages/qrcode/qrcode.component';
 
 import { authGuard } from './guards/auth.guard';
 import { authRedirectGuard } from './guards/auth-redirect.guard';
@@ -65,6 +66,11 @@ export const routes: Routes = [
         path: 'location-import',
         component: LocationImportComponent,
         title: 'Location Import & Management'
+      },
+      {
+        path: 'qrcode',
+        component: QrCodeGeneratorComponent,
+        title: 'QR Code Generator'
       },
       // {
       //   path: 'ecommerce',
