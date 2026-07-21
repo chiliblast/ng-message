@@ -39,6 +39,18 @@
         "timeout": "5s",
         "strategy": "freshness"
       }
+    },
+    {
+      "name": "hierarchy-cache",
+      "urls": [
+        "http://localhost:3000/api/hierarchy"
+      ],
+      "cacheConfig": {
+        "maxSize": 10,
+        "maxAge": "1d",
+        "timeout": "3s",
+        "strategy": "freshness"
+      }
     }
   ]
 }

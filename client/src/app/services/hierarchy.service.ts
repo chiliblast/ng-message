@@ -134,46 +134,10 @@ export class HierarchyService {
     if (this.cachedHierarchy) {
       return of(this.cachedHierarchy);
     }
-    
-    // TODO: Remove this mock response once real response is available
-    // Usage
-    const mockRes = this.generateTree(
-      3, // roots
-      5, // max depth
-      1, // min children
-      6, // max children
-      0  // starting depthFromStart
+
+    return this.http.get<any>(this.apiUrl).pipe(
+      map(data => Array.isArray(data) ? data : [data]),
+      tap(data => this.cachedHierarchy = data)
     );
-
-    console.log(mockRes);
-    const addUiFlags = (group: any): any => {
-      const actions = [];
-      const prog = group.progress || 0;
-      
-      if (prog >= 80) {
-        actions.push({ id: 1, name: 'Active', color: '#10b981', label: 'A' });
-      } else if (prog >= 40) {
-        actions.push({ id: 2, name: 'Pending', color: '#f59e0b', label: 'B' });
-      } else if (prog > 0) {
-        actions.push({ id: 3, name: 'Suspended', color: '#ef4444', label: 'C' });
-      } else {
-        actions.push({ id: 4, name: 'Active', color: '#10b981', label: 'D' });
-      }
-
-      return {
-        ...group,
-        isOpen: true,
-        actions,
-        children: (group.children || []).map((c: any) => addUiFlags(c))
-      };
-    };
-
-    this.cachedHierarchy = mockRes.map(addUiFlags);
-
-    return of(this.cachedHierarchy).pipe(
-      tap(data => this.storage.saveHierarchy(data))
-    );
-
-    
   }
 }
