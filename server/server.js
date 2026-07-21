@@ -25,6 +25,7 @@ app.use('/peerjs', peerServer);
 app.use(cors());
 app.use(express.json());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+app.use(express.static(path.join(__dirname, 'dist/ng-message/browser')));
 
 // Track multiple sockets per user (Set of socket IDs)
 const connectedUsers = new Map();
@@ -217,6 +218,11 @@ app.post('/api/auth/logout-global', (req, res) => {
 // Attach io to app for use in controllers
 app.set('io', io);
 app.set('connectedUsers', connectedUsers);
+
+// Fallback route to serve index.html for Angular routing
+app.use((req, res) => {
+    res.sendFile(path.join(__dirname, 'dist/ng-message/browser/index.html'));
+});
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
