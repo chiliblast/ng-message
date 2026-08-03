@@ -18,11 +18,11 @@ export class NewsService {
       "NOTICE: Please sync your offline data when returning to a stable connection."
     ];
 
-    // Cycle a random message every 15 seconds locally
-    return timer(0, 15000).pipe(
-      map(() => {
-        const randomIndex = Math.floor(Math.random() * hardcodedMessages.length);
-        return "FLASH: " + hardcodedMessages[randomIndex].toUpperCase();
+    // Cycle messages sequentially in a loop every 25 seconds locally
+    return timer(0, 25000).pipe(
+      map((tick) => {
+        const index = tick % hardcodedMessages.length;
+        return "FLASH: " + hardcodedMessages[index].toUpperCase();
       })
     );
   }

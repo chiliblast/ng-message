@@ -135,9 +135,9 @@ export class HierarchyService {
       return of(this.cachedHierarchy);
     }
 
-    return this.http.get<any>(this.apiUrl).pipe(
-      map(data => Array.isArray(data) ? data : [data]),
-      tap(data => this.cachedHierarchy = data)
-    );
+    // Mock API response since server is not needed right now
+    const mockTree = this.generateTree();
+    this.cachedHierarchy = mockTree;
+    return of(mockTree);
   }
 }

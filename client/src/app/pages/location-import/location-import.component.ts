@@ -52,10 +52,14 @@ export class LocationImportComponent implements OnInit {
   importData: any[] = [];
   
   dbColumns = [
-    { key: 'name', label: 'Name' },
+    { key: 'target_number', label: 'Target Number' },
+    { key: 'target_name', label: 'Target Name' },
     { key: 'latitude', label: 'Latitude' },
     { key: 'longitude', label: 'Longitude' },
-    { key: 'address', label: 'Address' }
+    { key: 'latitide_dms', label: 'Latitude (DMS)' },
+    { key: 'lontitude_dms', label: 'Longitude (DMS)' },
+    { key: 'altitude', label: 'Altitude' },
+    { key: 'target_description', label: 'Target Description' }
   ];
   fileHeaders: string[] = [];
   rawFileData: any[] = [];
@@ -64,10 +68,14 @@ export class LocationImportComponent implements OnInit {
   // Right Grid (Live Registry)
   registryData: any[] = [];
   registryColumnDefs: ColDef[] = [
-    { field: 'name', headerName: 'Name', flex: 1.5, sortable: true, filter: true },
+    { field: 'target_number', headerName: 'Target #', flex: 1.2, sortable: true, filter: true },
+    { field: 'target_name', headerName: 'Name', flex: 1.5, sortable: true, filter: true },
     { field: 'latitude', headerName: 'Lat', flex: 1 },
     { field: 'longitude', headerName: 'Long', flex: 1 },
-    { field: 'address', headerName: 'Address', flex: 2, sortable: true, filter: true },
+    { field: 'latitide_dms', headerName: 'Lat (DMS)', flex: 1.2 },
+    { field: 'lontitude_dms', headerName: 'Long (DMS)', flex: 1.2 },
+    { field: 'altitude', headerName: 'Alt', flex: 0.8 },
+    { field: 'target_description', headerName: 'Description', flex: 2, sortable: true, filter: true },
     {
       headerName: 'Actions',
       width: 120,
@@ -147,10 +155,14 @@ export class LocationImportComponent implements OnInit {
 
   addNewLocation() {
     this.newLocationForm = {
-      name: '',
+      target_number: '',
+      target_name: '',
       latitude: '',
       longitude: '',
-      address: ''
+      latitide_dms: '',
+      lontitude_dms: '',
+      altitude: 2,
+      target_description: ''
     };
     this.isAddModalOpen = true;
     this.initMap();
@@ -203,6 +215,8 @@ export class LocationImportComponent implements OnInit {
         const coords = toLonLat(evt.coordinate);
         this.newLocationForm.latitude = coords[1].toFixed(6);
         this.newLocationForm.longitude = coords[0].toFixed(6);
+        this.newLocationForm.latitide_dms = this.locationService.decimalToDMS(coords[1], true);
+        this.newLocationForm.lontitude_dms = this.locationService.decimalToDMS(coords[0], false);
 
         // Update Marker
         this.markerSource.clear();
@@ -297,6 +311,8 @@ export class LocationImportComponent implements OnInit {
       const lonLat = toLonLat(evt.coordinate);
       this.locationToEdit.latitude = lonLat[1].toFixed(6);
       this.locationToEdit.longitude = lonLat[0].toFixed(6);
+      this.locationToEdit.latitide_dms = this.locationService.decimalToDMS(lonLat[1], true);
+      this.locationToEdit.lontitude_dms = this.locationService.decimalToDMS(lonLat[0], false);
 
       this.editMarkerSource.clear();
       this.editMarkerSource.addFeature(new Feature({ geometry: new Point(evt.coordinate) }));
@@ -316,6 +332,8 @@ export class LocationImportComponent implements OnInit {
     const lon = parseFloat(form.longitude);
 
     if (this.validatePrecision(form.latitude) && this.validatePrecision(form.longitude)) {
+      form.latitide_dms = this.locationService.decimalToDMS(lat, true);
+      form.lontitude_dms = this.locationService.decimalToDMS(lon, false);
       const coords = fromLonLat([lon, lat]);
       
       source.clear();
@@ -336,7 +354,7 @@ export class LocationImportComponent implements OnInit {
   }
 
   confirmAddLocation() {
-    if (!this.newLocationForm.name || !this.newLocationForm.latitude || !this.newLocationForm.longitude) {
+    if (!this.newLocationForm.target_name || !this.newLocationForm.latitude || !this.newLocationForm.longitude) {
       this.toastService.show('Please enter Name and Coordinates', 'warning');
       return;
     }
@@ -370,10 +388,14 @@ export class LocationImportComponent implements OnInit {
   locationToDelete: any = null;
   locationToEdit: any = null;
   newLocationForm = {
-    name: '',
+    target_number: '',
+    target_name: '',
     latitude: '',
     longitude: '',
-    address: ''
+    latitide_dms: '',
+    lontitude_dms: '',
+    altitude: 2,
+    target_description: ''
   };
 
   ngOnInit() {
@@ -461,7 +483,11 @@ export class LocationImportComponent implements OnInit {
         return f === d || f.includes(d) || d.includes(f) ||
                (d === 'latitude' && (f === 'lat' || f === 'y')) ||
                (d === 'longitude' && (f === 'lng' || f === 'long' || f === 'x')) ||
-               (d === 'name' && (f === 'title' || f === 'label'));
+               (d === 'latitide_dms' && (f.includes('lat') && f.includes('dms'))) ||
+               (d === 'lontitude_dms' && (f.includes('long') && f.includes('dms') || f.includes('lng') && f.includes('dms'))) ||
+               (d === 'target_name' && (f === 'name' || f === 'title' || f === 'label')) ||
+               (d === 'target_number' && (f === 'number' || f === 'code' || f === 'id')) ||
+               (d === 'target_description' && (f === 'description' || f === 'address' || f === 'details'));
       });
       if (match) {
         this.columnMapping[dbCol.key] = match;
@@ -556,15 +582,33 @@ export class LocationImportComponent implements OnInit {
         const fileCol = this.columnMapping[dbCol.key];
         let val = fileCol ? row[fileCol] : null;
         
-        // Parse numbers for coordinates
-        if (dbCol.key === 'latitude' || dbCol.key === 'longitude') {
-          val = parseFloat(val);
+        // Parse numbers for coordinates and altitude
+        if (dbCol.key === 'latitude' || dbCol.key === 'longitude' || dbCol.key === 'altitude') {
+          val = val !== null && val !== undefined && val !== '' ? parseFloat(val) : null;
         }
         
         obj[dbCol.key] = val;
       });
+
+      // Autofill missing coordinates / DMS if one is present
+      if ((obj.latitude === null || isNaN(obj.latitude)) && obj.latitide_dms) {
+        obj.latitude = this.locationService.dmsToDecimal(obj.latitide_dms);
+      } else if (obj.latitude !== null && !isNaN(obj.latitude) && !obj.latitide_dms) {
+        obj.latitide_dms = this.locationService.decimalToDMS(obj.latitude, true);
+      }
+
+      if ((obj.longitude === null || isNaN(obj.longitude)) && obj.lontitude_dms) {
+        obj.longitude = this.locationService.dmsToDecimal(obj.lontitude_dms);
+      } else if (obj.longitude !== null && !isNaN(obj.longitude) && !obj.lontitude_dms) {
+        obj.lontitude_dms = this.locationService.decimalToDMS(obj.longitude, false);
+      }
+
+      if (obj.altitude === null || isNaN(obj.altitude)) {
+        obj.altitude = 2;
+      }
+
       return obj;
-    }).filter(d => !isNaN(d.latitude) && !isNaN(d.longitude));
+    }).filter(d => !isNaN(d.latitude) && !isNaN(d.longitude) && d.latitude !== null && d.longitude !== null);
 
     if (mappedData.length === 0) {
       this.toastService.show('No valid data after mapping (Coordinates missing or invalid)', 'warning');
@@ -573,7 +617,7 @@ export class LocationImportComponent implements OnInit {
 
     this.locationService.bulkSave(mappedData).subscribe({
       next: (res) => {
-        this.toastService.show(res.message, 'success');
+        this.toastService.show(res.message || 'Import successful', 'success');
         this.rawFileData = [];
         this.fileHeaders = [];
         this.columnMapping = {};

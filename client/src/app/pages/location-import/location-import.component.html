@@ -30,10 +30,15 @@
       </div>
       
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-          <i class="pi pi-upload text-brand-500"></i>
-          Import File
-        </h2>
+        <div>
+          <h2 class="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
+            <i class="pi pi-upload text-brand-500"></i>
+            Import File
+          </h2>
+          <span class="text-[10px] bg-brand-50 dark:bg-brand-950 text-brand-600 dark:text-brand-400 px-2 py-0.5 rounded-full font-semibold uppercase tracking-wider mt-1 inline-block">
+            Supports DMS Conversion
+          </span>
+        </div>
         <div class="flex gap-2">
           <label class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
             <span>Browse File</span>
@@ -177,11 +182,30 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Form Fields -->
         <div class="space-y-4">
+          <!-- Target Number & Altitude -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Target Number</app-label>
+              <app-input-field 
+                [(value)]="newLocationForm.target_number"
+                placeholder="e.g. LOC-101"
+              />
+            </div>
+            <div>
+              <app-label>Altitude</app-label>
+              <app-input-field 
+                type="number"
+                [(value)]="newLocationForm.altitude"
+                placeholder="e.g. 2"
+              />
+            </div>
+          </div>
+
           <!-- Name -->
           <div>
             <app-label>Location Name</app-label>
             <app-input-field 
-              [(value)]="newLocationForm.name"
+              [(value)]="newLocationForm.target_name"
               placeholder="e.g. Science Block A"
             />
           </div>
@@ -214,11 +238,31 @@
             </div>
           </div>
 
-          <!-- Address -->
+          <!-- DMS Coordinates Display (Read-Only) -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Latitude (DMS)</app-label>
+              <app-input-field 
+                type="text" 
+                [disabled]="true"
+                [(value)]="newLocationForm.latitide_dms"
+                [placeholder]="'Auto-calculated'"
+              />
+            </div>
+            <div>
+              <app-label>Longitude (DMS)</app-label>
+              <app-input-field 
+                type="text" 
+                [disabled]="true"
+                [(value)]="newLocationForm.lontitude_dms"
+                [placeholder]="'Auto-calculated'"
+              />
+            </div>
+          </div>
           <div class="space-y-1.5">
             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
             <textarea 
-              [(ngModel)]="newLocationForm.address"
+              [(ngModel)]="newLocationForm.target_description"
               placeholder="Street address, building name, etc."
               rows="3"
               class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
@@ -269,11 +313,30 @@
       <div *ngIf="locationToEdit" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Form Fields -->
         <div class="space-y-4">
+          <!-- Target Number & Altitude -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Target Number</app-label>
+              <app-input-field 
+                [(value)]="locationToEdit.target_number"
+                placeholder="e.g. LOC-101"
+              />
+            </div>
+            <div>
+              <app-label>Altitude</app-label>
+              <app-input-field 
+                type="number"
+                [(value)]="locationToEdit.altitude"
+                placeholder="e.g. 2"
+              />
+            </div>
+          </div>
+
           <!-- Name -->
           <div>
             <app-label>Location Name</app-label>
             <app-input-field 
-              [(value)]="locationToEdit.name"
+              [(value)]="locationToEdit.target_name"
               placeholder="e.g. Science Block A"
             />
           </div>
@@ -306,11 +369,31 @@
             </div>
           </div>
 
-          <!-- Address -->
+          <!-- DMS Coordinates Display (Read-Only) -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <app-label>Latitude (DMS)</app-label>
+              <app-input-field 
+                type="text" 
+                [disabled]="true"
+                [(value)]="locationToEdit.latitide_dms"
+                [placeholder]="'Auto-calculated'"
+              />
+            </div>
+            <div>
+              <app-label>Longitude (DMS)</app-label>
+              <app-input-field 
+                type="text" 
+                [disabled]="true"
+                [(value)]="locationToEdit.lontitude_dms"
+                [placeholder]="'Auto-calculated'"
+              />
+            </div>
+          </div>
           <div class="space-y-1.5">
             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Address / Details</label>
             <textarea 
-              [(ngModel)]="locationToEdit.address"
+              [(ngModel)]="locationToEdit.target_description"
               rows="3"
               class="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-gray-800 text-sm dark:text-white/90 placeholder:text-gray-400 dark:placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all resize-none"></textarea>
           </div>
