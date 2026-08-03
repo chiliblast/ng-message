@@ -1,28 +1,55 @@
 <div class="h-10 w-full flex items-center justify-between px-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_10px_-1px_rgba(0,0,0,0.05)]">
-  <div class="flex items-center gap-3 w-full overflow-hidden h-full">
-    
-    <!-- Blinking Indicator -->
-    <span class="flex h-2.5 w-2.5 relative shrink-0">
-      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
-      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
-    </span>
-
+  <div class="flex items-center w-full overflow-hidden h-full">
     <!-- Flashing Message from Mock API -->
     <div class="ticker-container text-[11px] sm:text-xs font-bold text-gray-700 dark:text-gray-300 tracking-wide h-full">
-      <div 
-        *ngIf="currentMessage" 
-        [class.ticker-active]="isAnimating" 
-        class="ticker-text"
-      >
-        {{ currentMessage }}
-      </div>
-      <div *ngIf="!currentMessage" class="text-gray-400 dark:text-gray-500 animate-pulse">
-        Loading latest broadcast...
+      <div class="marquee-track" [style.transform]="'translate3d(' + currentPercent + '%, 0, 0)'">
+        <!-- Main Message List -->
+        <div class="flex items-center gap-12 pr-12 shrink-0 whitespace-nowrap">
+          <div *ngFor="let msg of allMessages" class="flex items-center gap-2 shrink-0">
+            <!-- Blinking Indicator -->
+            <span class="flex h-2.5 w-2.5 relative shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+            </span>
+            <span>{{ msg }}</span>
+          </div>
+        </div>
+        <!-- Duplicate Message List for Seamless Loop -->
+        <div class="flex items-center gap-12 pr-12 shrink-0 whitespace-nowrap">
+          <div *ngFor="let msg of allMessages" class="flex items-center gap-2 shrink-0">
+            <!-- Blinking Indicator -->
+            <span class="flex h-2.5 w-2.5 relative shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-500"></span>
+            </span>
+            <span>{{ msg }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="shrink-0 text-[10px] font-black uppercase text-gray-400 dark:text-gray-500 tracking-wider pl-4 hidden sm:block">
-    Ng-Message v1.0
+  <div class="flex items-center gap-3 shrink-0">
+    <!-- Ticker Controls -->
+    <div class="flex items-center gap-1 shrink-0 pl-4 border-l border-gray-200 dark:border-gray-800">
+      <button (click)="prevMessage()" class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors" title="Reverse News">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button (click)="togglePause()" class="w-6 h-6 flex items-center justify-center rounded-md bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/20 dark:hover:bg-brand-900/40 text-brand-600 dark:text-brand-400 transition-colors" [title]="isPaused ? 'Play' : 'Pause'">
+        <svg *ngIf="!isPaused" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+        <svg *ngIf="isPaused" class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      </button>
+      <button (click)="nextMessage()" class="w-6 h-6 flex items-center justify-center rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors" title="Forward News">
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
   </div>
 </div>
