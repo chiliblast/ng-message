@@ -35,8 +35,7 @@
             ],
             "scripts": [
               "node_modules/apexcharts/dist/apexcharts.min.js",
-              "node_modules/html-magnifier/html-magnifier.js",
-              "src/app/core/modules/WebSdk/index.js"
+              "node_modules/html-magnifier/html-magnifier.js"
             ]
           },
           "configurations": {

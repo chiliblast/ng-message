@@ -85,16 +85,16 @@ export class AuthService {
     );
   }
 
-  loginWithFingerprint(fingerprintData: string) {
-    const payload = { fingerprintData };
-    return this.http.post(`${this.apiUrl}/login-fingerprint`, payload, {
+  loginWithWebAuthn(credential: any) {
+    // Send the WebAuthn credential payload to the server for verification
+    return this.http.post(`${this.apiUrl}/login-webauthn`, credential, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
       catchError(() => {
         // Fallback mock response if server endpoint is missing
         const mockRes = {
           "success": true,
-          "message": "Fingerprint Login successful",
+          "message": "WebAuthn Login successful",
           "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
           "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
           "loginLogId": 1,
