@@ -192,7 +192,13 @@ export class AuthService {
 
   private handleLocalLogout() {
     this.userSubject.next(null);
-    this.router.navigate(['/signin']);
+    
+    // If this window is the dual screen window, close it instead of redirecting to sign in
+    if (window.name.startsWith('DualScreenHome') || window.location.pathname.includes('home-standalone')) {
+      window.close();
+    } else {
+      this.router.navigate(['/signin']);
+    }
   }
 
   refreshToken(): Observable<any> {

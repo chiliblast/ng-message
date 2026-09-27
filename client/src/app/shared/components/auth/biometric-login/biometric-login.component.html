@@ -52,5 +52,14 @@
     <p class="text-xs text-gray-400 dark:text-gray-500">
       Use Windows Hello or device biometrics
     </p>
+    
+    <!-- Back Button (shown if authentication failed/canceled) -->
+    <button 
+      *ngIf="showBackButton"
+      (click)="goBack.emit()"
+      class="mt-4 inline-block text-xs font-semibold text-brand-500 hover:text-brand-600 transition-colors pt-2"
+    >
+      &larr; Back to Sign in
+    </button>
   </div>
 </div>

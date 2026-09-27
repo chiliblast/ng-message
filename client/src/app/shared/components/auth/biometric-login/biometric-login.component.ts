@@ -1,4 +1,4 @@
-import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
+import { Component, inject, Output, EventEmitter, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../../services/auth.service';
@@ -11,7 +11,7 @@ import { ToastService } from '../../../../services/toast.service';
   templateUrl: './biometric-login.component.html',
   styles: ``
 })
-export class BiometricLoginComponent {
+export class BiometricLoginComponent implements OnInit {
   private authService = inject(AuthService);
   private toastService = inject(ToastService);
   private router = inject(Router);
@@ -19,9 +19,18 @@ export class BiometricLoginComponent {
   @Input() loading = false;
   @Input() username = 'user'; // Accept username dynamically
   @Output() loadingChange = new EventEmitter<boolean>();
+  @Output() goBack = new EventEmitter<void>();
 
   isWebAuthnScanning = false;
   webAuthnStatus = '';
+  showBackButton = false;
+
+  ngOnInit() {
+    // Automatically trigger the WebAuthn prompt when this component is loaded (Step 2)
+    setTimeout(() => {
+      this.startWebAuthnLogin();
+    }, 500); // Slight delay for smoother UI transition
+  }
 
   private setLoading(state: boolean) {
     this.loading = state;
@@ -31,10 +40,12 @@ export class BiometricLoginComponent {
   async startWebAuthnLogin() {
     if (!window.PublicKeyCredential) {
       this.toastService.show('WebAuthn is not supported in this browser.', 'error');
+      this.showBackButton = true;
       return;
     }
 
     this.isWebAuthnScanning = true;
+    this.showBackButton = false;
     this.webAuthnStatus = 'Waiting for authentication...';
 
     try {
@@ -129,6 +140,7 @@ export class BiometricLoginComponent {
             const errMsg = err.error?.message || err.message || 'Authentication failed';
             this.toastService.show(errMsg, 'error');
             this.webAuthnStatus = 'Verification failed. Try again.';
+            this.showBackButton = true;
           }
         });
       }
@@ -136,6 +148,7 @@ export class BiometricLoginComponent {
       console.error('WebAuthn error:', error);
       this.webAuthnStatus = 'Authentication failed or canceled.';
       this.toastService.show(error.message || 'Biometric authentication canceled', 'error');
+      this.showBackButton = true;
     } finally {
       this.isWebAuthnScanning = false;
     }

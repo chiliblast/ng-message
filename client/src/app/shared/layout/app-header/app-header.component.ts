@@ -71,6 +71,33 @@ export class AppHeaderComponent {
     }
   }
 
+  async openDualScreen() {
+    const route = '/home-standalone'; // Open the standalone home page without layout
+    const windowName = 'DualScreenHome_' + Date.now();
+
+    try {
+      // Check if the modern Window Management API is supported
+      if ('getScreenDetails' in window) {
+        const screenDetails = await (window as any).getScreenDetails();
+        // Find the first screen that is not the current one
+        const secondScreen = screenDetails.screens.find((s: any) => s !== screenDetails.currentScreen);
+        
+        if (secondScreen) {
+          // Open exactly on the bounds of the second screen
+          window.open(route, windowName, `left=${secondScreen.availLeft},top=${secondScreen.availTop},width=${secondScreen.availWidth},height=${secondScreen.availHeight}`);
+          return;
+        }
+      }
+      
+      // Fallback: just open a new window
+      window.open(route, windowName, 'width=1280,height=800,left=800,top=0');
+    } catch (e) {
+      console.error('Dual screen error:', e);
+      // Fallback if permission denied
+      window.open(route, windowName, 'width=1280,height=800');
+    }
+  }
+
   dropdownNodes: any[] = [];
   selectedNodes: any[] = [];
   isDropdownOpen = false;

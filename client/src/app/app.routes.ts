@@ -148,6 +148,13 @@ export const routes: Routes = [
       
     ]
   },
+  // standalone page for dual screen
+  {
+    path: 'home-standalone',
+    component: HomeComponent,
+    canActivate: [authGuard, roleGuard],
+    title: 'Home (Dual Screen)'
+  },
   // auth pages
   {
     path:'signin',
