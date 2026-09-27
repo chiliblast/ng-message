@@ -1,0 +1,39 @@
+<app-modal [isOpen]="isOpen" (close)="onClose()" className="max-w-[400px] w-full p-6">
+  <div class="flex flex-col items-center justify-center space-y-6">
+    <div class="p-4 bg-gray-100 rounded-full dark:bg-gray-800">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-brand-500">
+        <!-- Fingerprint icon path -->
+        <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="text-center">
+      <h3 class="mb-2 text-lg font-semibold text-gray-800 dark:text-white/90">
+        Register Fingerprint
+      </h3>
+      <p class="text-sm text-gray-500 dark:text-gray-400">
+        {{ statusText }}
+      </p>
+    </div>
+
+    <div class="w-full space-y-3">
+      <app-button
+        className="w-full"
+        (btnClick)="startRegistration()"
+        [loading]="loading"
+      >
+        Start Registration
+      </app-button>
+      
+      <button 
+        class="w-full px-4 py-2 text-sm font-medium text-gray-500 transition-colors bg-transparent border-0 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
+        (click)="onClose()"
+        [disabled]="loading"
+      >
+        Cancel
+      </button>
+    </div>
+  </div>
+</app-modal>

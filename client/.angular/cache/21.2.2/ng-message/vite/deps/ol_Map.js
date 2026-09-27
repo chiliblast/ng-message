@@ -8,7 +8,7 @@ import {
 } from "./chunk-HI6VWKAW.js";
 import {
   BaseVector_default
-} from "./chunk-XM52BBPZ.js";
+} from "./chunk-TISNM4ON.js";
 import {
   EventType_default as EventType_default2,
   Event_default as Event_default2,
@@ -16,6 +16,11 @@ import {
   inView
 } from "./chunk-CGTITJPB.js";
 import "./chunk-3U7ETZD3.js";
+import {
+  CollectionEventType_default,
+  Collection_default
+} from "./chunk-UO2MFT2B.js";
+import "./chunk-6MQFOTFN.js";
 import {
   CLASS_COLLAPSED,
   CLASS_CONTROL,
@@ -38,11 +43,6 @@ import {
   replaceChildren,
   replaceNode
 } from "./chunk-54EF7IXW.js";
-import {
-  CollectionEventType_default,
-  Collection_default
-} from "./chunk-UO2MFT2B.js";
-import "./chunk-6MQFOTFN.js";
 import {
   ViewHint_default,
   View_default,

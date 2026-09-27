@@ -41,6 +41,35 @@ export class AppHeaderComponent {
   
   magnifier: any;
   isMagnifierEnabled = false;
+  
+  isLocked = false;
+  isUnlockPromptVisible = false;
+  unlockError = '';
+
+  lockScreen() {
+    this.isLocked = true;
+    this.isUnlockPromptVisible = false;
+    this.unlockError = '';
+  }
+
+  showUnlockPrompt() {
+    this.isUnlockPromptVisible = true;
+  }
+
+  cancelUnlock() {
+    this.isUnlockPromptVisible = false;
+    this.unlockError = '';
+  }
+
+  unlockScreen(pwd: string) {
+    if (pwd) { // Mock validation
+      this.isLocked = false;
+      this.isUnlockPromptVisible = false;
+      this.unlockError = '';
+    } else {
+      this.unlockError = 'Please enter your password to unlock';
+    }
+  }
 
   dropdownNodes: any[] = [];
   selectedNodes: any[] = [];

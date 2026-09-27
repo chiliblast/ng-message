@@ -42,30 +42,25 @@ export class BiometricLoginComponent {
       const challenge = new Uint8Array(32);
       window.crypto.getRandomValues(challenge);
 
-      // For this mock, we use 'create' with 'platform' attachment to force Windows Hello
-      // to prompt for a new passkey. In a real flow, you'd use 'get' for login.
-      const credential = await navigator.credentials.create({
+      // In a real application, you would fetch the user's registered credential IDs
+      // from the server before calling 'get', and pass them in 'allowCredentials'.
+      // This tells Windows Hello to ONLY ask for the passkey belonging to that specific user,
+      // skipping the selection list entirely.
+      
+      // const mockCredentialIdFromServer = new Uint8Array([...]); // fetched from DB
+
+      const credential = await navigator.credentials.get({
         publicKey: {
           challenge: challenge,
-          rp: {
-            name: "ng-message WebAuthn",
-            id: window.location.hostname
-          },
-          user: {
-            id: new Uint8Array(16),
-            name: this.username || "user",
-            displayName: (this.username || "ng-message User") + " (ng-message)"
-          },
-          pubKeyCredParams: [
-            { type: "public-key", alg: -7 },
-            { type: "public-key", alg: -257 }
-          ],
           timeout: 60000,
-          authenticatorSelection: {
-            authenticatorAttachment: 'platform', // This forces the local device (Windows Hello)
-            userVerification: 'required',
-            residentKey: 'required'
-          }
+          userVerification: 'required',
+          /*
+          allowCredentials: [{
+            type: 'public-key',
+            id: mockCredentialIdFromServer,
+            transports: ['internal']
+          }]
+          */
         }
       });
 
@@ -73,9 +68,57 @@ export class BiometricLoginComponent {
         this.webAuthnStatus = 'Authentication successful. Verifying...';
         this.setLoading(true);
 
-        // Convert raw credential data to base64url or similar if needed for a real backend.
-        // For the mock, we just pass an identifier indicating it was a WebAuthn login.
-        this.authService.loginWithWebAuthn(credential).subscribe({
+        const pkCredential = credential as PublicKeyCredential;
+
+        // Helper to convert ArrayBuffer to Base64URL string (standard for WebAuthn)
+        const bufferToBase64url = (buffer: ArrayBuffer) => {
+          const bytes = new Uint8Array(buffer);
+          let str = '';
+          for (const charCode of bytes) {
+            str += String.fromCharCode(charCode);
+          }
+          return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+        };
+
+        // Extract the cryptographic keys and identifiers
+        const rawId = bufferToBase64url(pkCredential.rawId);
+        
+        let clientDataJSON = '';
+        let authenticatorData = '';
+        let signature = '';
+        let userHandle = '';
+        
+        // TypeScript safe cast for the response object
+        const response = pkCredential.response as any;
+        
+        if (response.clientDataJSON) {
+          clientDataJSON = bufferToBase64url(response.clientDataJSON);
+        }
+        if (response.authenticatorData) {
+          authenticatorData = bufferToBase64url(response.authenticatorData);
+        }
+        if (response.signature) {
+          signature = bufferToBase64url(response.signature);
+        }
+        if (response.userHandle) {
+          userHandle = bufferToBase64url(response.userHandle);
+        }
+
+        const cryptographicPayload = {
+          id: pkCredential.id,
+          rawId: rawId,
+          type: pkCredential.type,
+          response: {
+            clientDataJSON: clientDataJSON,
+            authenticatorData: authenticatorData,
+            signature: signature,
+            userHandle: userHandle
+          },
+          username: this.username // Attach the user this key belongs to
+        };
+
+        // For the mock, we pass this formatted cryptographic payload.
+        this.authService.loginWithWebAuthn(cryptographicPayload).subscribe({
           next: (res: any) => {
             this.setLoading(false);
             this.toastService.show(res?.message || 'Biometric Login successful!', 'success');

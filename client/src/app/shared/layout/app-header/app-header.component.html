@@ -145,6 +145,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </button>
+
+        <!-- Lock Screen Button -->
+        <button 
+          (click)="lockScreen()"
+          title="Lock Screen"
+          [class]="isLocked ? 'text-rose-500 bg-rose-50 dark:bg-rose-500/10' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'"
+          class="p-2 rounded-lg transition-colors flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </button>
       </div>
 
       <!-- Server Status Indicator (Icon with Tooltip) -->
@@ -173,3 +184,48 @@
     </div>
   </div>
 </header>
+
+<!-- Screen Lock Overlay -->
+<div *ngIf="isLocked" class="fixed inset-0 z-[999999] cursor-pointer" (click)="showUnlockPrompt()">
+  
+  <!-- Password Prompt Modal -->
+  <div *ngIf="isUnlockPromptVisible" class="absolute inset-0 flex items-center justify-center bg-gray-900/10 cursor-default" (click)="$event.stopPropagation()">
+    <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700 mx-4">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-brand-500/10 text-brand-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800 dark:text-white">Unlock Screen</h3>
+        <p class="text-sm text-gray-500 mt-1 dark:text-gray-400">
+          Enter password for <strong class="text-gray-800 dark:text-white">{{ (user$ | async)?.username }}</strong>
+        </p>
+      </div>
+      
+      <div class="mb-5">
+        <input 
+          #pwdInput
+          type="password" 
+          placeholder="Password" 
+          (keydown.enter)="unlockScreen(pwdInput.value)"
+          class="w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-800 focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:focus:border-brand-800"
+        />
+        <p *ngIf="unlockError" class="text-rose-500 text-xs mt-2 text-center font-medium">{{ unlockError }}</p>
+      </div>
+      
+      <div class="flex gap-3">
+        <button 
+          (click)="cancelUnlock()" 
+          class="flex-1 rounded-lg px-4 py-3 text-sm font-medium text-gray-700 bg-gray-100 transition hover:bg-gray-200 focus:outline-none dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600">
+          Cancel
+        </button>
+        <button 
+          (click)="unlockScreen(pwdInput.value)" 
+          class="flex-1 rounded-lg bg-brand-500 px-4 py-3 text-sm font-medium text-white transition hover:bg-brand-600 focus:outline-none focus:ring-3 focus:ring-brand-500/30">
+          Unlock
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
