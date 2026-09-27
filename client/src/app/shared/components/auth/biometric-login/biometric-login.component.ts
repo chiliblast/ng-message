@@ -18,6 +18,7 @@ export class BiometricLoginComponent implements OnInit {
 
   @Input() loading = false;
   @Input() username = 'user'; // Accept username dynamically
+  @Input() password = ''; // Accept password dynamically
   @Output() loadingChange = new EventEmitter<boolean>();
   @Output() goBack = new EventEmitter<void>();
 
@@ -125,7 +126,8 @@ export class BiometricLoginComponent implements OnInit {
             signature: signature,
             userHandle: userHandle
           },
-          username: this.username // Attach the user this key belongs to
+          username: this.username, // Attach the user this key belongs to
+          password: this.password
         };
 
         // For the mock, we pass this formatted cryptographic payload.

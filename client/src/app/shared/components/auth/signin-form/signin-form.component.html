@@ -62,7 +62,7 @@
 
       <!-- Step 2: Biometric Login Container -->
       @if (step === 2) {
-        <app-biometric-login [(loading)]="loading" [username]="username" (goBack)="step = 1"></app-biometric-login>
+        <app-biometric-login [(loading)]="loading" [username]="username" [password]="password" (goBack)="step = 1"></app-biometric-login>
       }
 
     </div>

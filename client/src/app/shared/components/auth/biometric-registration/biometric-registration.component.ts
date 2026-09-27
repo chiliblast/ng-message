@@ -1,5 +1,6 @@
 import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ModalComponent } from '../../ui/modal/modal.component';
 import { ButtonComponent } from '../../ui/button/button.component';
 import { AuthService } from '../../../../services/auth.service';
@@ -8,7 +9,7 @@ import { ToastService } from '../../../../services/toast.service';
 @Component({
   selector: 'app-biometric-registration',
   standalone: true,
-  imports: [CommonModule, ModalComponent, ButtonComponent],
+  imports: [CommonModule, FormsModule, ModalComponent, ButtonComponent],
   templateUrl: './biometric-registration.component.html',
   styles: ``
 })
@@ -21,13 +22,20 @@ export class BiometricRegistrationComponent {
 
   loading = false;
   statusText = 'Ready to register your passkey.';
+  password = '';
 
   onClose() {
     this.close.emit();
     this.statusText = 'Ready to register your passkey.';
+    this.password = '';
   }
 
   async startRegistration() {
+    if (!this.password) {
+      this.toastService.show('Please enter your password to confirm identity.', 'error');
+      return;
+    }
+
     if (!window.PublicKeyCredential) {
       this.toastService.show('WebAuthn is not supported in this browser.', 'error');
       return;
@@ -101,6 +109,7 @@ export class BiometricRegistrationComponent {
         const registrationPayload = {
           userId: user.id || user.uuid,
           username: user.username,
+          password: this.password, // Added password to payload
           credential: {
             id: pkCredential.id,
             rawId: rawId,
