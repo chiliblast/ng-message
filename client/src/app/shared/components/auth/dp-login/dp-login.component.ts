@@ -22,9 +22,11 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
   @Input() loading = false;
   @Input() username = 'user';
   @Input() password = '';
+  @Input() navigateOnSuccess = true;
   @Output() loadingChange = new EventEmitter<boolean>();
   @Output() goBack = new EventEmitter<void>();
   @Output() scanCancelled = new EventEmitter<void>();
+  @Output() success = new EventEmitter<any>();
 
   isConnected$ = this.dpService.isConnected$;
   status$ = this.dpService.status$;
@@ -127,7 +129,10 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
         this.loading = false;
         this.loadingChange.emit(false);
         this.toastService.show(res?.message || 'Biometric Login successful!', 'success');
-        this.router.navigate(['/']);
+        this.success.emit(res);
+        if (this.navigateOnSuccess) {
+          this.router.navigate(['/']);
+        }
       },
       error: (err) => {
         this.loading = false;

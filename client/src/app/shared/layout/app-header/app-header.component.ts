@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { SidebarService } from '../../services/sidebar.service';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -15,6 +15,9 @@ import { HierarchyService } from '../../../services/hierarchy.service';
 import { FormsModule } from '@angular/forms';
 import { Tree, TreeItem, TreeItemGroup } from '@angular/aria/tree';
 import { MessageModalComponent } from '../../../pages/home/modals/message-modal/message-modal.component';
+import { DigitalPersonaService } from '../../../services/digital-persona.service';
+import { ToastService } from '../../../services/toast.service';
+import { DpLoginComponent } from '../../components/auth/dp-login/dp-login.component';
 
 declare var HTMLMagnifier: any;
 
@@ -29,11 +32,14 @@ declare var HTMLMagnifier: any;
     FontAwesomeModule,
     FormsModule,
     Tree, TreeItem, TreeItemGroup,
-    MessageModalComponent
+    MessageModalComponent,
+    DpLoginComponent
   ],
   templateUrl: './app-header.component.html',
 })
 export class AppHeaderComponent {
+  @ViewChild(DpLoginComponent) dpLogin?: DpLoginComponent;
+
   isApplicationMenuOpen = false;
   readonly isMobileOpen$;
   readonly connected$;
@@ -45,30 +51,91 @@ export class AppHeaderComponent {
   isLocked = false;
   isUnlockPromptVisible = false;
   unlockError = '';
+  unlockPassword = '';
+  loading = false;
+
+  // Biometric requirement flag (matches signin-form)
+  requireBiometric = true;
+  isCredentialsAuthenticated = false;
 
   lockScreen() {
     this.isLocked = true;
-    this.isUnlockPromptVisible = false;
+    this.isUnlockPromptVisible = true;
+    this.isCredentialsAuthenticated = false;
+    this.unlockPassword = '';
     this.unlockError = '';
+    this.dpService.checkConnection();
   }
 
   showUnlockPrompt() {
     this.isUnlockPromptVisible = true;
+    this.dpService.checkConnection();
   }
 
   cancelUnlock() {
     this.isUnlockPromptVisible = false;
+    this.cancelScan();
+  }
+
+  cancelScan() {
+    this.isCredentialsAuthenticated = false;
+    if (this.dpLogin) {
+      this.dpLogin.onCancel();
+    }
     this.unlockError = '';
   }
 
-  unlockScreen(pwd: string) {
-    if (pwd) { // Mock validation
-      this.isLocked = false;
-      this.isUnlockPromptVisible = false;
-      this.unlockError = '';
+  async retryBiometricConnection() {
+    this.toastService.show('Checking biometric device connection...', 'info');
+    const ok = await this.dpService.checkConnection();
+    if (ok) {
+      this.toastService.show('Biometric device connected and ready!', 'success');
+      if (this.isCredentialsAuthenticated && this.dpLogin) {
+        this.dpLogin.startScan();
+      }
     } else {
-      this.unlockError = 'Please enter your password to unlock';
+      this.toastService.show('No biometric device detected. Please connect your scanner.', 'error');
     }
+  }
+
+  unlockScreen(pwd: string) {
+    if (!pwd) {
+      this.unlockError = 'Please enter your password to unlock';
+      return;
+    }
+    this.unlockPassword = pwd;
+    const username = this.authService.currentUserValue?.username || '';
+    this.loading = true;
+    this.unlockError = '';
+
+    this.authService.login({ username, password: pwd }).subscribe({
+      next: () => {
+        this.loading = false;
+        if (this.requireBiometric) {
+          this.isCredentialsAuthenticated = true;
+          this.toastService.show('Password verified. Please scan your fingerprint to unlock.', 'info');
+          if (this.dpLogin) {
+            this.dpLogin.startScan();
+          }
+        } else {
+          this.onBiometricSuccess();
+        }
+      },
+      error: (err) => {
+        this.loading = false;
+        this.isCredentialsAuthenticated = false;
+        this.unlockError = err.error?.message || (typeof err.error === 'string' ? err.error : null) || err.message || 'Invalid password';
+      }
+    });
+  }
+
+  onBiometricSuccess() {
+    this.isLocked = false;
+    this.isUnlockPromptVisible = false;
+    this.isCredentialsAuthenticated = false;
+    this.unlockPassword = '';
+    this.unlockError = '';
+    this.toastService.show('Screen unlocked successfully!', 'success');
   }
 
   async openDualScreen() {
@@ -112,7 +179,9 @@ export class AppHeaderComponent {
     private notificationService: NotificationService,
     private searchService: SearchService,
     private authService: AuthService,
-    private hierarchyService: HierarchyService
+    private hierarchyService: HierarchyService,
+    public dpService: DigitalPersonaService,
+    private toastService: ToastService
   ) {
     this.user$ = this.authService.user$;
     this.isMobileOpen$ = this.sidebarService.isMobileOpen$;
