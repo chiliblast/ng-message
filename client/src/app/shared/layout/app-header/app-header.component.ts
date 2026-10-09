@@ -78,9 +78,10 @@ export class AppHeaderComponent {
   }
 
   cancelScan() {
+    if (!this.isCredentialsAuthenticated) return;
     this.isCredentialsAuthenticated = false;
     if (this.dpLogin) {
-      this.dpLogin.onCancel();
+      this.dpLogin.onCancel(false);
     }
     this.unlockError = '';
   }

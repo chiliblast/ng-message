@@ -59,7 +59,8 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
           this.startScan();
         }
       } else if (!changes['enabled'].currentValue && this.isScanning) {
-        this.onCancel();
+        // Disabled by parent - stop capture silently without re-emitting scanCancelled to avoid loop
+        this.onCancel(false);
       }
     }
   }
@@ -91,7 +92,7 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     if (this.isScanning) {
-      await this.onCancel();
+      await this.onCancel(true);
     } else {
       await this.startScan();
     }
@@ -104,11 +105,14 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
     await this.dpService.startCapture();
   }
 
-  async onCancel() {
+  async onCancel(emitEvent = true) {
+    if (!this.isScanning) return;
     this.isScanning = false;
     await this.dpService.stopCapture();
-    this.scanCancelled.emit();
-    this.goBack.emit();
+    if (emitEvent) {
+      this.scanCancelled.emit();
+      this.goBack.emit();
+    }
   }
 
   private sendToCentralServer(base64Image: string) {

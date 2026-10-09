@@ -65,9 +65,10 @@ export class SigninFormComponent {
   }
 
   cancelScan() {
+    if (!this.isCredentialsAuthenticated) return;
     this.isCredentialsAuthenticated = false;
     if (this.dpLogin) {
-      this.dpLogin.onCancel();
+      this.dpLogin.onCancel(false);
     }
     this.toastService.show('Fingerprint scan cancelled.', 'info');
   }
