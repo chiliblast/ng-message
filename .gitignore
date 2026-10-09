@@ -8,7 +8,7 @@
 # server/.env
 
 # Large Assets
-server/assets/
+#server/assets/
 
 # Build outputs
 # dist/
