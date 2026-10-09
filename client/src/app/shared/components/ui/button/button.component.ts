@@ -18,6 +18,7 @@ export class ButtonComponent {
 
   @Input() size: 'sm' | 'md' = 'md';
   @Input() variant: 'primary' | 'outline' = 'primary';
+  @Input() type: 'button' | 'submit' | 'reset' = 'button';
   @Input() disabled = false;
   @Input() loading = false;
   @Input() className = '';

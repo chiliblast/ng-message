@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["toast.component.ts"],
+  "sourcesContent": ["\n    @keyframes slide-in {\n      from { transform: translateX(100%); opacity: 0; }\n      to { transform: translateX(0); opacity: 1; }\n    }\n    .animate-slide-in {\n      animation: slide-in 0.3s ease-out forwards;\n    }\n  "],
+  "mappings": ";AACI,WAAA;AACE;AAAO,eAAA,WAAA;AAA6B,aAAA;AAAY;AAChD;AAAK,eAAA,WAAA;AAA0B,aAAA;AAAY;AAC7C;AACA,CAAA;AACE,aAAA,SAAA,KAAA,SAAA;AACF;",
+  "names": []
+}

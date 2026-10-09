@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto'); // Use built-in crypto module
 
 exports.login = async (req, res) => {
-    const { username, password } = req.body;
+    const { username, password = '' } = req.body;
 
     try {
         // 1. Generate the hash for the typed password using your SECRET_KEY
@@ -60,6 +60,41 @@ exports.login = async (req, res) => {
             }
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error', error });
+        console.error('❌ Login Error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message || error });
     }
+};
+
+exports.loginRawBiometric = async (req, res) => {
+    const { username, password, base64Image } = req.body;
+    console.log(`[Mock API] Raw Biometric Login requested for ${username}. Image length: ${base64Image?.length}`);
+    
+    // In a real application, you would send this base64Image to an AFIS (Automated Fingerprint Identification System)
+    // to match against enrolled templates. For this mock, we just approve it.
+    
+    res.json({
+        success: true,
+        message: "Raw Biometric Login successful (Mock AFIS Match)",
+        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+        loginLogId: 1,
+        appUserModel: {
+            id: 1,
+            uuid: "mock-user-uuid",
+            role: "ADMIN",
+            username: username
+        }
+    });
+};
+
+exports.registerRawBiometric = async (req, res) => {
+    const { userId, username, password, base64Image } = req.body;
+    console.log(`[Mock API] Raw Biometric Registration requested for ${username}. Image length: ${base64Image?.length}`);
+    
+    // In a real application, you would send this base64Image to an AFIS to extract minutiae and save the template
+    // to the database, associated with this userId.
+    
+    res.json({
+        success: true,
+        message: "Raw Biometric registered successfully (Mock API)"
+    });
 };

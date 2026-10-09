@@ -1,4 +1,7 @@
 import {
+  Group_default
+} from "./chunk-DN37LFPK.js";
+import {
   BuilderGroup_default,
   DECLUTTER,
   ExecutorGroup_default,
@@ -10,52 +13,7 @@ import {
   getSquaredTolerance,
   hitDetect,
   renderFeature
-} from "./chunk-6XKHKBVQ.js";
-import {
-  ImageCanvas_default,
-  ImageLayer_default,
-  Image_default,
-  create as create2,
-  fromTransform
-} from "./chunk-VRBQ2NMI.js";
-import {
-  BaseTile_default,
-  DataTile_default,
-  LRUCache_default,
-  TileLayer_default,
-  TileProperty_default,
-  Tile_default as Tile_default2,
-  asArrayLike,
-  asImageLike
-} from "./chunk-FZDCB2VF.js";
-import {
-  Layer_default as Layer_default2,
-  ZIndexContext_default
-} from "./chunk-YFUPEYEZ.js";
-import {
-  fromResolutionLike
-} from "./chunk-7EDTMLQK.js";
-import {
-  ImageTile_default,
-  TileRange_default,
-  Tile_default2 as Tile_default,
-  createOrUpdate2 as createOrUpdate,
-  getKey
-} from "./chunk-AY5DVSNN.js";
-import {
-  Feature_default as Feature_default2,
-  LineString_default,
-  VectorEventType_default,
-  Vector_default
-} from "./chunk-RWNGKRXA.js";
-import "./chunk-SX6VJL3J.js";
-import "./chunk-LPZAUJUI.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
-import {
-  Group_default
-} from "./chunk-HI6VWKAW.js";
+} from "./chunk-FJOCWFMP.js";
 import {
   BaseVector_default,
   BooleanType,
@@ -71,49 +29,91 @@ import {
   newParsingContext,
   parse,
   typeName
-} from "./chunk-TISNM4ON.js";
-import {
-  EventType_default as EventType_default2,
-  Event_default,
-  Layer_default,
-  Property_default
-} from "./chunk-CGTITJPB.js";
-import {
-  TileState_default
-} from "./chunk-3U7ETZD3.js";
-import {
-  Collection_default
-} from "./chunk-UO2MFT2B.js";
-import {
-  RBush
-} from "./chunk-6MQFOTFN.js";
+} from "./chunk-KTG6GWPK.js";
 import {
   Fill_default,
   Stroke_default,
   Style_default,
   Text_default
-} from "./chunk-SEDETUIR.js";
+} from "./chunk-FIFKTIYM.js";
+import {
+  ImageCanvas_default,
+  ImageLayer_default,
+  Image_default,
+  create as create2,
+  fromTransform
+} from "./chunk-JOJMVNI6.js";
+import {
+  fromResolutionLike
+} from "./chunk-7EDTMLQK.js";
+import {
+  Feature_default as Feature_default2,
+  LineString_default,
+  VectorEventType_default,
+  Vector_default
+} from "./chunk-MCDTXTCB.js";
+import {
+  Collection_default
+} from "./chunk-UO2MFT2B.js";
+import "./chunk-SX6VJL3J.js";
+import {
+  RBush
+} from "./chunk-6MQFOTFN.js";
+import "./chunk-VLAIQMRX.js";
+import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import {
+  BaseTile_default,
+  DataTile_default,
+  LRUCache_default,
+  TileLayer_default,
+  TileProperty_default,
+  Tile_default as Tile_default2,
+  asArrayLike,
+  asImageLike
+} from "./chunk-2UTICLCB.js";
+import {
+  Layer_default,
+  ZIndexContext_default
+} from "./chunk-ZURZ6BSE.js";
+import {
+  EventType_default as EventType_default2,
+  Event_default,
+  Layer_default as Layer_default2,
+  Property_default
+} from "./chunk-M4IY4NQB.js";
 import {
   asArray
-} from "./chunk-7H5QLMDW.js";
+} from "./chunk-2GTIAKGJ.js";
+import {
+  ImageTile_default,
+  TileRange_default,
+  Tile_default2 as Tile_default,
+  createOrUpdate2 as createOrUpdate,
+  getKey
+} from "./chunk-E3M7EYWB.js";
+import {
+  TileState_default
+} from "./chunk-3U7ETZD3.js";
 import {
   ImageState_default,
   SAFARI_BUG_237906,
   createCanvasContext2D,
   toSize
-} from "./chunk-54EF7IXW.js";
+} from "./chunk-L3E353SU.js";
 import {
   ViewHint_default
-} from "./chunk-KY6ASBZ5.js";
+} from "./chunk-UK7UYFT4.js";
 import "./chunk-UUNRDFYK.js";
 import {
   inflateEnds
-} from "./chunk-EI6MWDKW.js";
-import "./chunk-ZL2AWGCB.js";
+} from "./chunk-SN7LJ3EI.js";
+import "./chunk-555HNW5N.js";
 import {
   Point_default,
   transform2D
-} from "./chunk-YD3L4RHR.js";
+} from "./chunk-U23BO6VG.js";
 import {
   apply,
   compose,
@@ -157,7 +157,7 @@ import {
   transformExtent,
   wrapX,
   wrapX2
-} from "./chunk-SI74V2AK.js";
+} from "./chunk-3V33AXQY.js";
 import {
   clamp,
   squaredSegmentDistance
@@ -2719,7 +2719,7 @@ var TileTexture = class extends BaseTileRepresentation_default {
 var TileTexture_default = TileTexture;
 
 // node_modules/ol/renderer/webgl/Layer.js
-var WebGLLayerRenderer = class _WebGLLayerRenderer extends Layer_default2 {
+var WebGLLayerRenderer = class _WebGLLayerRenderer extends Layer_default {
   /**
    * @param {LayerType} layer Layer.
    * @param {Options} [options] Options.
@@ -9529,7 +9529,7 @@ var WebGLPointsLayerRenderer = class extends Layer_default3 {
 var PointsLayer_default = WebGLPointsLayerRenderer;
 
 // node_modules/ol/layer/WebGLPoints.js
-var WebGLPointsLayer = class extends Layer_default {
+var WebGLPointsLayer = class extends Layer_default2 {
   /**
    * @param {Options<VectorSourceType>} options Options.
    */
@@ -9945,7 +9945,7 @@ WebGLTileLayer.prototype.dispose;
 var WebGLTile_default = WebGLTileLayer;
 
 // node_modules/ol/layer/WebGLVector.js
-var WebGLVectorLayer = class extends Layer_default {
+var WebGLVectorLayer = class extends Layer_default2 {
   /**
    * @param {Options<VectorSourceType, FeatureType>} [options] Options.
    */
@@ -9990,7 +9990,7 @@ export {
   Group_default as Group,
   Heatmap_default as Heatmap,
   Image_default as Image,
-  Layer_default as Layer,
+  Layer_default2 as Layer,
   Tile_default2 as Tile,
   Vector_default2 as Vector,
   VectorImage_default as VectorImage,

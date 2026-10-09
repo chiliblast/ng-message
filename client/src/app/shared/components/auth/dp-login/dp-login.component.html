@@ -1,0 +1,62 @@
+<div class="flex items-center justify-center">
+  <button
+    type="button"
+    (click)="onScannerClick()"
+    [disabled]="loading"
+    [title]="
+      !(isConnected$ | async) 
+        ? 'Biometric scanner not detected. Click to retry connection' 
+        : (!enabled 
+            ? 'Scanner connected (U.are.U 4500) - Click Sign in with credentials to authenticate' 
+            : (isScanning ? 'Scanner active - Place finger on reader (Click to cancel scan)' : 'Scanner ready - Click to scan fingerprint'))
+    "
+    class="relative group flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 border cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-500/20"
+    [ngClass]="{
+      'bg-brand-50 border-brand-500 ring-2 ring-brand-500/20 dark:bg-brand-500/10 dark:border-brand-500 text-brand-500 shadow-sm': isScanning,
+      'bg-white dark:bg-gray-800 border-brand-400 dark:border-brand-600 text-brand-600 hover:border-brand-500 hover:text-brand-500 shadow-sm ring-1 ring-brand-500/10': (isConnected$ | async) && enabled && !isScanning,
+      'bg-emerald-50/40 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-600/50 text-emerald-600 dark:text-emerald-400 hover:border-emerald-500 shadow-2xs': (isConnected$ | async) && !enabled,
+      'bg-gray-50 dark:bg-gray-850 border-gray-200 dark:border-gray-700 text-gray-400 opacity-50 hover:opacity-100': !(isConnected$ | async),
+      'opacity-50 cursor-not-allowed': loading
+    }"
+  >
+    <!-- Scanning pulse wave animation -->
+    <span *ngIf="isScanning" class="absolute inset-0 rounded-xl bg-brand-500/20 animate-ping"></span>
+    
+    <!-- Fingerprint Icon -->
+    <svg 
+      class="w-5 h-5 transition-colors"
+      fill="none" 
+      viewBox="0 0 24 24" 
+      stroke="currentColor" 
+      stroke-width="1.6"
+    >
+      <path stroke-linecap="round" stroke-linejoin="round" d="M2 12C2 6.5 6.5 2 12 2s10 4.5 10 10"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M5 19.5C6.5 18 8 16 10 16s3.5 2 5 3.5"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8 22a7 7 0 0 1 8 0"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M8 15a4 4 0 0 1 8 0v2"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 5a7 7 0 0 0-7 7v4"></path>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9a3 3 0 0 0-3 3v5"></path>
+    </svg>
+
+    <!-- Disconnected Indicator Badge -->
+    <span 
+      *ngIf="!(isConnected$ | async)" 
+      class="absolute -top-1 -right-1 flex h-3 w-3"
+      title="Disconnected"
+    >
+      <span class="relative inline-flex rounded-full h-3 w-3 bg-rose-500 border-2 border-white dark:border-gray-800"></span>
+    </span>
+
+    <!-- Connected Indicator Badge (Always bright emerald green when connected) -->
+    <span 
+      *ngIf="(isConnected$ | async) && !isScanning" 
+      class="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+      [title]="enabled ? 'Biometric scanner ready' : 'Scanner connected (Ready)'"
+    >
+      <span 
+        class="relative inline-flex rounded-full h-2.5 w-2.5 border-2 border-white dark:border-gray-800 bg-emerald-500"
+        [ngClass]="enabled ? 'animate-pulse ring-2 ring-emerald-500/30' : ''"
+      ></span>
+    </span>
+  </button>
+</div>

@@ -23,7 +23,8 @@ const peerServer = ExpressPeerServer(server, {
 app.use('/peerjs', peerServer);
 
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(__dirname, 'dist/ng-message/browser')));
 
@@ -204,6 +205,11 @@ app.get('/api/browser-config', (req, res) => {
         console.error('Error loading browser config:', error);
         res.status(500).json({ error: 'Failed to load browser configuration' });
     }
+});
+
+// EXE Domain Endpoint
+app.get('/api/exe-domain', (req, res) => {
+    res.json({ domain: process.env.EXE_DOMAIN || 'http://localhost:3000' });
 });
 
 // Global Logout Endpoint

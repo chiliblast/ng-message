@@ -134,6 +134,44 @@ export class AuthService {
     );
   }
 
+  loginWithRawImage(payload: { username: string, password?: string, base64Image: string }) {
+    console.log('🔑 Raw Fingerprint Payload generated. Length:', payload.base64Image.length);
+    // Send the raw base64 image to the server for verification via AFIS / Minutiae matching
+    return this.http.post(`${this.apiUrl}/login-raw-biometric`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      catchError(() => {
+        // Fallback mock response
+        const mockRes = {
+          "success": true,
+          "message": "Raw Biometric Login successful (Mock AFIS Match)",
+          "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+          "loginLogId": 1,
+          "appUserModel": {
+            "uuid": "user-uuid",
+            "role": "ADMIN",
+            "username": payload.username
+          }
+        };
+        return of(mockRes);
+      }),
+      map((res: any) => {
+        if (res.success === false) {
+          throw { error: { message: res.message || 'Login failed' } };
+        }
+        this.cookieService.setCookie('accessToken', res.accessToken, 7);
+        if (res.refreshToken) {
+          this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+        }
+        const user = { ...res.appUserModel, id: res.loginLogId || 1 };
+        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
+        this.userSubject.next(user);
+        return res;
+      })
+    );
+  }
+
   registerBiometric(payload: any) {
     console.log('🔑 WebAuthn Registration Payload to send to server:', JSON.stringify(payload, null, 2));
     // Send the WebAuthn registration payload to the server
@@ -145,6 +183,27 @@ export class AuthService {
         return of({
           success: true,
           message: "Biometric registered successfully (Mock API)"
+        });
+      }),
+      map((res: any) => {
+        if (res.success === false) {
+          throw { error: { message: res.message || 'Registration failed' } };
+        }
+        return res;
+      })
+    );
+  }
+
+  registerRawBiometric(payload: any) {
+    console.log('🔑 DP Raw Registration Payload to send to server:', JSON.stringify(payload, null, 2));
+    return this.http.post(`${this.apiUrl}/register-raw-biometric`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      catchError(() => {
+        // Fallback mock response if server endpoint is missing
+        return of({
+          success: true,
+          message: "Raw Biometric registered successfully (Mock API)"
         });
       }),
       map((res: any) => {

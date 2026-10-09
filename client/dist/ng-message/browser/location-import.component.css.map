@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["location-import.component.ts"],
+  "sourcesContent": ["\n    .grid-container { height: 400px; width: 100%; }\n  "],
+  "mappings": ";AACI,CAAA;AAAkB,UAAA;AAAe,SAAA;AAAa;",
+  "names": []
+}
