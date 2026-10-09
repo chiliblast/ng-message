@@ -135,7 +135,8 @@ export class AuthService {
   }
 
   loginWithRawImage(payload: { username: string, password?: string, base64Image: string }) {
-    console.log('🔑 Raw Fingerprint Payload generated. Length:', payload.base64Image.length);
+    console.log(`🔑 [Mock API Raw Biometric] Username:`, payload.username);
+    console.log(`🔑 [Mock API Raw Biometric] Base64 Image:`, payload.base64Image);
     // Send the raw base64 image to the server for verification via AFIS / Minutiae matching
     return this.http.post(`${this.apiUrl}/login-raw-biometric`, payload, {
       headers: { 'Content-Type': 'application/json' }

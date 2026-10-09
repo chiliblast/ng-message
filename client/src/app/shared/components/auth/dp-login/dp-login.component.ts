@@ -113,6 +113,9 @@ export class DpLoginComponent implements OnInit, OnDestroy, OnChanges {
     this.loading = true;
     this.loadingChange.emit(true);
 
+    console.log(`🔑 [Mock API Biometric] Username:`, this.username);
+    console.log(`🔑 [Mock API Biometric] Base64 Image:`, base64Image);
+
     const payload = {
       username: this.username,
       password: this.password,
