@@ -67,7 +67,8 @@ exports.login = async (req, res) => {
 
 exports.loginRawBiometric = async (req, res) => {
     const { username, password, base64Image } = req.body;
-    console.log(`[Mock API] Raw Biometric Login requested for ${username}. Image length: ${base64Image?.length}`);
+    console.log(`🔑 [Mock API] Raw Biometric Login requested for username:`, username);
+    console.log(`🔑 [Mock API] Base64 Image for ${username}:`, base64Image);
     
     // In a real application, you would send this base64Image to an AFIS (Automated Fingerprint Identification System)
     // to match against enrolled templates. For this mock, we just approve it.
@@ -88,7 +89,8 @@ exports.loginRawBiometric = async (req, res) => {
 
 exports.registerRawBiometric = async (req, res) => {
     const { userId, username, password, base64Image } = req.body;
-    console.log(`[Mock API] Raw Biometric Registration requested for ${username}. Image length: ${base64Image?.length}`);
+    console.log(`🔑 [Mock API] Raw Biometric Registration requested for username:`, username);
+    console.log(`🔑 [Mock API] Base64 Image for ${username}:`, base64Image);
     
     // In a real application, you would send this base64Image to an AFIS to extract minutiae and save the template
     // to the database, associated with this userId.
