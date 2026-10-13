@@ -1,6 +1,17 @@
 import {
+  lineStringLength
+} from "./chunk-SX6VJL3J.js";
+import {
+  Layer_default2 as Layer_default,
+  ZIndexContext_default,
+  canvasPool
+} from "./chunk-DTGEUEQ7.js";
+import {
   BaseVector_default
-} from "./chunk-KTG6GWPK.js";
+} from "./chunk-7ZLY3WAE.js";
+import {
+  EventType_default
+} from "./chunk-4KDWRKEG.js";
 import {
   Icon_default,
   asColorLike,
@@ -21,37 +32,26 @@ import {
   getTextDimensions,
   measureAndCacheTextWidth,
   registerFont
-} from "./chunk-FIFKTIYM.js";
-import {
-  lineStringLength
-} from "./chunk-SX6VJL3J.js";
-import {
-  Layer_default2 as Layer_default,
-  ZIndexContext_default,
-  canvasPool
-} from "./chunk-ZURZ6BSE.js";
-import {
-  EventType_default
-} from "./chunk-M4IY4NQB.js";
+} from "./chunk-SEDETUIR.js";
 import {
   ImageState_default,
   createCanvasContext2D,
   releaseCanvas
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   ViewHint_default
-} from "./chunk-UK7UYFT4.js";
+} from "./chunk-OTOAFGMZ.js";
 import {
   inflateCoordinates,
   inflateCoordinatesArray,
   inflateMultiCoordinatesArray,
   snap
-} from "./chunk-SN7LJ3EI.js";
+} from "./chunk-EI6MWDKW.js";
 import {
   rotate,
   transform2D,
   transformGeom2D
-} from "./chunk-U23BO6VG.js";
+} from "./chunk-YD3L4RHR.js";
 import {
   apply,
   compose,
@@ -80,7 +80,7 @@ import {
   toUserResolution,
   wrapX,
   wrapX2
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   clamp,
   lerp,
@@ -5607,16 +5607,16 @@ var VectorLayer = class extends BaseVector_default {
 var Vector_default = VectorLayer;
 
 export {
+  Immediate_default,
+  getSquaredTolerance,
+  renderFeature,
   BuilderGroup_default,
   DECLUTTER,
   ExecutorGroup_default,
-  Immediate_default,
   HIT_DETECT_RESOLUTION,
   createHitDetectionImageData,
   hitDetect,
-  getSquaredTolerance,
-  renderFeature,
   VectorLayer_default,
   Vector_default
 };
-//# sourceMappingURL=chunk-FJOCWFMP.js.map
+//# sourceMappingURL=chunk-76USV3PF.js.map

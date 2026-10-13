@@ -2,7 +2,7 @@ import {
   TileImage_default,
   createXYZ,
   extentFromProjection
-} from "./chunk-ZYB6DTYO.js";
+} from "./chunk-URZBMD42.js";
 
 // node_modules/ol/source/XYZ.js
 var XYZ = class extends TileImage_default {
@@ -89,4 +89,4 @@ export {
   ATTRIBUTION,
   OSM_default
 };
-//# sourceMappingURL=chunk-CJUCOLG3.js.map
+//# sourceMappingURL=chunk-FMX7Z27F.js.map

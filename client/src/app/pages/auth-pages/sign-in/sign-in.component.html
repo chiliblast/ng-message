@@ -1,3 +1,8 @@
 <app-auth-page-layout>
+  <!-- Previous 2-step authentication component (authenticated credentials first, then requested fingerprint):
   <app-signin-form class="flex flex-col flex-1"/>
+  -->
+
+  <!-- New unified authentication component (takes credentials, requests fingerprint scan upon clicking Sign in, sends all 3 to server): -->
+  <app-signin-form-unified class="flex flex-col flex-1"/>
 </app-auth-page-layout>

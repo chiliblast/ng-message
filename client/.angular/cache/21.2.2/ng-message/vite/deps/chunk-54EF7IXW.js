@@ -410,13 +410,13 @@ export {
   replaceChildren,
   createMockDiv,
   isCanvas,
+  hasArea,
+  scale,
+  toSize,
   ImageState_default,
   listenImage,
   decodeFallback,
   decode,
-  Image_default,
-  hasArea,
-  scale,
-  toSize
+  Image_default
 };
-//# sourceMappingURL=chunk-L3E353SU.js.map
+//# sourceMappingURL=chunk-54EF7IXW.js.map

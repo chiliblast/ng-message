@@ -1,16 +1,16 @@
 import {
-  Layer_default2 as Layer_default
-} from "./chunk-ZURZ6BSE.js";
+  Layer_default2
+} from "./chunk-DTGEUEQ7.js";
 import {
-  Layer_default as Layer_default2
-} from "./chunk-M4IY4NQB.js";
+  Layer_default
+} from "./chunk-4KDWRKEG.js";
 import {
   ImageState_default,
   Image_default
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   ViewHint_default
-} from "./chunk-UK7UYFT4.js";
+} from "./chunk-OTOAFGMZ.js";
 import {
   apply,
   compose
@@ -24,10 +24,10 @@ import {
   getWidth,
   intersects,
   isEmpty
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 
 // node_modules/ol/renderer/canvas/ImageLayer.js
-var CanvasImageLayerRenderer = class extends Layer_default {
+var CanvasImageLayerRenderer = class extends Layer_default2 {
   /**
    * @param {import("../../layer/Image.js").default} imageLayer Image layer.
    */
@@ -206,7 +206,7 @@ var CanvasImageLayerRenderer = class extends Layer_default {
 var ImageLayer_default = CanvasImageLayerRenderer;
 
 // node_modules/ol/layer/BaseImage.js
-var BaseImageLayer = class extends Layer_default2 {
+var BaseImageLayer = class extends Layer_default {
   /**
    * @param {Options<ImageSourceType>} [options] Layer options.
    */
@@ -434,8 +434,8 @@ export {
   scale,
   translate,
   translation,
-  ImageCanvas_default,
   ImageLayer_default,
-  Image_default2 as Image_default
+  Image_default2 as Image_default,
+  ImageCanvas_default
 };
-//# sourceMappingURL=chunk-JOJMVNI6.js.map
+//# sourceMappingURL=chunk-7S3NFSKE.js.map

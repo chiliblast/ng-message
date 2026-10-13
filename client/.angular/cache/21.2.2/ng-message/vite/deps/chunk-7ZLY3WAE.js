@@ -1,4 +1,10 @@
 import {
+  RBush
+} from "./chunk-6MQFOTFN.js";
+import {
+  Layer_default
+} from "./chunk-4KDWRKEG.js";
+import {
   Circle_default,
   Fill_default,
   Icon_default,
@@ -8,13 +14,7 @@ import {
   Text_default,
   createDefaultStyle,
   toFunction
-} from "./chunk-FIFKTIYM.js";
-import {
-  RBush
-} from "./chunk-6MQFOTFN.js";
-import {
-  Layer_default
-} from "./chunk-M4IY4NQB.js";
+} from "./chunk-SEDETUIR.js";
 import {
   NO_COLOR,
   fromString,
@@ -22,10 +22,10 @@ import {
   rgbaToLcha,
   toString,
   withAlpha
-} from "./chunk-2GTIAKGJ.js";
+} from "./chunk-7H5QLMDW.js";
 import {
   toSize
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   ascending
 } from "./chunk-R2H6PGDU.js";
@@ -2400,4 +2400,4 @@ export {
   computeGeometryType,
   BaseVector_default
 };
-//# sourceMappingURL=chunk-KTG6GWPK.js.map
+//# sourceMappingURL=chunk-7ZLY3WAE.js.map

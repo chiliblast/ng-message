@@ -1,11 +1,11 @@
 import {
+  fromExtent
+} from "./chunk-EI6MWDKW.js";
+import {
   DEFAULT_TILE_SIZE,
   easeOut,
   inAndOut
 } from "./chunk-UUNRDFYK.js";
-import {
-  fromExtent
-} from "./chunk-SN7LJ3EI.js";
 import {
   METERS_PER_UNIT,
   add,
@@ -23,7 +23,7 @@ import {
   rotate,
   toUserCoordinate,
   toUserExtent
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   clamp,
   modulo,
@@ -1876,4 +1876,4 @@ export {
   withZoom,
   getView
 };
-//# sourceMappingURL=chunk-UK7UYFT4.js.map
+//# sourceMappingURL=chunk-OTOAFGMZ.js.map

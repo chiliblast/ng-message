@@ -1,10 +1,10 @@
 import {
   EventType_default as EventType_default2,
   Event_default
-} from "./chunk-M4IY4NQB.js";
+} from "./chunk-4KDWRKEG.js";
 import {
   asArray
-} from "./chunk-2GTIAKGJ.js";
+} from "./chunk-7H5QLMDW.js";
 import {
   ImageState_default,
   WORKER_OFFSCREEN_CANVAS,
@@ -12,7 +12,7 @@ import {
   createMockDiv,
   getSharedCanvasContext2D,
   isCanvas
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   apply,
   compose,
@@ -28,7 +28,7 @@ import {
   getTopLeft,
   getTopRight,
   getWidth
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   EventType_default,
   Observable_default,
@@ -587,4 +587,4 @@ export {
   canvasPool,
   Layer_default2
 };
-//# sourceMappingURL=chunk-ZURZ6BSE.js.map
+//# sourceMappingURL=chunk-DTGEUEQ7.js.map

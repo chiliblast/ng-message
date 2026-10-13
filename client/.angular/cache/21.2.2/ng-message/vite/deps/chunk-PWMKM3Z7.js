@@ -1,9 +1,6 @@
 import {
-  Layer_default2 as Layer_default
-} from "./chunk-ZURZ6BSE.js";
-import {
-  Layer_default as Layer_default2
-} from "./chunk-M4IY4NQB.js";
+  Layer_default2
+} from "./chunk-DTGEUEQ7.js";
 import {
   ImageTile_default,
   TileRange_default,
@@ -11,14 +8,17 @@ import {
   Tile_default2,
   createOrUpdate2 as createOrUpdate,
   getCacheKey
-} from "./chunk-E3M7EYWB.js";
+} from "./chunk-AY5DVSNN.js";
+import {
+  Layer_default
+} from "./chunk-4KDWRKEG.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
 import {
   createCanvasContext2D,
   toSize
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   apply,
   compose
@@ -33,7 +33,7 @@ import {
   getRotatedViewport,
   getTopLeft,
   intersects
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   Disposable_default,
   ascending,
@@ -433,7 +433,7 @@ function getRenderExtent(frameState, extent) {
   }
   return extent;
 }
-var CanvasTileLayerRenderer = class extends Layer_default {
+var CanvasTileLayerRenderer = class extends Layer_default2 {
   /**
    * @param {LayerType} tileLayer Tile layer.
    * @param {Options} [options] Options.
@@ -1112,7 +1112,7 @@ var TileProperty_default = {
 };
 
 // node_modules/ol/layer/BaseTile.js
-var BaseTileLayer = class extends Layer_default2 {
+var BaseTileLayer = class extends Layer_default {
   /**
    * @param {Options<TileSourceType>} [options] Tile layer options.
    */
@@ -1235,4 +1235,4 @@ export {
   BaseTile_default,
   Tile_default3 as Tile_default
 };
-//# sourceMappingURL=chunk-2UTICLCB.js.map
+//# sourceMappingURL=chunk-PWMKM3Z7.js.map

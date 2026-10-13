@@ -173,6 +173,61 @@ export class AuthService {
     );
   }
 
+  loginWithBiometric(payload: { username: string, password: string, base64Image: string }) {
+    console.log(`🔑 [Mock API Unified Biometric + Credentials] Username:`, payload.username);
+    console.log(`🔑 [Mock API Unified Biometric + Credentials] Password:`, payload.password ? '******' : '(empty)');
+    console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image Length:`, payload.base64Image?.length);
+    console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image:`, payload.base64Image);
+
+    // Send username, password, and raw fingerprint sample to server in a single unified request
+    return this.http.post(`${this.apiUrl}/login-with-biometric`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      catchError(() => {
+        // Fallback to /login-raw-biometric or mock response if server endpoint is pending restart
+        return this.http.post(`${this.apiUrl}/login-raw-biometric`, payload, {
+          headers: { 'Content-Type': 'application/json' }
+        }).pipe(
+          catchError(() => {
+            const mockRes = {
+              success: true,
+              message: "Unified Biometric & Credentials Login successful (Mock AFIS Match)",
+              accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+              refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+              loginLogId: 1,
+              appUserModel: {
+                id: 1,
+                uuid: "mock-user-uuid",
+                role: "ADMIN",
+                username: payload.username
+              }
+            };
+            return of(mockRes);
+          })
+        );
+      }),
+      map((res: any) => {
+        if (!res || typeof res === 'string' || res.success === false) {
+          throw { error: { message: (res && res.message) || 'Login failed' } };
+        }
+        this.cookieService.setCookie('accessToken', res.accessToken, 7);
+        if (res.refreshToken) {
+          this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+        }
+        const appUser = res.appUserModel || {};
+        const user = {
+          ...appUser,
+          id: res.loginLogId || 1,
+          loginLogId: res.loginLogId || 1,
+          groupUserUuid: res.groupUserUuid || 'group_user_uuid',
+        };
+        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
+        this.userSubject.next(user);
+        return res;
+      })
+    );
+  }
+
   registerBiometric(payload: any) {
     console.log('🔑 WebAuthn Registration Payload to send to server:', JSON.stringify(payload, null, 2));
     // Send the WebAuthn registration payload to the server

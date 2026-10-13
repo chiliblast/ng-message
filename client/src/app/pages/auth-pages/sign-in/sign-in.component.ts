@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
 import { AuthPageLayoutComponent } from '../../../shared/layout/auth-page-layout/auth-page-layout.component';
-import { SigninFormComponent } from '../../../shared/components/auth/signin-form/signin-form.component';
+// import { SigninFormComponent } from '../../../shared/components/auth/signin-form/signin-form.component';
+import { SigninFormUnifiedComponent } from '../../../shared/components/auth/signin-form-unified/signin-form-unified.component';
 
 @Component({
   selector: 'app-sign-in',
   imports: [
     AuthPageLayoutComponent,
-    SigninFormComponent,
+    // SigninFormComponent,
+    SigninFormUnifiedComponent,
   ],
   templateUrl: './sign-in.component.html',
   styles: ``

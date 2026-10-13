@@ -4,22 +4,22 @@ import {
 import {
   TileImage_default,
   appendParams
-} from "./chunk-ZYB6DTYO.js";
+} from "./chunk-URZBMD42.js";
 import {
   Source_default
-} from "./chunk-VLAIQMRX.js";
+} from "./chunk-LPZAUJUI.js";
 import {
   ERROR_THRESHOLD,
   Triangulation_default,
   calculateSourceResolution,
   hash,
   render
-} from "./chunk-E3M7EYWB.js";
+} from "./chunk-AY5DVSNN.js";
 import {
   ImageState_default,
   Image_default,
   decode
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   buffer,
   compareVersions,
@@ -35,7 +35,7 @@ import {
   getWidth,
   isEmpty,
   transform
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   ceil,
   floor,
@@ -844,4 +844,4 @@ export {
   getLegendUrl,
   TileWMS_default
 };
-//# sourceMappingURL=chunk-ZIG72PYX.js.map
+//# sourceMappingURL=chunk-PQP4QP7K.js.map

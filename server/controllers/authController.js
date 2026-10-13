@@ -66,22 +66,74 @@ exports.login = async (req, res) => {
 };
 
 exports.loginRawBiometric = async (req, res) => {
-    const { username, password, base64Image } = req.body;
-    console.log(`🔑 [Mock API] Raw Biometric Login requested for username:`, username);
-    console.log(`🔑 [Mock API] Base64 Image for ${username}:`, base64Image);
+    const { username, password = '', base64Image } = req.body;
+    console.log(`\n======================================================`);
+    console.log(`🔐 [Mock API] Raw Biometric Login requested:`);
+    console.log(`   👤 Username: ${username}`);
+    console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
+    console.log(`   🖐️ Biometric Sample (Base64 length): ${base64Image ? base64Image.length : 0}`);
+    console.log(`======================================================\n`);
     
     // In a real application, you would send this base64Image to an AFIS (Automated Fingerprint Identification System)
     // to match against enrolled templates. For this mock, we just approve it.
     
     res.json({
         success: true,
-        message: "Raw Biometric Login successful (Mock AFIS Match)",
+        message: "Biometric and credentials authentication successful!",
         accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
+        refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
         loginLogId: 1,
+        groupUserUuid: "group_user_uuid",
         appUserModel: {
             id: 1,
             uuid: "mock-user-uuid",
             role: "ADMIN",
+            defaultUsername: username,
+            displayName: username.toUpperCase(),
+            shortName: username,
+            username: username
+        }
+    });
+};
+
+exports.loginWithBiometric = async (req, res) => {
+    const { username, password = '', base64Image } = req.body;
+    console.log(`\n======================================================`);
+    console.log(`🔐 [Mock API] Unified Biometric + Password Login Attempt`);
+    console.log(`   👤 Username: ${username}`);
+    console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
+    console.log(`   🖐️ Biometric Sample (Base64 length): ${base64Image ? base64Image.length : 0}`);
+    console.log(`======================================================\n`);
+
+    if (!username || !password) {
+        return res.status(400).json({ success: false, message: 'Username and password are required' });
+    }
+
+    if (!base64Image) {
+        return res.status(400).json({ success: false, message: 'Fingerprint biometric image is required' });
+    }
+
+    // In a production backend, server validates password hash + AFIS fingerprint match
+    const token = jwt.sign(
+        { id: 1, username: username, name: username, type: 'ADMIN' },
+        process.env.SECRET_KEY || 'default_secret',
+        { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
+    );
+
+    res.json({
+        success: true,
+        message: "Biometric and credentials authentication successful!",
+        accessToken: token,
+        refreshToken: token,
+        loginLogId: 1,
+        groupUserUuid: "group_user_uuid",
+        appUserModel: {
+            id: 1,
+            uuid: "mock-user-uuid",
+            role: "ADMIN",
+            defaultUsername: username,
+            displayName: username.toUpperCase(),
+            shortName: username,
             username: username
         }
     });
@@ -100,3 +152,4 @@ exports.registerRawBiometric = async (req, res) => {
         message: "Raw Biometric registered successfully (Mock API)"
     });
 };
+

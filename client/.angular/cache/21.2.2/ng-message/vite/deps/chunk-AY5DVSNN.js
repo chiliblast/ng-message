@@ -6,7 +6,7 @@ import {
   createCanvasContext2D,
   listenImage,
   releaseCanvas
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   easeIn
 } from "./chunk-UUNRDFYK.js";
@@ -35,7 +35,7 @@ import {
   intersects,
   transform,
   wrapAndSliceX
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   clamp,
   modulo,
@@ -678,104 +678,6 @@ function getBlankImage() {
 }
 var ImageTile_default = ImageTile;
 
-// node_modules/ol/TileRange.js
-var TileRange = class {
-  /**
-   * @param {number} minX Minimum X.
-   * @param {number} maxX Maximum X.
-   * @param {number} minY Minimum Y.
-   * @param {number} maxY Maximum Y.
-   */
-  constructor(minX, maxX, minY, maxY) {
-    this.minX = minX;
-    this.maxX = maxX;
-    this.minY = minY;
-    this.maxY = maxY;
-  }
-  /**
-   * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
-   * @return {boolean} Contains tile coordinate.
-   */
-  contains(tileCoord) {
-    return this.containsXY(tileCoord[1], tileCoord[2]);
-  }
-  /**
-   * @param {TileRange} tileRange Tile range.
-   * @return {boolean} Contains.
-   */
-  containsTileRange(tileRange) {
-    return this.minX <= tileRange.minX && tileRange.maxX <= this.maxX && this.minY <= tileRange.minY && tileRange.maxY <= this.maxY;
-  }
-  /**
-   * @param {number} x Tile coordinate x.
-   * @param {number} y Tile coordinate y.
-   * @return {boolean} Contains coordinate.
-   */
-  containsXY(x, y) {
-    return this.minX <= x && x <= this.maxX && this.minY <= y && y <= this.maxY;
-  }
-  /**
-   * @param {TileRange} tileRange Tile range.
-   * @return {boolean} Equals.
-   */
-  equals(tileRange) {
-    return this.minX == tileRange.minX && this.minY == tileRange.minY && this.maxX == tileRange.maxX && this.maxY == tileRange.maxY;
-  }
-  /**
-   * @param {TileRange} tileRange Tile range.
-   */
-  extend(tileRange) {
-    if (tileRange.minX < this.minX) {
-      this.minX = tileRange.minX;
-    }
-    if (tileRange.maxX > this.maxX) {
-      this.maxX = tileRange.maxX;
-    }
-    if (tileRange.minY < this.minY) {
-      this.minY = tileRange.minY;
-    }
-    if (tileRange.maxY > this.maxY) {
-      this.maxY = tileRange.maxY;
-    }
-  }
-  /**
-   * @return {number} Height.
-   */
-  getHeight() {
-    return this.maxY - this.minY + 1;
-  }
-  /**
-   * @return {import("./size.js").Size} Size.
-   */
-  getSize() {
-    return [this.getWidth(), this.getHeight()];
-  }
-  /**
-   * @return {number} Width.
-   */
-  getWidth() {
-    return this.maxX - this.minX + 1;
-  }
-  /**
-   * @param {TileRange} tileRange Tile range.
-   * @return {boolean} Intersects.
-   */
-  intersects(tileRange) {
-    return this.minX <= tileRange.maxX && this.maxX >= tileRange.minX && this.minY <= tileRange.maxY && this.maxY >= tileRange.minY;
-  }
-};
-function createOrUpdate2(minX, maxX, minY, maxY, tileRange) {
-  if (tileRange !== void 0) {
-    tileRange.minX = minX;
-    tileRange.maxX = maxX;
-    tileRange.minY = minY;
-    tileRange.maxY = maxY;
-    return tileRange;
-  }
-  return new TileRange(minX, maxX, minY, maxY);
-}
-var TileRange_default = TileRange;
-
 // node_modules/ol/reproj/Triangulation.js
 var MAX_SUBDIVISION = 10;
 var MAX_TRIANGLE_WIDTH = 0.25;
@@ -1342,17 +1244,115 @@ var ReprojTile = class extends Tile_default {
 };
 var Tile_default2 = ReprojTile;
 
+// node_modules/ol/TileRange.js
+var TileRange = class {
+  /**
+   * @param {number} minX Minimum X.
+   * @param {number} maxX Maximum X.
+   * @param {number} minY Minimum Y.
+   * @param {number} maxY Maximum Y.
+   */
+  constructor(minX, maxX, minY, maxY) {
+    this.minX = minX;
+    this.maxX = maxX;
+    this.minY = minY;
+    this.maxY = maxY;
+  }
+  /**
+   * @param {import("./tilecoord.js").TileCoord} tileCoord Tile coordinate.
+   * @return {boolean} Contains tile coordinate.
+   */
+  contains(tileCoord) {
+    return this.containsXY(tileCoord[1], tileCoord[2]);
+  }
+  /**
+   * @param {TileRange} tileRange Tile range.
+   * @return {boolean} Contains.
+   */
+  containsTileRange(tileRange) {
+    return this.minX <= tileRange.minX && tileRange.maxX <= this.maxX && this.minY <= tileRange.minY && tileRange.maxY <= this.maxY;
+  }
+  /**
+   * @param {number} x Tile coordinate x.
+   * @param {number} y Tile coordinate y.
+   * @return {boolean} Contains coordinate.
+   */
+  containsXY(x, y) {
+    return this.minX <= x && x <= this.maxX && this.minY <= y && y <= this.maxY;
+  }
+  /**
+   * @param {TileRange} tileRange Tile range.
+   * @return {boolean} Equals.
+   */
+  equals(tileRange) {
+    return this.minX == tileRange.minX && this.minY == tileRange.minY && this.maxX == tileRange.maxX && this.maxY == tileRange.maxY;
+  }
+  /**
+   * @param {TileRange} tileRange Tile range.
+   */
+  extend(tileRange) {
+    if (tileRange.minX < this.minX) {
+      this.minX = tileRange.minX;
+    }
+    if (tileRange.maxX > this.maxX) {
+      this.maxX = tileRange.maxX;
+    }
+    if (tileRange.minY < this.minY) {
+      this.minY = tileRange.minY;
+    }
+    if (tileRange.maxY > this.maxY) {
+      this.maxY = tileRange.maxY;
+    }
+  }
+  /**
+   * @return {number} Height.
+   */
+  getHeight() {
+    return this.maxY - this.minY + 1;
+  }
+  /**
+   * @return {import("./size.js").Size} Size.
+   */
+  getSize() {
+    return [this.getWidth(), this.getHeight()];
+  }
+  /**
+   * @return {number} Width.
+   */
+  getWidth() {
+    return this.maxX - this.minX + 1;
+  }
+  /**
+   * @param {TileRange} tileRange Tile range.
+   * @return {boolean} Intersects.
+   */
+  intersects(tileRange) {
+    return this.minX <= tileRange.maxX && this.maxX >= tileRange.minX && this.minY <= tileRange.maxY && this.maxY >= tileRange.minY;
+  }
+};
+function createOrUpdate2(minX, maxX, minY, maxY, tileRange) {
+  if (tileRange !== void 0) {
+    tileRange.minX = minX;
+    tileRange.maxX = maxX;
+    tileRange.minY = minY;
+    tileRange.maxY = maxY;
+    return tileRange;
+  }
+  return new TileRange(minX, maxX, minY, maxY);
+}
+var TileRange_default = TileRange;
+
 export {
   Tile_default,
   ImageTile_default,
-  createOrUpdate2 as createOrUpdate,
-  TileRange_default,
   calculateSourceResolution,
   calculateSourceExtentResolution,
   render,
   Triangulation_default,
   ERROR_THRESHOLD,
   Tile_default2,
+  createOrUpdate2 as createOrUpdate,
+  TileRange_default,
   createOrUpdate as createOrUpdate2,
   getKeyZXY,
   getKey,
@@ -1361,4 +1361,4 @@ export {
   hashZXY,
   withinExtentAndZ
 };
-//# sourceMappingURL=chunk-E3M7EYWB.js.map
+//# sourceMappingURL=chunk-AY5DVSNN.js.map

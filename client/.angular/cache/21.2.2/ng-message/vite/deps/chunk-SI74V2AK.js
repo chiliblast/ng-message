@@ -1488,8 +1488,6 @@ export {
   applyTransform,
   wrapX,
   wrapAndSliceX,
-  warn,
-  error,
   compareVersions,
   add,
   degreesToStringHDMS,
@@ -1498,6 +1496,8 @@ export {
   scale,
   wrapX2,
   angleBetween,
+  warn,
+  error,
   fromCode,
   METERS_PER_UNIT,
   Projection_default,
@@ -1537,4 +1537,4 @@ export {
   createSafeCoordinateTransform,
   addCommon
 };
-//# sourceMappingURL=chunk-3V33AXQY.js.map
+//# sourceMappingURL=chunk-SI74V2AK.js.map

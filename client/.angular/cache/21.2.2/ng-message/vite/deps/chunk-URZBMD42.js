@@ -1,17 +1,17 @@
 import {
   Source_default
-} from "./chunk-VLAIQMRX.js";
+} from "./chunk-LPZAUJUI.js";
 import {
   ImageTile_default,
   TileRange_default,
   Tile_default2 as Tile_default,
-  createOrUpdate,
+  createOrUpdate as createOrUpdate2,
   createOrUpdate2 as createOrUpdate3,
   getCacheKey,
   hash,
   hashZXY,
   withinExtentAndZ
-} from "./chunk-E3M7EYWB.js";
+} from "./chunk-AY5DVSNN.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
@@ -19,25 +19,25 @@ import {
   WORKER_OFFSCREEN_CANVAS,
   scale,
   toSize
-} from "./chunk-L3E353SU.js";
+} from "./chunk-54EF7IXW.js";
 import {
   DEFAULT_MAX_ZOOM,
   DEFAULT_TILE_SIZE
 } from "./chunk-UUNRDFYK.js";
 import {
   intersectsLinearRing
-} from "./chunk-555HNW5N.js";
+} from "./chunk-ZL2AWGCB.js";
 import {
   METERS_PER_UNIT,
   containsCoordinate,
-  createOrUpdate as createOrUpdate2,
+  createOrUpdate,
   equivalent,
   get3 as get,
   getCorner,
   getHeight,
   getTopLeft,
   getWidth
-} from "./chunk-3V33AXQY.js";
+} from "./chunk-SI74V2AK.js";
 import {
   ceil,
   clamp,
@@ -240,7 +240,7 @@ var TileGrid = class {
       if (x !== void 0 && y !== void 0) {
         x = Math.floor(x / 2);
         y = Math.floor(y / 2);
-        tileRange = createOrUpdate(x, x, y, y, tempTileRange);
+        tileRange = createOrUpdate2(x, x, y, y, tempTileRange);
       } else {
         tileRange = this.getTileRangeForExtentAndZ(
           tileCoordExtent,
@@ -326,7 +326,7 @@ var TileGrid = class {
       if (this.zoomFactor_ === 2) {
         const minX = tileCoord[1] * 2;
         const minY = tileCoord[2] * 2;
-        return createOrUpdate(
+        return createOrUpdate2(
           minX,
           minX + 1,
           minY,
@@ -360,7 +360,7 @@ var TileGrid = class {
     const tileCoordX = tileCoord[1];
     const tileCoordY = tileCoord[2];
     if (z === tileCoordZ) {
-      return createOrUpdate(
+      return createOrUpdate2(
         tileCoordX,
         tileCoordY,
         tileCoordX,
@@ -373,11 +373,11 @@ var TileGrid = class {
       const minX = Math.floor(tileCoordX * factor);
       const minY = Math.floor(tileCoordY * factor);
       if (z < tileCoordZ) {
-        return createOrUpdate(minX, minX, minY, minY, tempTileRange);
+        return createOrUpdate2(minX, minX, minY, minY, tempTileRange);
       }
       const maxX = Math.floor(factor * (tileCoordX + 1)) - 1;
       const maxY = Math.floor(factor * (tileCoordY + 1)) - 1;
-      return createOrUpdate(minX, maxX, minY, maxY, tempTileRange);
+      return createOrUpdate2(minX, maxX, minY, maxY, tempTileRange);
     }
     const tileCoordExtent = this.getTileCoordExtent(tileCoord, this.tmpExtent_);
     return this.getTileRangeForExtentAndZ(tileCoordExtent, z, tempTileRange);
@@ -396,7 +396,7 @@ var TileGrid = class {
     this.getTileCoordForXYAndZ_(extent[2], extent[1], z, true, tmpTileCoord);
     const maxX = tmpTileCoord[1];
     const maxY = tmpTileCoord[2];
-    return createOrUpdate(minX, maxX, minY, maxY, tempTileRange);
+    return createOrUpdate2(minX, maxX, minY, maxY, tempTileRange);
   }
   /**
    * @param {import("../tilecoord.js").TileCoord} tileCoord Tile coordinate.
@@ -427,7 +427,7 @@ var TileGrid = class {
     const minY = origin[1] - (tileCoord[2] + 1) * tileSize[1] * resolution;
     const maxX = minX + tileSize[0] * resolution;
     const maxY = minY + tileSize[1] * resolution;
-    return createOrUpdate2(minX, minY, maxX, maxY, tempExtent);
+    return createOrUpdate(minX, minY, maxX, maxY, tempExtent);
   }
   /**
    * Get the tile coordinate for the given map coordinate and resolution.  This
@@ -717,7 +717,7 @@ function extentFromProjection(projection) {
   let extent = projection.getExtent();
   if (!extent) {
     const half = 180 * METERS_PER_UNIT.degrees / projection.getMetersPerUnit();
-    extent = createOrUpdate2(-half, -half, half, half);
+    extent = createOrUpdate(-half, -half, half, half);
   }
   return extent;
 }
@@ -1397,4 +1397,4 @@ export {
   UrlTile_default,
   TileImage_default
 };
-//# sourceMappingURL=chunk-ZYB6DTYO.js.map
+//# sourceMappingURL=chunk-URZBMD42.js.map
