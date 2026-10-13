@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { DropdownItemTwoComponent } from '../../ui/dropdown/dropdown-item/dropdown-item.component-two';
 import { BiometricRegistrationComponent } from '../../auth/biometric-registration/biometric-registration.component';
 import { DpRegistrationComponent } from '../../auth/dp-registration/dp-registration.component';
+import { CaptchaModalComponent } from '../../auth/captcha-modal/captcha-modal.component';
 
 import { inject } from '@angular/core';
 import { AuthService } from '../../../../services/auth.service';
@@ -12,7 +13,15 @@ import { AuthService } from '../../../../services/auth.service';
 @Component({
   selector: 'app-user-dropdown',
   templateUrl: './user-dropdown.component.html',
-  imports:[CommonModule,RouterModule,DropdownComponent,DropdownItemTwoComponent,BiometricRegistrationComponent,DpRegistrationComponent]
+  imports: [
+    CommonModule,
+    RouterModule,
+    DropdownComponent,
+    DropdownItemTwoComponent,
+    BiometricRegistrationComponent,
+    DpRegistrationComponent,
+    CaptchaModalComponent
+  ]
 })
 export class UserDropdownComponent {
   private authService = inject(AuthService);
@@ -22,6 +31,7 @@ export class UserDropdownComponent {
   isOpen = false;
   isBiometricModalOpen = false;
   isDpModalOpen = false;
+  isCaptchaModalOpen = false;
 
   toggleDropdown() {
     this.isOpen = !this.isOpen;
@@ -47,6 +57,15 @@ export class UserDropdownComponent {
 
   closeDpModal() {
     this.isDpModalOpen = false;
+  }
+
+  openCaptchaModal() {
+    this.closeDropdown();
+    this.isCaptchaModalOpen = true;
+  }
+
+  closeCaptchaModal() {
+    this.isCaptchaModalOpen = false;
   }
 
   onLogout() {

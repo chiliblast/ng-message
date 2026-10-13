@@ -64,6 +64,7 @@
     "swiper": "^11.2.10",
     "tailwindcss": "^4.1.11",
     "tslib": "^2.3.0",
+    "use-offline-captcha": "^0.2.0",
     "WebSdk": "file:src/app/core/modules/WebSdk",
     "xlsx": "^0.18.5",
     "zone.js": "~0.15.0"
