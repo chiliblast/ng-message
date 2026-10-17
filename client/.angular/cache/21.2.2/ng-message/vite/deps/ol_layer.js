@@ -51,6 +51,9 @@ import {
   getKey
 } from "./chunk-AY5DVSNN.js";
 import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import {
   Group_default
 } from "./chunk-LMAW7IKW.js";
 import {
@@ -99,9 +102,6 @@ import {
   createCanvasContext2D,
   toSize
 } from "./chunk-54EF7IXW.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
 import {
   ViewHint_default
 } from "./chunk-OTOAFGMZ.js";

@@ -84,6 +84,9 @@ import {
   hash
 } from "./chunk-AY5DVSNN.js";
 import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import {
   TileQueue_default
 } from "./chunk-AODCLWIO.js";
 import "./chunk-UO2MFT2B.js";
@@ -102,9 +105,6 @@ import {
   scale as scale2,
   toSize
 } from "./chunk-54EF7IXW.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
 import {
   ViewHint_default
 } from "./chunk-OTOAFGMZ.js";

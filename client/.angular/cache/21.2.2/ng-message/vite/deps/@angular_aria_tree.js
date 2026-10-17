@@ -63,10 +63,10 @@ import {
   ɵɵlistener,
   ɵɵqueryAdvance
 } from "./chunk-YRKA7ZQU.js";
-import "./chunk-JRFR6BLO.js";
 import {
   isObservable
 } from "./chunk-HWYXSU2G.js";
+import "./chunk-JRFR6BLO.js";
 import {
   BehaviorSubject,
   Observable,
