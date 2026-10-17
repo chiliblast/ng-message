@@ -1,0 +1,119 @@
+{
+  "configVersion": 1,
+  "timestamp": 1792255218630,
+  "index": "/index.html",
+  "assetGroups": [
+    {
+      "name": "app",
+      "installMode": "prefetch",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [
+        "/browser-check.css",
+        "/browser-check.js",
+        "/chunk-6LRII76O.js",
+        "/chunk-BL7DVK5A.js",
+        "/chunk-C7XXYB36.js",
+        "/chunk-D2LLXYIQ.js",
+        "/chunk-GAL4ENT6.js",
+        "/chunk-IR2N76ZA.js",
+        "/chunk-IYHAPYI4.js",
+        "/chunk-O5BWTIU7.js",
+        "/chunk-RBGG3E5X.js",
+        "/chunk-TJAKUGGY.js",
+        "/chunk-UUFJWG76.js",
+        "/favicon.ico",
+        "/index.html",
+        "/main-4HF53FDA.js",
+        "/manifest.webmanifest",
+        "/polyfills-5CFQRCPP.js",
+        "/scripts-LJCRYJEY.js",
+        "/styles-ZRMUWDOQ.css"
+      ],
+      "patterns": []
+    },
+    {
+      "name": "assets",
+      "installMode": "lazy",
+      "updateMode": "prefetch",
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "urls": [],
+      "patterns": []
+    }
+  ],
+  "dataGroups": [
+    {
+      "name": "api-freshness",
+      "patterns": [
+        "http:\\/\\/localhost:3000\\/api\\/messages\\/.*"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 3600000,
+      "timeoutMs": 5000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "hierarchy-cache",
+      "patterns": [
+        "http:\\/\\/localhost:3000\\/api\\/hierarchy"
+      ],
+      "strategy": "freshness",
+      "maxSize": 10,
+      "maxAge": 86400000,
+      "timeoutMs": 3000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
+  "hashTable": {
+    "/browser-check.css": "c3e94fafe44556ee0a54ca473fe310c1769b3f5e",
+    "/browser-check.js": "c365a1cacb669bfc5c6bc01feb22db6c26a962b3",
+    "/chunk-6LRII76O.js": "9102a9cd39a1b33433762551b0af35e75d575b62",
+    "/chunk-BL7DVK5A.js": "412e07e243d7657f6a197fbf553afddb4553f37d",
+    "/chunk-C7XXYB36.js": "7126fd947ef41ad801d6657247d38e4972dfa73f",
+    "/chunk-D2LLXYIQ.js": "064e8c436c2ff8fdd7b292fa862833d0d75bdd8d",
+    "/chunk-GAL4ENT6.js": "00d2a3914f360b8b7c866630c354154fc5765d84",
+    "/chunk-IR2N76ZA.js": "51002a4a5141ad4eebeae6cf9ffee279684c964c",
+    "/chunk-IYHAPYI4.js": "e4cab87b5c2e6bfa6911fd8f6894a6c1606fcb1a",
+    "/chunk-O5BWTIU7.js": "8bbc0189cbee0b32bb7f9b07983b9563c7111e44",
+    "/chunk-RBGG3E5X.js": "f555fcba0a99040aad64384a29cbf064f22a73d3",
+    "/chunk-TJAKUGGY.js": "eed90e637e2c87f9a38a67a44a1271988590f55b",
+    "/chunk-UUFJWG76.js": "c6b4eda9825c9c4db557608d3f4c1384d26f9582",
+    "/favicon.ico": "9c39f434fe1261f68c5e3eefdf734630d99c5670",
+    "/index.html": "0900dd58cb89f8c03e5a5c15947b882200812366",
+    "/main-4HF53FDA.js": "138b3ea07a48b695d7f3877b91c6f8adc6bce120",
+    "/manifest.webmanifest": "5a3a59b758a5d064582fa00138a9eb00043bb7ec",
+    "/polyfills-5CFQRCPP.js": "f2241e9a25858f895ce299d15f6f22e849e2fd72",
+    "/scripts-LJCRYJEY.js": "94bc731c76c08277aeef16c89f2d75941f62cfee",
+    "/styles-ZRMUWDOQ.css": "1f5e7b6afada543e768217671abcb08305aaccd6"
+  },
+  "navigationUrls": [
+    {
+      "positive": true,
+      "regex": "^\\/.*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*\\.[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*$"
+    },
+    {
+      "positive": false,
+      "regex": "^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$"
+    }
+  ],
+  "navigationRequestStrategy": "performance"
+}

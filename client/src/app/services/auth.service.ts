@@ -173,19 +173,26 @@ export class AuthService {
     );
   }
 
-  loginWithBiometric(payload: { username: string, password: string, base64Image: string }) {
+  loginWithBiometric(payload: { username: string, password: string, base64Image: string, biometricType?: 'fingerprint' | 'face' }) {
+    const bType = payload.biometricType || 'fingerprint';
+    console.log(`🔑 [Mock API Unified Biometric + Credentials] Type:`, bType.toUpperCase());
     console.log(`🔑 [Mock API Unified Biometric + Credentials] Username:`, payload.username);
     console.log(`🔑 [Mock API Unified Biometric + Credentials] Password:`, payload.password ? '******' : '(empty)');
     console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image Length:`, payload.base64Image?.length);
     console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image:`, payload.base64Image);
 
-    // Send username, password, and raw fingerprint sample to server in a single unified request
-    return this.http.post(`${this.apiUrl}/login-with-biometric`, payload, {
+    const body = {
+      ...payload,
+      biometricType: bType
+    };
+
+    // Send username, password, and biometric sample (fingerprint or face) to server in a single unified request
+    return this.http.post(`${this.apiUrl}/login-with-biometric`, body, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
       catchError(() => {
         // Fallback to /login-raw-biometric or mock response if server endpoint is pending restart
-        return this.http.post(`${this.apiUrl}/login-raw-biometric`, payload, {
+        return this.http.post(`${this.apiUrl}/login-raw-biometric`, body, {
           headers: { 'Content-Type': 'application/json' }
         }).pipe(
           catchError(() => {

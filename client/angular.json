@@ -36,7 +36,9 @@
             "scripts": [
               "node_modules/apexcharts/dist/apexcharts.min.js",
               "node_modules/html-magnifier/html-magnifier.js",
-              "node_modules/@digitalpersona/devices/@types/WebSdk/index.js"
+              "node_modules/@digitalpersona/devices/@types/WebSdk/index.js",
+              "node_modules/@digitalpersona/face/dist/facefinder.js",
+              "node_modules/@digitalpersona/face/dist/face.sdk.js"
             ]
           },
           "configurations": {

@@ -1,29 +1,29 @@
 import {
-  BuilderGroup_default,
-  DECLUTTER,
-  ExecutorGroup_default,
-  HIT_DETECT_RESOLUTION,
-  Immediate_default,
-  VectorLayer_default,
-  Vector_default as Vector_default2,
-  createHitDetectionImageData,
-  getSquaredTolerance,
-  hitDetect,
-  renderFeature
-} from "./chunk-76USV3PF.js";
-import {
   ImageCanvas_default,
   ImageLayer_default,
   Image_default,
   create as create2,
   fromTransform
-} from "./chunk-7S3NFSKE.js";
+} from "./chunk-6QR72QY2.js";
+import {
+  fromResolutionLike
+} from "./chunk-7EDTMLQK.js";
 import {
   Feature_default as Feature_default2,
   LineString_default,
   VectorEventType_default,
-  Vector_default
-} from "./chunk-RWNGKRXA.js";
+  Vector_default as Vector_default2
+} from "./chunk-K4SIRF54.js";
+import "./chunk-LPZAUJUI.js";
+import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import {
+  Group_default
+} from "./chunk-X4EUKP7W.js";
+import {
+  Collection_default
+} from "./chunk-UO2MFT2B.js";
 import {
   BaseTile_default,
   DataTile_default,
@@ -33,29 +33,31 @@ import {
   Tile_default as Tile_default2,
   asArrayLike,
   asImageLike
-} from "./chunk-PWMKM3Z7.js";
-import "./chunk-SX6VJL3J.js";
-import {
-  Layer_default as Layer_default2,
-  ZIndexContext_default
-} from "./chunk-DTGEUEQ7.js";
-import {
-  fromResolutionLike
-} from "./chunk-7EDTMLQK.js";
-import "./chunk-LPZAUJUI.js";
+} from "./chunk-44L4UVTM.js";
 import {
   ImageTile_default,
   TileRange_default,
   Tile_default2 as Tile_default,
   createOrUpdate2 as createOrUpdate,
   getKey
-} from "./chunk-AY5DVSNN.js";
+} from "./chunk-UEL55OZR.js";
 import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
+  TileState_default
+} from "./chunk-3U7ETZD3.js";
 import {
-  Group_default
-} from "./chunk-LMAW7IKW.js";
+  BuilderGroup_default,
+  DECLUTTER,
+  ExecutorGroup_default,
+  HIT_DETECT_RESOLUTION,
+  Immediate_default,
+  VectorLayer_default,
+  Vector_default,
+  createHitDetectionImageData,
+  getSquaredTolerance,
+  hitDetect,
+  renderFeature
+} from "./chunk-NVGBRNBZ.js";
+import "./chunk-SX6VJL3J.js";
 import {
   BaseVector_default,
   BooleanType,
@@ -71,28 +73,30 @@ import {
   newParsingContext,
   parse,
   typeName
-} from "./chunk-7ZLY3WAE.js";
-import {
-  Collection_default
-} from "./chunk-UO2MFT2B.js";
-import {
-  RBush
-} from "./chunk-6MQFOTFN.js";
-import {
-  EventType_default as EventType_default2,
-  Event_default,
-  Layer_default,
-  Property_default
-} from "./chunk-4KDWRKEG.js";
-import {
-  TileState_default
-} from "./chunk-3U7ETZD3.js";
+} from "./chunk-VB6S5TMC.js";
 import {
   Fill_default,
   Stroke_default,
   Style_default,
   Text_default
 } from "./chunk-SEDETUIR.js";
+import {
+  RBush
+} from "./chunk-6MQFOTFN.js";
+import {
+  Layer_default as Layer_default2,
+  ZIndexContext_default
+} from "./chunk-YFUPEYEZ.js";
+import {
+  EventType_default as EventType_default2,
+  Event_default,
+  Layer_default,
+  Property_default
+} from "./chunk-CGTITJPB.js";
+import {
+  ViewHint_default
+} from "./chunk-KY6ASBZ5.js";
+import "./chunk-UUNRDFYK.js";
 import {
   asArray
 } from "./chunk-7H5QLMDW.js";
@@ -103,12 +107,8 @@ import {
   toSize
 } from "./chunk-54EF7IXW.js";
 import {
-  ViewHint_default
-} from "./chunk-OTOAFGMZ.js";
-import {
   inflateEnds
 } from "./chunk-EI6MWDKW.js";
-import "./chunk-UUNRDFYK.js";
 import "./chunk-ZL2AWGCB.js";
 import {
   Point_default,
@@ -315,7 +315,7 @@ var INTERVALS = [
   2 / 3600,
   1 / 3600
 ];
-var Graticule = class extends Vector_default2 {
+var Graticule = class extends Vector_default {
   /**
    * @param {Options} [options] Options.
    */
@@ -411,7 +411,7 @@ var Graticule = class extends Vector_default2 {
     }
     this.intervals_ = options.intervals !== void 0 ? options.intervals : INTERVALS;
     this.setSource(
-      new Vector_default({
+      new Vector_default2({
         loader: this.loaderFunction.bind(this),
         strategy: this.strategyFunction.bind(this),
         features: new Collection_default(),
@@ -9992,7 +9992,7 @@ export {
   Image_default as Image,
   Layer_default as Layer,
   Tile_default2 as Tile,
-  Vector_default2 as Vector,
+  Vector_default as Vector,
   VectorImage_default as VectorImage,
   VectorTile_default as VectorTile,
   WebGLPoints_default as WebGLPoints,

@@ -1,7 +1,0 @@
-{
-  "version": 3,
-  "sources": ["footer.component.ts"],
-  "sourcesContent": ["\n    .ticker-container {\n      position: relative;\n      flex: 1;\n      height: 100%;\n      overflow: hidden;\n      display: flex;\n      align-items: center;\n    }\n    .marquee-track {\n      display: flex;\n      align-items: center;\n      width: max-content;\n      will-change: transform;\n    }\n  "],
-  "mappings": ";AACI,CAAA;AACE,YAAA;AACA,QAAA;AACA,UAAA;AACA,YAAA;AACA,WAAA;AACA,eAAA;AACF;AACA,CAAA;AACE,WAAA;AACA,eAAA;AACA,SAAA;AACA,eAAA;AACF;",
-  "names": []
-}

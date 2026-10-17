@@ -66,20 +66,19 @@ exports.login = async (req, res) => {
 };
 
 exports.loginRawBiometric = async (req, res) => {
-    const { username, password = '', base64Image } = req.body;
+    const { username, password = '', base64Image, biometricType = 'fingerprint' } = req.body;
+    const isFace = biometricType === 'face';
     console.log(`\n======================================================`);
-    console.log(`🔐 [Mock API] Raw Biometric Login requested:`);
+    console.log(`🔐 [Mock API] Raw ${isFace ? 'Face Scan' : 'Fingerprint'} Login requested:`);
     console.log(`   👤 Username: ${username}`);
     console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
-    console.log(`   🖐️ Biometric Sample (Base64 length): ${base64Image ? base64Image.length : 0}`);
+    console.log(`   🧬 Biometric Type: ${biometricType.toUpperCase()}`);
+    console.log(`   ${isFace ? '📷 Face Image' : '🖐️ Fingerprint Sample'} (Base64 length): ${base64Image ? base64Image.length : 0}`);
     console.log(`======================================================\n`);
-    
-    // In a real application, you would send this base64Image to an AFIS (Automated Fingerprint Identification System)
-    // to match against enrolled templates. For this mock, we just approve it.
     
     res.json({
         success: true,
-        message: "Biometric and credentials authentication successful!",
+        message: `${isFace ? 'Face recognition' : 'Biometric fingerprint'} and credentials authentication successful!`,
         accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
         refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
         loginLogId: 1,
@@ -97,12 +96,14 @@ exports.loginRawBiometric = async (req, res) => {
 };
 
 exports.loginWithBiometric = async (req, res) => {
-    const { username, password = '', base64Image } = req.body;
+    const { username, password = '', base64Image, biometricType = 'fingerprint' } = req.body;
+    const isFace = biometricType === 'face';
     console.log(`\n======================================================`);
-    console.log(`🔐 [Mock API] Unified Biometric + Password Login Attempt`);
+    console.log(`🔐 [Mock API] Unified ${isFace ? 'Face Scan' : 'Fingerprint'} + Password Login Attempt`);
     console.log(`   👤 Username: ${username}`);
     console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
-    console.log(`   🖐️ Biometric Sample (Base64 length): ${base64Image ? base64Image.length : 0}`);
+    console.log(`   🧬 Biometric Type: ${biometricType.toUpperCase()}`);
+    console.log(`   ${isFace ? '📷 Face Image' : '🖐️ Fingerprint Sample'} (Base64 length): ${base64Image ? base64Image.length : 0}`);
     console.log(`======================================================\n`);
 
     if (!username || !password) {
@@ -110,10 +111,10 @@ exports.loginWithBiometric = async (req, res) => {
     }
 
     if (!base64Image) {
-        return res.status(400).json({ success: false, message: 'Fingerprint biometric image is required' });
+        return res.status(400).json({ success: false, message: `${isFace ? 'Face' : 'Fingerprint'} biometric image is required` });
     }
 
-    // In a production backend, server validates password hash + AFIS fingerprint match
+    // In a production backend, server validates password hash + AFIS fingerprint / face match
     const token = jwt.sign(
         { id: 1, username: username, name: username, type: 'ADMIN' },
         process.env.SECRET_KEY || 'default_secret',
@@ -122,7 +123,7 @@ exports.loginWithBiometric = async (req, res) => {
 
     res.json({
         success: true,
-        message: "Biometric and credentials authentication successful!",
+        message: `${isFace ? 'Face recognition' : 'Biometric fingerprint'} and credentials authentication successful!`,
         accessToken: token,
         refreshToken: token,
         loginLogId: 1,

@@ -12,41 +12,27 @@ import {
 import "./chunk-RFFIRJYH.js";
 import {
   ImageCanvas_default,
-  Image_default as Image_default2,
+  Image_default as Image_default3,
   orthographic,
   scale as scale3,
   translate,
   translation
-} from "./chunk-7S3NFSKE.js";
-import {
-  Vector_default,
-  loadFeaturesXhr
-} from "./chunk-RWNGKRXA.js";
-import {
-  DataTile_default,
-  LRUCache_default,
-  Tile_default as Tile_default2,
-  asArrayLike,
-  asImageLike,
-  toArray
-} from "./chunk-PWMKM3Z7.js";
-import "./chunk-SX6VJL3J.js";
-import "./chunk-DTGEUEQ7.js";
+} from "./chunk-6QR72QY2.js";
 import {
   ATTRIBUTION,
   OSM_default,
   XYZ_default
-} from "./chunk-FMX7Z27F.js";
+} from "./chunk-3637ZCH2.js";
 import {
   DECIMALS,
-  Image_default as Image_default3,
+  Image_default as Image_default2,
   TileWMS_default,
   createLoader,
   defaultImageLoadFunction,
   getFeatureInfoUrl,
   getLegendUrl,
   getRequestExtent
-} from "./chunk-PQP4QP7K.js";
+} from "./chunk-S45HR5WD.js";
 import "./chunk-7EDTMLQK.js";
 import {
   TileEventType_default,
@@ -67,10 +53,29 @@ import {
   nullTileUrlFunction,
   pickUrl,
   renderXYZTemplate
-} from "./chunk-URZBMD42.js";
+} from "./chunk-7RWWHA5G.js";
+import {
+  Vector_default,
+  loadFeaturesXhr
+} from "./chunk-K4SIRF54.js";
 import {
   Source_default
 } from "./chunk-LPZAUJUI.js";
+import {
+  Feature_default
+} from "./chunk-K65TGVJ3.js";
+import {
+  TileQueue_default
+} from "./chunk-AODCLWIO.js";
+import "./chunk-UO2MFT2B.js";
+import {
+  DataTile_default,
+  LRUCache_default,
+  Tile_default as Tile_default2,
+  asArrayLike,
+  asImageLike,
+  toArray
+} from "./chunk-44L4UVTM.js";
 import {
   ERROR_THRESHOLD,
   ImageTile_default,
@@ -82,19 +87,21 @@ import {
   getCacheKey,
   getKeyZXY,
   hash
-} from "./chunk-AY5DVSNN.js";
-import {
-  Feature_default
-} from "./chunk-K65TGVJ3.js";
-import {
-  TileQueue_default
-} from "./chunk-AODCLWIO.js";
-import "./chunk-UO2MFT2B.js";
-import "./chunk-6MQFOTFN.js";
-import "./chunk-4KDWRKEG.js";
+} from "./chunk-UEL55OZR.js";
 import {
   TileState_default
 } from "./chunk-3U7ETZD3.js";
+import "./chunk-SX6VJL3J.js";
+import "./chunk-6MQFOTFN.js";
+import "./chunk-YFUPEYEZ.js";
+import "./chunk-CGTITJPB.js";
+import {
+  ViewHint_default
+} from "./chunk-KY6ASBZ5.js";
+import {
+  DEFAULT_MAX_ZOOM,
+  DEFAULT_TILE_SIZE
+} from "./chunk-UUNRDFYK.js";
 import "./chunk-7H5QLMDW.js";
 import {
   Image_default,
@@ -105,14 +112,7 @@ import {
   scale as scale2,
   toSize
 } from "./chunk-54EF7IXW.js";
-import {
-  ViewHint_default
-} from "./chunk-OTOAFGMZ.js";
 import "./chunk-EI6MWDKW.js";
-import {
-  DEFAULT_MAX_ZOOM,
-  DEFAULT_TILE_SIZE
-} from "./chunk-UUNRDFYK.js";
 import "./chunk-ZL2AWGCB.js";
 import {
   Point_default
@@ -8919,7 +8919,7 @@ var IIIF = class extends TileImage_default {
 var IIIF_default = IIIF;
 
 // node_modules/ol/source/ImageArcGISRest.js
-var ImageArcGISRest = class extends Image_default3 {
+var ImageArcGISRest = class extends Image_default2 {
   /**
    * @param {Options} [options] Image ArcGIS Rest Options.
    */
@@ -9048,7 +9048,7 @@ var ImageArcGISRest = class extends Image_default3 {
 var ImageArcGISRest_default = ImageArcGISRest;
 
 // node_modules/ol/source/ImageCanvas.js
-var ImageCanvasSource = class extends Image_default3 {
+var ImageCanvasSource = class extends Image_default2 {
   /**
    * @param {Options} [options] ImageCanvas options.
    */
@@ -9166,7 +9166,7 @@ function createLoader3(options) {
 }
 
 // node_modules/ol/source/ImageMapGuide.js
-var ImageMapGuide = class extends Image_default3 {
+var ImageMapGuide = class extends Image_default2 {
   /**
    * @param {Options} options ImageMapGuide options.
    */
@@ -9296,7 +9296,7 @@ function createLoader4(options) {
 }
 
 // node_modules/ol/source/ImageStatic.js
-var Static = class extends Image_default3 {
+var Static = class extends Image_default2 {
   /**
    * @param {Options} options ImageStatic options.
    */
@@ -9469,7 +9469,7 @@ var ImageTileSource = class extends DataTile_default3 {
 var ImageTile_default2 = ImageTileSource;
 
 // node_modules/ol/source/ImageWMS.js
-var ImageWMS = class extends Image_default3 {
+var ImageWMS = class extends Image_default2 {
   /**
    * @param {Options} [options] ImageWMS options.
    */
@@ -10894,7 +10894,7 @@ var RasterSourceEvent = class extends Event_default {
     this.data = data;
   }
 };
-var RasterSource = class extends Image_default3 {
+var RasterSource = class extends Image_default2 {
   /**
    * @param {Options} options Options.
    */
@@ -11234,8 +11234,8 @@ function createLayer(layerOrSource) {
   if (layerOrSource instanceof Source_default) {
     if (layerOrSource instanceof Tile_default3) {
       layer = new Tile_default2({ source: layerOrSource });
-    } else if (layerOrSource instanceof Image_default3) {
-      layer = new Image_default2({ source: layerOrSource });
+    } else if (layerOrSource instanceof Image_default2) {
+      layer = new Image_default3({ source: layerOrSource });
     }
   } else {
     layer = layerOrSource;
@@ -12302,7 +12302,7 @@ export {
   GeoTIFF_default as GeoTIFF,
   Google_default as Google,
   IIIF_default as IIIF,
-  Image_default3 as Image,
+  Image_default2 as Image,
   ImageArcGISRest_default as ImageArcGISRest,
   ImageCanvas_default2 as ImageCanvas,
   ImageMapGuide_default as ImageMapGuide,
