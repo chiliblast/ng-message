@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { DropdownItemTwoComponent } from '../../ui/dropdown/dropdown-item/dropdown-item.component-two';
 import { BiometricRegistrationComponent } from '../../auth/biometric-registration/biometric-registration.component';
 import { DpRegistrationComponent } from '../../auth/dp-registration/dp-registration.component';
+import { FaceRegistrationComponent } from '../../auth/face-registration/face-registration.component';
 import { CaptchaModalComponent } from '../../auth/captcha-modal/captcha-modal.component';
 
 import { inject } from '@angular/core';
@@ -20,6 +21,7 @@ import { AuthService } from '../../../../services/auth.service';
     DropdownItemTwoComponent,
     BiometricRegistrationComponent,
     DpRegistrationComponent,
+    FaceRegistrationComponent,
     CaptchaModalComponent
   ]
 })
@@ -31,7 +33,9 @@ export class UserDropdownComponent {
   isOpen = false;
   isBiometricModalOpen = false;
   isDpModalOpen = false;
+  isFaceModalOpen = false;
   isCaptchaModalOpen = false;
+
 
   toggleDropdown() {
     this.isOpen = !this.isOpen;
@@ -59,7 +63,17 @@ export class UserDropdownComponent {
     this.isDpModalOpen = false;
   }
 
+  openFaceModal() {
+    this.closeDropdown();
+    this.isFaceModalOpen = true;
+  }
+
+  closeFaceModal() {
+    this.isFaceModalOpen = false;
+  }
+
   openCaptchaModal() {
+
     this.closeDropdown();
     this.isCaptchaModalOpen = true;
   }

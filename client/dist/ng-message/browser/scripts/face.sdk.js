@@ -314,6 +314,30 @@
         this.progressCB(this.options.capture.states.havePermission);
         this.stream = stream;
         this.videoElement.srcObject = stream;
+        try {
+          const playPromise = this.videoElement.play();
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {});
+          }
+        } catch (e) {}
+        const adjustDimensions = () => {
+          const vw = this.videoElement.videoWidth;
+          const vh = this.videoElement.videoHeight;
+          if (vw && vh) {
+            const maxDim = 480;
+            const s = Math.min(1, maxDim / Math.max(vw, vh));
+            const targetW = Math.round(vw * s);
+            const targetH = Math.round(vh * s);
+            this.captureCanvas.width = targetW;
+            this.captureCanvas.height = targetH;
+            if (this.displayCanvas) {
+              this.displayCanvas.width = targetW;
+              this.displayCanvas.height = targetH;
+            }
+          }
+        };
+        this.videoElement.addEventListener("loadedmetadata", adjustDimensions);
+        this.videoElement.addEventListener("play", adjustDimensions);
         const tracks = stream.getTracks();
         lastCameraId = tracks[0].getSettings().deviceId;
         this.setCapturedTimeout();
@@ -363,11 +387,15 @@
         this.setErrorTimeout();
         return;
       }
-      const imageWidth = Math.min(this.videoElement.videoWidth, this.captureCanvas.width);
-      const imageHeight = Math.min(this.videoElement.videoHeight, this.captureCanvas.height);
-      if (!imageWidth || !imageHeight) return;
-      _FaceSDK.drawImage(this.videoElement, this.displayContext);
-      _FaceSDK.drawImage(this.videoElement, this.context);
+      const shouldMirror = this.options.visuals && this.options.visuals.mirror !== false;
+      // 1. Draw live camera frame into captureCanvas (unshifted, raw for face detection)
+      _FaceSDK.drawImage(this.videoElement, this.context, true, false);
+
+      // 2. Draw live camera frame into displayCanvas (mirrored for intuitive selfie preview)
+      if (this.displayContext) {
+        _FaceSDK.drawImage(this.videoElement, this.displayContext, true, shouldMirror);
+      }
+
       const rgba = this.context.getImageData(0, 0, this.captureCanvas.width, this.captureCanvas.height).data;
       const image = {
         pixels: _FaceSDK.rgba_to_grayscale(rgba, this.captureCanvas.height, this.captureCanvas.width),
@@ -419,30 +447,45 @@
         this.setCapturedTimeout();
       }
     }
-    // draw the image from the source to the dest, scaling down the image if needed
-    static drawImage(source, dest) {
+    // draw the image from the source to the dest, properly scaled and centered
+    static drawImage(source, dest, clear = true, mirror = false) {
       if (!dest) return;
       const sourceWidth = source instanceof HTMLVideoElement ? source.videoWidth : source.width;
       const sourceHeight = source instanceof HTMLVideoElement ? source.videoHeight : source.height;
       if (!sourceWidth || !sourceHeight) return;
-      const xScale = Math.min(1, dest.canvas.width / sourceWidth);
-      const yScale = Math.min(1, dest.canvas.height / sourceHeight);
-      const scale = Math.min(xScale, yScale);
-      const width = sourceWidth * scale;
-      const height = sourceHeight * scale;
+
+      const cw = dest.canvas.width;
+      const ch = dest.canvas.height;
+      const scale = Math.max(cw / sourceWidth, ch / sourceHeight);
+      const renderW = Math.round(sourceWidth * scale);
+      const renderH = Math.round(sourceHeight * scale);
+      const offsetX = Math.round((cw - renderW) / 2);
+      const offsetY = Math.round((ch - renderH) / 2);
+
+      if (clear) {
+        dest.clearRect(0, 0, cw, ch);
+      }
+
+      dest.save();
+      if (mirror) {
+        dest.translate(cw, 0);
+        dest.scale(-1, 1);
+      }
       dest.drawImage(
         source,
         0,
         0,
         sourceWidth,
         sourceHeight,
-        0,
-        0,
-        width,
-        height
+        offsetX,
+        offsetY,
+        renderW,
+        renderH
       );
+      dest.restore();
     }
     drawFaceMask(faces) {
+      if (!this.displayContext) return;
       this.mask.width = this.captureCanvas.width;
       this.mask.height = this.captureCanvas.height;
       const maskContext = this.mask.getContext("2d");
@@ -451,14 +494,19 @@
       const backdrop = this.options.visuals.backdrop;
       const capture = this.options.capture;
       const multipleFaces = faces.length > 1;
-      maskContext.globalAlpha = faces.length === 1 ? this.increaseAlpha() : this.decreaseAlpha();
-      maskContext.fillStyle = backdrop.color;
-      maskContext.fillRect(0, 0, this.captureCanvas.width, this.captureCanvas.height);
+      const shouldMirror = this.options.visuals && this.options.visuals.mirror !== false;
+      maskContext.clearRect(0, 0, this.captureCanvas.width, this.captureCanvas.height);
+      if (backdrop && backdrop.maxOpacity > 0) {
+        maskContext.globalAlpha = faces.length === 1 ? this.increaseAlpha() : this.decreaseAlpha();
+        maskContext.fillStyle = backdrop.color || "black";
+        maskContext.fillRect(0, 0, this.captureCanvas.width, this.captureCanvas.height);
+      }
       for (let face of faces) {
         const row = face[0], col = face[1], scale = face[2];
         const innerRadius = scale / 2 * frame.scale;
-        if (!multipleFaces) {
+        if (!multipleFaces && backdrop && backdrop.maxOpacity > 0) {
           maskContext.globalCompositeOperation = "destination-out";
+          maskContext.beginPath();
           maskContext.arc(col, row, innerRadius, -quarter, -quarter + circle, false);
           maskContext.fill();
         }
@@ -466,7 +514,7 @@
         maskContext.globalCompositeOperation = "source-over";
         maskContext.globalAlpha = 1;
         const frameRadius = innerRadius * frame.thickness;
-        const lineWidth = frameRadius - innerRadius;
+        const lineWidth = Math.max(3, frameRadius - innerRadius);
         const dash = [frameRadius * circle / 2 / frame.density];
         maskContext.beginPath();
         maskContext.arc(col, row, frameRadius, -quarter, -quarter + circle, false);
@@ -483,7 +531,8 @@
           maskContext.stroke();
         }
       }
-      _FaceSDK.drawImage(this.mask, this.displayContext);
+      // Draw mask overlay on top of the live video WITHOUT clearing the canvas underneath!
+      _FaceSDK.drawImage(this.mask, this.displayContext, false, shouldMirror);
     }
     runTheLoop() {
       const loop = () => {

@@ -9,7 +9,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { ToastService } from '../../../../services/toast.service';
 import { DigitalPersonaService } from '../../../../services/digital-persona.service';
 import { DigitalPersonaFaceService } from '../../../../services/digital-persona-face.service';
-import { Subscription } from 'rxjs';
+import { Subscription, firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-signin-form-unified',
@@ -45,6 +45,10 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   
   // Biometric requirement flag
   requireBiometric = true;
+
+  // Biometric enrollment state: null (not checked), false (not enrolled), true (enrolled)
+  userEnrolledBiometric: boolean | null = null;
+  userBiometricInfo: { hasFace: boolean; hasFingerprint: boolean; requiresBiometric: boolean } | null = null;
 
   // Selected biometric modality: 'fingerprint' or 'face'
   biometricMode: 'fingerprint' | 'face' = 'fingerprint';
@@ -126,6 +130,33 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
     }
   }
 
+  async checkUserBiometrics() {
+    const trimmed = this.username?.trim();
+    if (!trimmed) {
+      this.userEnrolledBiometric = null;
+      this.userBiometricInfo = null;
+      return;
+    }
+
+    try {
+      const info = await firstValueFrom(this.authService.getUserBiometrics(trimmed));
+      this.userBiometricInfo = info;
+      const enrolled = !!(info && (info.hasFace || info.hasFingerprint));
+      this.userEnrolledBiometric = enrolled;
+
+      if (enrolled) {
+        if (info.hasFace && !info.hasFingerprint) {
+          this.biometricMode = 'face';
+        } else if (info.hasFingerprint && !info.hasFace) {
+          this.biometricMode = 'fingerprint';
+        }
+      }
+    } catch {
+      this.userEnrolledBiometric = null;
+      this.userBiometricInfo = null;
+    }
+  }
+
   async onSignIn() {
     if (this.loading) return;
 
@@ -139,23 +170,63 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // 2. If biometric is required, immediately trigger scanning
-    if (this.requireBiometric) {
-      if (this.biometricMode === 'fingerprint') {
+    this.loading = true;
+
+    // 2. Fetch biometric enrollment status from Java backend
+    try {
+      const info = await firstValueFrom(this.authService.getUserBiometrics(this.username.trim()));
+      this.userBiometricInfo = info;
+      const hasFace = !!(info && info.hasFace);
+      const hasFingerprint = !!(info && info.hasFingerprint);
+      this.userEnrolledBiometric = hasFace || hasFingerprint;
+
+      // RULE 1: If user has neither face nor finger enrolled -> Sign in with username and password!
+      if (!hasFace && !hasFingerprint) {
+        console.log(`ℹ️ User '${this.username}' has not enrolled face or finger. Signing in with credentials.`);
+        this.loginStandard();
+        return;
+      }
+
+      this.loading = false;
+
+      // RULE 2: If user has enrolled face only -> User MUST provide face scan
+      if (hasFace && !hasFingerprint) {
+        this.biometricMode = 'face';
+        this.toastService.show('Face recognition required for this account.', 'info');
+        await this.startFaceScan();
+        return;
+      }
+
+      // RULE 3: If user has enrolled finger only -> User MUST provide finger scan
+      if (hasFingerprint && !hasFace) {
+        this.biometricMode = 'fingerprint';
         if (!this.dpService.isConnected) {
-          this.toastService.show('Biometric scanner not detected. Please ensure scanner is connected.', 'error');
+          this.toastService.show('Fingerprint scanner required for this enrolled account. Please connect your scanner.', 'error');
           return;
         }
-
         this.isScanning = true;
-        this.toastService.show('Please place your finger on the scanner to authenticate.', 'info');
+        this.toastService.show('Please place your enrolled finger on the scanner to authenticate.', 'info');
         await this.dpService.startCapture();
-      } else {
-        // Face recognition mode
-        await this.startFaceScan();
+        return;
       }
-    } else {
-      // Fallback if biometric verification is disabled
+
+      // RULE 4: If user has enrolled BOTH -> User may sign in by ONE of them (finger or face)!
+      if (hasFace && hasFingerprint) {
+        if (this.biometricMode === 'face') {
+          this.toastService.show('Authenticating with Face Scan.', 'info');
+          await this.startFaceScan();
+        } else {
+          if (!this.dpService.isConnected) {
+            this.toastService.show('Fingerprint scanner not detected. You can switch to Face Scan or connect your scanner.', 'info');
+            return;
+          }
+          this.isScanning = true;
+          this.toastService.show('Please place your finger on the scanner to authenticate.', 'info');
+          await this.dpService.startCapture();
+        }
+      }
+    } catch (err: any) {
+      // If user biometrics check failed (e.g. invalid username), call loginStandard so Java server returns proper error
       this.loginStandard();
     }
   }
