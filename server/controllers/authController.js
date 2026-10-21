@@ -66,40 +66,15 @@ exports.login = async (req, res) => {
 };
 
 exports.loginRawBiometric = async (req, res) => {
-    const { username, password = '', base64Image, biometricType = 'fingerprint' } = req.body;
-    const isFace = biometricType === 'face';
-    console.log(`\n======================================================`);
-    console.log(`🔐 [Mock API] Raw ${isFace ? 'Face Scan' : 'Fingerprint'} Login requested:`);
-    console.log(`   👤 Username: ${username}`);
-    console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
-    console.log(`   🧬 Biometric Type: ${biometricType.toUpperCase()}`);
-    console.log(`   ${isFace ? '📷 Face Image' : '🖐️ Fingerprint Sample'} (Base64 length): ${base64Image ? base64Image.length : 0}`);
-    console.log(`======================================================\n`);
-    
-    res.json({
-        success: true,
-        message: `${isFace ? 'Face recognition' : 'Biometric fingerprint'} and credentials authentication successful!`,
-        accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
-        refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjQ4MjkyMDk2MDB9.mock-signature",
-        loginLogId: 1,
-        groupUserUuid: "group_user_uuid",
-        appUserModel: {
-            id: 1,
-            uuid: "mock-user-uuid",
-            role: "ADMIN",
-            defaultUsername: username,
-            displayName: username.toUpperCase(),
-            shortName: username,
-            username: username
-        }
-    });
+    return exports.loginWithBiometric(req, res);
 };
+
 
 exports.loginWithBiometric = async (req, res) => {
     const { username, password = '', base64Image, biometricType = 'fingerprint' } = req.body;
     const isFace = biometricType === 'face';
     console.log(`\n======================================================`);
-    console.log(`🔐 [Mock API] Unified ${isFace ? 'Face Scan' : 'Fingerprint'} + Password Login Attempt`);
+    console.log(`🔐 [Auth Proxy] Unified ${isFace ? 'Face Scan' : 'Fingerprint'} + Password Login Attempt`);
     console.log(`   👤 Username: ${username}`);
     console.log(`   🔑 Password: ${password ? '******** (' + password.length + ' chars)' : '(empty)'}`);
     console.log(`   🧬 Biometric Type: ${biometricType.toUpperCase()}`);
@@ -114,7 +89,22 @@ exports.loginWithBiometric = async (req, res) => {
         return res.status(400).json({ success: false, message: `${isFace ? 'Face' : 'Fingerprint'} biometric image is required` });
     }
 
-    // In a production backend, server validates password hash + AFIS fingerprint / face match
+    // Forward request to real Java Backend (SourceAFIS & Face Recognition Engine)
+    try {
+        const javaRes = await fetch('http://localhost:8080/api/auth/login-with-biometric', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(req.body)
+        });
+
+        const javaData = await javaRes.json();
+        console.log(`⚡ [Java Biometric Backend] Status: ${javaRes.status}, Match:`, javaData.biometricMatchResult);
+        return res.status(javaRes.status).json(javaData);
+    } catch (javaError) {
+        console.warn(`⚠️ [Java Backend Offline] Falling back to Node token generation:`, javaError.message);
+    }
+
+    // Fallback if Java backend is stopped
     const token = jwt.sign(
         { id: 1, username: username, name: username, type: 'ADMIN' },
         process.env.SECRET_KEY || 'default_secret',
@@ -123,7 +113,7 @@ exports.loginWithBiometric = async (req, res) => {
 
     res.json({
         success: true,
-        message: `${isFace ? 'Face recognition' : 'Biometric fingerprint'} and credentials authentication successful!`,
+        message: `${isFace ? 'Face recognition' : 'Biometric fingerprint'} and credentials authentication successful (Fallback Mode)`,
         accessToken: token,
         refreshToken: token,
         loginLogId: 1,
@@ -140,17 +130,41 @@ exports.loginWithBiometric = async (req, res) => {
     });
 };
 
+
 exports.registerRawBiometric = async (req, res) => {
-    const { userId, username, password, base64Image } = req.body;
-    console.log(`🔑 [Mock API] Raw Biometric Registration requested for username:`, username);
-    console.log(`🔑 [Mock API] Base64 Image for ${username}:`, base64Image);
-    
-    // In a real application, you would send this base64Image to an AFIS to extract minutiae and save the template
-    // to the database, associated with this userId.
-    
+    const { username, password, base64Image, biometricType = 'fingerprint' } = req.body;
+    console.log(`\n======================================================`);
+    console.log(`🔑 [Register Biometric Proxy] Biometric Type: ${biometricType.toUpperCase()}`);
+    console.log(`   👤 Username: ${username}`);
+    console.log(`   🔑 Password provided: ${password ? 'Yes (' + password.length + ' chars)' : 'No'}`);
+    console.log(`   📷 Sample length: ${base64Image ? base64Image.length : 0} chars`);
+    console.log(`======================================================\n`);
+
+    // Forward to Java Backend (SourceAFIS / Face Recognition Engine)
+    try {
+        const javaRes = await fetch('http://localhost:8080/api/auth/register-biometric', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username,
+                password,
+                base64Image,
+                biometricType
+            })
+        });
+        const javaData = await javaRes.json();
+        console.log(`⚡ [Java Biometric Register] Status: ${javaRes.status}, Result:`, javaData);
+        return res.status(javaRes.status).json(javaData);
+    } catch (err) {
+        console.warn('⚠️ [Java Backend Offline] Falling back to mock registration:', err.message);
+    }
+
     res.json({
         success: true,
-        message: "Raw Biometric registered successfully (Mock API)"
+        message: `${biometricType === 'face' ? 'Face' : 'Fingerprint'} registered successfully (Mock API)`
     });
 };
+
+exports.registerBiometric = exports.registerRawBiometric;
+
 
