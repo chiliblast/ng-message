@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="server-java-ant" default="compile" basedir=".">
+    <description>
+        NG-Message Java Biometric Server built with Apache Ant (100% Offline)
+    </description>
+
+    <!-- Directory Properties -->
+    <property name="src.dir" location="src"/>
+    <property name="build.dir" location="build"/>
+    <property name="classes.dir" location="${build.dir}/classes"/>
+    <property name="dist.dir" location="dist"/>
+    <property name="lib.dir" location="lib"/>
+    <property name="config.dir" location="config"/>
+    <property name="main.class" value="com.ngmessage.ant.ServerAntApplication"/>
+    <property name="test.class" value="com.ngmessage.ant.test.BiometricApiTest"/>
+    <property name="jar.name" value="server-java-ant.jar"/>
+
+    <!-- Compilation Classpath containing bundled offline JARs in lib/ -->
+    <path id="classpath">
+        <fileset dir="${lib.dir}">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <!-- Runtime Classpath: compiled classes + config + lib JARs -->
+    <path id="runtime.classpath">
+        <pathelement location="${classes.dir}"/>
+        <pathelement location="${config.dir}"/>
+        <path refid="classpath"/>
+    </path>
+
+    <!-- Target: Clean -->
+    <target name="clean" description="Clean build and distribution directories">
+        <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
+        <echo message="Cleaned build and dist directories."/>
+    </target>
+
+    <!-- Target: Init -->
+    <target name="init">
+        <mkdir dir="${classes.dir}"/>
+        <mkdir dir="${dist.dir}"/>
+    </target>
+
+    <!-- Target: Compile -->
+    <target name="compile" depends="init" description="Compile Java source code">
+        <echo message="Compiling Java source files with Ant..."/>
+        <javac srcdir="${src.dir}"
+               destdir="${classes.dir}"
+               classpathref="classpath"
+               includeantruntime="false"
+               source="17"
+               target="17"
+               debug="true"
+               encoding="UTF-8">
+            <compilerarg value="-Xlint:-options"/>
+        </javac>
+        <copy todir="${classes.dir}">
+            <fileset dir="${config.dir}" includes="*.properties"/>
+        </copy>
+        <echo message="Compilation successful."/>
+    </target>
+
+    <!-- Target: Jar -->
+    <target name="jar" depends="compile" description="Package application into standalone JAR">
+        <echo message="Packaging into ${dist.dir}/${jar.name}..."/>
+
+        <jar destfile="${dist.dir}/${jar.name}" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main.class}"/>
+            </manifest>
+        </jar>
+
+        <mkdir dir="${dist.dir}/lib"/>
+        <copy todir="${dist.dir}/lib">
+            <fileset dir="${lib.dir}" includes="*.jar"/>
+        </copy>
+        <mkdir dir="${dist.dir}/config"/>
+        <copy todir="${dist.dir}/config">
+            <fileset dir="${config.dir}" includes="*.*"/>
+        </copy>
+
+        <echo message="JAR packaged successfully: ${dist.dir}/${jar.name}"/>
+    </target>
+
+    <!-- Target: Run -->
+    <target name="run" depends="compile" description="Run application directly via Ant">
+        <echo message="Starting ${ant.project.name}..."/>
+        <java classname="${main.class}" fork="true">
+            <classpath refid="runtime.classpath"/>
+        </java>
+    </target>
+
+    <!-- Target: Test -->
+    <target name="test" depends="compile" description="Run automated biometric API tests">
+        <echo message="Running automated Biometric API tests..."/>
+        <java classname="${test.class}" fork="true">
+            <classpath refid="runtime.classpath"/>
+        </java>
+    </target>
+
+</project>
