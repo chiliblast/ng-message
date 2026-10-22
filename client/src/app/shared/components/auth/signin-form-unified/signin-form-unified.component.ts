@@ -10,6 +10,7 @@ import { ToastService } from '../../../../services/toast.service';
 import { DigitalPersonaService } from '../../../../services/digital-persona.service';
 import { DigitalPersonaFaceService } from '../../../../services/digital-persona-face.service';
 import { Subscription, firstValueFrom } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-signin-form-unified',
@@ -36,6 +37,9 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   @ViewChild('captureCanvas') captureCanvasRef?: ElementRef<HTMLCanvasElement>;
   @ViewChild('displayCanvas') displayCanvasRef?: ElementRef<HTMLCanvasElement>;
 
+  // Download URL for HID Authentication Device Client Setup from server-java-ant
+  public adcDownloadUrl = `${environment.biometricApiUrl}/downloads/HID%20Authentication%20Device%20Client.exe`;
+
   showPassword = false;
   loading = false;
   isScanning = false;
@@ -43,20 +47,21 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   username = '';
   password = '';
   
-  // Biometric requirement flag
-  requireBiometric = true;
+  // 3 Authentication Options: 'password' | 'fingerprint' | 'face'
+  authMethod: 'password' | 'fingerprint' | 'face' = 'password';
 
-  // Biometric enrollment state: null (not checked), false (not enrolled), true (enrolled)
+  // Biometric enrollment state from server-java-ant
   userEnrolledBiometric: boolean | null = null;
-  userBiometricInfo: { hasFace: boolean; hasFingerprint: boolean; requiresBiometric: boolean } | null = null;
+  userBiometricInfo: { hasFace: boolean; hasFingerprint: boolean; requiresBiometric: boolean; fingerprintEnrolledAt?: string | null; faceEnrolledAt?: string | null } | null = null;
 
-  // Selected biometric modality: 'fingerprint' or 'face'
+  // Selected biometric modality alias for scanner / camera UI
   biometricMode: 'fingerprint' | 'face' = 'fingerprint';
   faceStatus = 'Ready';
   isMirrored = true;
   faceVerified = false;
   lastCapturedLength = 0;
 
+  private usernameDebounceTimer: any = null;
   private sampleSub?: Subscription;
   private connectSub?: Subscription;
   private faceSampleSub?: Subscription;
@@ -68,7 +73,7 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
 
     // Listen for device connection changes
     this.connectSub = this.dpService.isConnected$.subscribe(connected => {
-      if (!connected && this.isScanning && this.biometricMode === 'fingerprint') {
+      if (!connected && this.isScanning && this.authMethod === 'fingerprint') {
         this.isScanning = false;
         this.dpService.stopCapture();
         this.toastService.show('Biometric device was disconnected during scan.', 'error');
@@ -77,14 +82,14 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
 
     // Listen for captured fingerprint sample
     this.sampleSub = this.dpService.sample$.subscribe(base64Image => {
-      if (this.isScanning && this.biometricMode === 'fingerprint') {
+      if (this.isScanning && this.authMethod === 'fingerprint') {
         this.onSampleCaptured(base64Image, 'fingerprint');
       }
     });
 
     // Listen for captured face sample
     this.faceSampleSub = this.faceService.faceSample$.subscribe(base64Image => {
-      if (this.isScanning && this.biometricMode === 'face') {
+      if (this.isScanning && this.authMethod === 'face') {
         this.onSampleCaptured(base64Image, 'face');
       }
     });
@@ -96,6 +101,7 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    if (this.usernameDebounceTimer) clearTimeout(this.usernameDebounceTimer);
     if (this.connectSub) this.connectSub.unsubscribe();
     if (this.sampleSub) this.sampleSub.unsubscribe();
     if (this.faceSampleSub) this.faceSampleSub.unsubscribe();
@@ -112,12 +118,36 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
     this.faceService.setMirror(this.isMirrored);
   }
 
-  setBiometricMode(mode: 'fingerprint' | 'face') {
-    if (this.biometricMode === mode) return;
+  setAuthMethod(method: 'password' | 'fingerprint' | 'face') {
+    if (this.authMethod === method) return;
     if (this.isScanning) {
       this.cancelScan();
     }
-    this.biometricMode = mode;
+    this.authMethod = method;
+    if (method === 'face') {
+      this.biometricMode = 'face';
+    } else if (method === 'fingerprint') {
+      this.biometricMode = 'fingerprint';
+    }
+  }
+
+  setBiometricMode(mode: 'fingerprint' | 'face') {
+    this.setAuthMethod(mode);
+  }
+
+  onUsernameChange() {
+    if (this.usernameDebounceTimer) {
+      clearTimeout(this.usernameDebounceTimer);
+    }
+    const trimmed = this.username?.trim();
+    if (!trimmed) {
+      this.userEnrolledBiometric = null;
+      this.userBiometricInfo = null;
+      return;
+    }
+    this.usernameDebounceTimer = setTimeout(() => {
+      this.checkUserBiometrics();
+    }, 350);
   }
 
   async retryBiometricConnection() {
@@ -141,14 +171,29 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
     try {
       const info = await firstValueFrom(this.authService.getUserBiometrics(trimmed));
       this.userBiometricInfo = info;
-      const enrolled = !!(info && (info.hasFace || info.hasFingerprint));
+      const hasFace = !!(info && info.hasFace);
+      const hasFingerprint = !!(info && info.hasFingerprint);
+      const enrolled = hasFace || hasFingerprint;
       this.userEnrolledBiometric = enrolled;
 
-      if (enrolled) {
-        if (info.hasFace && !info.hasFingerprint) {
+      if (!enrolled) {
+        // Option 1 default: If user has neither face nor finger enrolled -> password sign in
+        this.authMethod = 'password';
+      } else {
+        if (hasFace && !hasFingerprint) {
+          // Option 3: User has face enrolled
+          this.authMethod = 'face';
           this.biometricMode = 'face';
-        } else if (info.hasFingerprint && !info.hasFace) {
+        } else if (hasFingerprint && !hasFace) {
+          // Option 2: User has fingerprint enrolled
+          this.authMethod = 'fingerprint';
           this.biometricMode = 'fingerprint';
+        } else if (hasFace && hasFingerprint) {
+          // Both enrolled: keep current choice or default to fingerprint
+          if (this.authMethod === 'password') {
+            this.authMethod = 'fingerprint';
+            this.biometricMode = 'fingerprint';
+          }
         }
       }
     } catch {
@@ -170,73 +215,40 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.loading = true;
-
-    // 2. Fetch biometric enrollment status from Java backend
-    try {
-      const info = await firstValueFrom(this.authService.getUserBiometrics(this.username.trim()));
-      this.userBiometricInfo = info;
-      const hasFace = !!(info && info.hasFace);
-      const hasFingerprint = !!(info && info.hasFingerprint);
-      this.userEnrolledBiometric = hasFace || hasFingerprint;
-
-      // RULE 1: If user has neither face nor finger enrolled -> Sign in with username and password!
-      if (!hasFace && !hasFingerprint) {
-        console.log(`ℹ️ User '${this.username}' has not enrolled face or finger. Signing in with credentials.`);
-        this.loginStandard();
-        return;
-      }
-
-      this.loading = false;
-
-      // RULE 2: If user has enrolled face only -> User MUST provide face scan
-      if (hasFace && !hasFingerprint) {
-        this.biometricMode = 'face';
-        this.toastService.show('Face recognition required for this account.', 'info');
-        await this.startFaceScan();
-        return;
-      }
-
-      // RULE 3: If user has enrolled finger only -> User MUST provide finger scan
-      if (hasFingerprint && !hasFace) {
-        this.biometricMode = 'fingerprint';
-        if (!this.dpService.isConnected) {
-          this.toastService.show('Fingerprint scanner required for this enrolled account. Please connect your scanner.', 'error');
-          return;
-        }
-        this.isScanning = true;
-        this.toastService.show('Please place your enrolled finger on the scanner to authenticate.', 'info');
-        await this.dpService.startCapture();
-        return;
-      }
-
-      // RULE 4: If user has enrolled BOTH -> User may sign in by ONE of them (finger or face)!
-      if (hasFace && hasFingerprint) {
-        if (this.biometricMode === 'face') {
-          this.toastService.show('Authenticating with Face Scan.', 'info');
-          await this.startFaceScan();
-        } else {
-          if (!this.dpService.isConnected) {
-            this.toastService.show('Fingerprint scanner not detected. You can switch to Face Scan or connect your scanner.', 'info');
-            return;
-          }
-          this.isScanning = true;
-          this.toastService.show('Please place your finger on the scanner to authenticate.', 'info');
-          await this.dpService.startCapture();
-        }
-      }
-    } catch (err: any) {
-      // If user biometrics check failed (e.g. invalid username), call loginStandard so Java server returns proper error
+    // OPTION 1: Username & Password Sign In
+    if (this.authMethod === 'password') {
       this.loginStandard();
+      return;
+    }
+
+    // OPTION 2: Username, Password & Fingerprint Sign In
+    if (this.authMethod === 'fingerprint') {
+      if (!this.dpService.isConnected) {
+        this.toastService.show('Fingerprint scanner not detected. Please connect your scanner or switch to another option.', 'error');
+        await this.retryBiometricConnection();
+        return;
+      }
+      this.biometricMode = 'fingerprint';
+      this.isScanning = true;
+      this.toastService.show('Please place your finger on the scanner to authenticate.', 'info');
+      await this.dpService.startCapture();
+      return;
+    }
+
+    // OPTION 3: Username, Password & Face Sign In
+    if (this.authMethod === 'face') {
+      this.biometricMode = 'face';
+      this.toastService.show('Activating face recognition...', 'info');
+      await this.startFaceScan();
+      return;
     }
   }
 
   async startFaceScan() {
     this.faceVerified = false;
     this.isScanning = true;
-    this.toastService.show('Starting camera for face recognition...', 'info');
 
-    // Allow DOM to render the video and canvas elements
+    // Allow DOM to render video and canvas elements
     setTimeout(async () => {
       const videoEl = this.faceVideoRef?.nativeElement;
       const captureCanvas = this.captureCanvasRef?.nativeElement;
@@ -260,14 +272,16 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   }
 
   useMockFace() {
-    this.faceService.generateMockFaceSample();
+    // Generate synthetic face matching server-java-ant matcher
+    const syntheticFace = this.createSyntheticFace();
+    this.onSampleCaptured(syntheticFace, 'face');
   }
 
   async cancelScan() {
     if (!this.isScanning) return;
     this.isScanning = false;
     this.faceVerified = false;
-    if (this.biometricMode === 'fingerprint') {
+    if (this.authMethod === 'fingerprint' || this.biometricMode === 'fingerprint') {
       await this.dpService.stopCapture();
       this.toastService.show('Fingerprint scan cancelled.', 'info');
     } else {
@@ -277,7 +291,7 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
   }
 
   async onScannerIconClick() {
-    if (this.biometricMode === 'fingerprint') {
+    if (this.authMethod === 'fingerprint') {
       if (!this.dpService.isConnected) {
         await this.retryBiometricConnection();
         return;
@@ -289,15 +303,18 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // If scanner/camera is ready, prompt user
     if (!this.username.trim() || !this.password) {
-      this.toastService.show('Please enter your username and password, then click Sign in.', 'info');
+      this.toastService.show('Please enter your username and password, then click Sign In.', 'info');
       return;
     }
 
     await this.onSignIn();
   }
 
+  /**
+   * Handles captured biometric image from scanner or camera,
+   * calling the relevant server-java-ant API (POST /api/auth/login-finger or POST /api/auth/login-face).
+   */
   private onSampleCaptured(base64Image: string, type: 'fingerprint' | 'face') {
     this.isScanning = false;
     this.loading = true;
@@ -316,31 +333,33 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
     }
 
     console.log(
-      `%c🔐 [Unified Sign In] Submitting Username, Password, and ${type.toUpperCase()} Biometric to Server`,
-      'background: #2563eb; color: white; font-size: 14px; font-weight: bold; padding: 4px 8px; border-radius: 4px;'
+      `%c🔐 [server-java-ant Sign In] Submitting Username, Password, and ${type.toUpperCase()} Biometric`,
+      'background: #10b981; color: white; font-size: 14px; font-weight: bold; padding: 4px 8px; border-radius: 4px;'
     );
     console.log(`👤 Username:`, this.username);
     console.log(`🔑 Password:`, this.password ? '****** (' + this.password.length + ' chars)' : '(empty)');
     console.log(`🧬 Biometric Type:`, type);
     console.log(`📷 Base64 Image length:`, base64Image?.length, 'characters');
-    console.log(`📷 Base64 Image (Full Data URL):`, base64Image);
-    console.log(`💡 Tip: You can access this full string in console anytime by typing: __lastCapturedBiometric`);
 
-    const payload = {
-      username: this.username,
-      password: this.password,
-      base64Image: base64Image,
-      biometricType: type
-    };
+    const authObservable = type === 'face'
+      ? this.authService.loginFace({
+          username: this.username,
+          password: this.password,
+          face: base64Image
+        })
+      : this.authService.loginFinger({
+          username: this.username,
+          password: this.password,
+          finger: base64Image
+        });
 
-    // Send all three to server for single-step authentication
-    this.authService.loginWithBiometric(payload).subscribe({
+    authObservable.subscribe({
       next: (res: any) => {
         this.toastService.show(res?.message || 'Authentication successful!', 'success');
         setTimeout(() => {
           this.loading = false;
           this.router.navigate(['/']);
-        }, 1200);
+        }, 1000);
       },
       error: (err) => {
         this.loading = false;
@@ -351,8 +370,12 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
     });
   }
 
+  /**
+   * Option 1: Standard Username & Password login (POST /api/auth/login on server-java-ant)
+   */
   private loginStandard() {
     this.loading = true;
+    console.log(`🔑 [server-java-ant Sign In] Standard Credentials: User: ${this.username}`);
     this.authService.login({ username: this.username, password: this.password }).subscribe({
       next: (res: any) => {
         this.loading = false;
@@ -361,9 +384,63 @@ export class SigninFormUnifiedComponent implements OnInit, OnDestroy {
       },
       error: (err) => {
         this.loading = false;
+        const errPayload = err.error;
+        // If server informs biometrics are required for this account
+        if (errPayload && errPayload.requiresBiometric) {
+          if (errPayload.hasFace && !errPayload.hasFingerprint) {
+            this.setAuthMethod('face');
+          } else if (errPayload.hasFingerprint && !errPayload.hasFace) {
+            this.setAuthMethod('fingerprint');
+          } else {
+            this.setAuthMethod('fingerprint');
+          }
+          this.toastService.show(errPayload.message || 'Biometric verification required for this account. Please select Fingerprint or Face Scan.', 'error');
+          return;
+        }
+
         const errMsg = err.error?.message || err.message || 'Invalid username or password';
         this.toastService.show(errMsg, 'error');
       }
     });
   }
+
+  /**
+   * Creates a synthetic face Base64 PNG identical to server-java-ant BiometricApiTest
+   */
+  private createSyntheticFace(): string {
+    const canvas = document.createElement('canvas');
+    canvas.width = 160;
+    canvas.height = 160;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#404040';
+      ctx.fillRect(0, 0, 160, 160);
+      // Head oval
+      ctx.fillStyle = '#d3d3d3';
+      ctx.beginPath();
+      ctx.ellipse(80, 80, 50, 60, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Eyes
+      ctx.fillStyle = '#000000';
+      ctx.beginPath();
+      ctx.ellipse(59, 66, 9, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.ellipse(101, 66, 9, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+      // Nose
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(80, 75);
+      ctx.lineTo(80, 100);
+      ctx.stroke();
+      // Mouth
+      ctx.beginPath();
+      ctx.arc(80, 105, 20, 0, Math.PI);
+      ctx.stroke();
+    }
+    return canvas.toDataURL('image/png');
+  }
 }
+

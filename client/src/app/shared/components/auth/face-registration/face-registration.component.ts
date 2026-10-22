@@ -129,6 +129,11 @@ export class FaceRegistrationComponent implements OnInit, OnDestroy {
     }
   }
 
+  get currentUsername(): string {
+    const user = this.authService.currentUserValue;
+    return user ? (user.username || user.defaultUsername || user.name || '') : '';
+  }
+
   private onFaceCaptured(base64Image: string) {
     if (this.loading) return;
 
@@ -142,35 +147,30 @@ export class FaceRegistrationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const username = this.currentUsername;
+    if (!username) {
+      this.toastService.show('You must be logged in to register biometrics.', 'error');
+      return;
+    }
+
     this.isScanning = false;
     this.faceVerified = true;
     this.loading = true;
     this.lastCapturedLength = base64Image?.length || 0;
 
-    const user = this.authService.currentUserValue;
-    if (!user) {
-      this.toastService.show('You must be logged in to register biometrics.', 'error');
-      this.loading = false;
-      this.faceVerified = false;
-      return;
-    }
-
-    const username = user.username || user.defaultUsername || user.name;
     const payload = {
-      userId: user.id || user.uuid,
       username: username,
-      password: this.password,
-      base64Image: base64Image,
-      biometricType: 'face'
+      password: this.password.trim(),
+      face: base64Image
     };
 
-    console.log('👤 [Register Face] Submitting face template to server for username:', payload.username);
+    console.log('👤 [server-java-ant Face Registration] Submitting face template for:', payload.username);
 
-    this.authService.registerRawBiometric(payload).subscribe({
+    this.authService.registerFace(payload).subscribe({
       next: (res: any) => {
-        this.toastService.show(res?.message || 'Face biometric registered successfully!', 'success');
+        this.loading = false;
+        this.toastService.show(res?.message || 'Face biometric registered successfully on server-java-ant!', 'success');
         setTimeout(() => {
-          this.loading = false;
           this.onClose();
         }, 1200);
       },

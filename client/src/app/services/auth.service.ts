@@ -11,7 +11,7 @@ export class AuthService {
   public user$ = this.userSubject.asObservable();
   private cookieService = inject(CookieService);
   private apiUrl = `${environment.apiBaseUrl}/auth`;
-  private biometricApiUrl = (environment as any).biometricApiUrl || 'http://localhost:8080/api/auth';
+  public biometricApiUrl = (environment as any).biometricApiUrl || 'http://localhost:8082/api/auth';
   private healthIntervalId: any = null;
 
   get currentUserValue() {
@@ -169,83 +169,129 @@ export class AuthService {
     );
   }
 
+  loginFinger(payload: { username: string, password: string, finger: string }) {
+    console.log(`🖐️ [Java ANT Fingerprint Login] User: ${payload.username}`);
+    return this.http.post(`${this.biometricApiUrl}/login-finger`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      map((res: any) => this.handleAuthSuccess(res)),
+      catchError((err: any) => {
+        console.error('❌ [loginFinger] Server error:', err);
+        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8082.' : err.message) || 'Fingerprint authentication failed';
+        return throwError(() => ({ error: { message: errMsg } }));
+      })
+    );
+  }
+
+  loginFace(payload: { username: string, password: string, face: string }) {
+    console.log(`👤 [Java ANT Face Login] User: ${payload.username}`);
+    return this.http.post(`${this.biometricApiUrl}/login-face`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      map((res: any) => this.handleAuthSuccess(res)),
+      catchError((err: any) => {
+        console.error('❌ [loginFace] Server error:', err);
+        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8082.' : err.message) || 'Face recognition authentication failed';
+        return throwError(() => ({ error: { message: errMsg } }));
+      })
+    );
+  }
+
   loginWithBiometric(payload: { username: string, password: string, base64Image: string, biometricType?: 'fingerprint' | 'face' }) {
     const bType = payload.biometricType || 'fingerprint';
-    console.log(`🔑 [Mock API Unified Biometric + Credentials] Type:`, bType.toUpperCase());
-    console.log(`🔑 [Mock API Unified Biometric + Credentials] Username:`, payload.username);
-    console.log(`🔑 [Mock API Unified Biometric + Credentials] Password:`, payload.password ? '******' : '(empty)');
-    console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image Length:`, payload.base64Image?.length);
-    console.log(`🔑 [Mock API Unified Biometric + Credentials] Base64 Image:`, payload.base64Image);
+    if (bType === 'face') {
+      return this.loginFace({
+        username: payload.username,
+        password: payload.password,
+        face: payload.base64Image
+      });
+    } else {
+      return this.loginFinger({
+        username: payload.username,
+        password: payload.password,
+        finger: payload.base64Image
+      });
+    }
+  }
 
-    const body = {
-      ...payload,
-      biometricType: bType
+  private handleAuthSuccess(res: any) {
+    if (!res || typeof res === 'string' || res.success === false) {
+      throw { error: { message: (res && res.message) || 'Login failed' } };
+    }
+    this.cookieService.setCookie('accessToken', res.accessToken, 7);
+    if (res.refreshToken) {
+      this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
+    }
+    const appUser = res.appUserModel || {};
+    const user = {
+      ...appUser,
+      id: res.loginLogId || appUser.id || 1,
+      loginLogId: res.loginLogId || appUser.id || 1,
+      groupUserUuid: res.groupUserUuid || 'group_user_uuid',
     };
+    this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
+    this.userSubject.next(user);
+    return res;
+  }
 
-    // Send username, password, and biometric sample directly to Java Backend (port 8080)
-    return this.http.post(`${this.biometricApiUrl}/login-with-biometric`, body, {
+  registerFinger(payload: { username: string, password: string, finger: string }) {
+    console.log(`🖐️ [server-java-ant Fingerprint Registration] User: ${payload.username}`);
+    return this.http.post(`${this.biometricApiUrl}/register-finger`, payload, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
       map((res: any) => {
-        if (!res || typeof res === 'string' || res.success === false) {
-          throw { error: { message: (res && res.message) || 'Login failed' } };
+        if (!res || res.success === false) {
+          throw { error: { message: (res && res.message) || 'Fingerprint registration failed' } };
         }
-        this.cookieService.setCookie('accessToken', res.accessToken, 7);
-        if (res.refreshToken) {
-          this.cookieService.setCookie('refreshToken', res.refreshToken, 7);
-        }
-        const appUser = res.appUserModel || {};
-        const user = {
-          ...appUser,
-          id: res.loginLogId || 1,
-          loginLogId: res.loginLogId || 1,
-          groupUserUuid: res.groupUserUuid || 'group_user_uuid',
-        };
-        this.cookieService.setCookie('user', encodeURIComponent(JSON.stringify(user)), 7);
-        this.userSubject.next(user);
         return res;
+      }),
+      catchError((err: any) => {
+        console.error('❌ [registerFinger] server-java-ant error:', err);
+        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8082. Please ensure server-java-ant is running.' : err.message) || 'Fingerprint registration failed';
+        return throwError(() => ({ error: { message: errMsg } }));
+      })
+    );
+  }
+
+  registerFace(payload: { username: string, password: string, face: string }) {
+    console.log(`👤 [server-java-ant Face Registration] User: ${payload.username}`);
+    return this.http.post(`${this.biometricApiUrl}/register-face`, payload, {
+      headers: { 'Content-Type': 'application/json' }
+    }).pipe(
+      map((res: any) => {
+        if (!res || res.success === false) {
+          throw { error: { message: (res && res.message) || 'Face registration failed' } };
+        }
+        return res;
+      }),
+      catchError((err: any) => {
+        console.error('❌ [registerFace] server-java-ant error:', err);
+        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8082. Please ensure server-java-ant is running.' : err.message) || 'Face registration failed';
+        return throwError(() => ({ error: { message: errMsg } }));
       })
     );
   }
 
   registerBiometric(payload: any) {
-    console.log('🔑 [Java Biometric Registration] Payload:', JSON.stringify(payload, null, 2));
-    // Send registration payload directly to Java Backend (port 8080)
-    return this.http.post(`${this.biometricApiUrl}/register-biometric`, payload, {
-      headers: { 'Content-Type': 'application/json' }
-    }).pipe(
-      map((res: any) => {
-        if (res && res.success === false) {
-          throw { error: { message: res.message || 'Registration failed' } };
-        }
-        return res;
-      }),
-      catchError((err: any) => {
-        console.error('❌ [registerBiometric] Java server error:', err);
-        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8080. Please ensure Java backend is running.' : err.message) || 'Biometric registration failed';
-        return throwError(() => ({ error: { message: errMsg } }));
-      })
-    );
+    const isFace = payload.biometricType === 'face' || !!payload.face;
+    const image = payload.face || payload.finger || payload.base64Image;
+    if (isFace) {
+      return this.registerFace({
+        username: payload.username,
+        password: payload.password,
+        face: image
+      });
+    } else {
+      return this.registerFinger({
+        username: payload.username,
+        password: payload.password,
+        finger: image
+      });
+    }
   }
 
   registerRawBiometric(payload: any) {
-    console.log('🔑 [Java Raw Biometric Registration] Payload:', JSON.stringify(payload, null, 2));
-    // Send registration payload directly to Java Backend (port 8080)
-    return this.http.post(`${this.biometricApiUrl}/register-biometric`, payload, {
-      headers: { 'Content-Type': 'application/json' }
-    }).pipe(
-      map((res: any) => {
-        if (res && res.success === false) {
-          throw { error: { message: res.message || 'Registration failed' } };
-        }
-        return res;
-      }),
-      catchError((err: any) => {
-        console.error('❌ [registerRawBiometric] Java server error:', err);
-        const errMsg = err.error?.message || (err.status === 0 ? 'Cannot connect to Java Biometric Server on port 8080. Please ensure Java backend is running.' : err.message) || 'Biometric registration failed';
-        return throwError(() => ({ error: { message: errMsg } }));
-      })
-    );
+    return this.registerBiometric(payload);
   }
 
   isLoggedIn(): boolean {
